@@ -6,6 +6,7 @@ import { BaseForm } from '@app/components/common/forms/BaseForm/BaseForm';
 import { BaseSpace } from '@app/components/common/BaseSpace/BaseSpace';
 import { Modal } from 'antd';
 import { Line } from 'react-chartjs-2';
+import { ChartOptions } from 'chart.js';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -132,17 +133,24 @@ const EditableTable: React.FC = () => {
         label: currentKindNumber !== null ? `Kind ${currentKindNumber}` : 'No Data Available',
         data: trendData ? trendData.map((data: any) => data.totalSize) : [],
         fill: true,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        backgroundColor: (context: any) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+          gradient.addColorStop(0, 'rgba(75, 192, 192, 0.6)');
+          gradient.addColorStop(1, 'rgba(75, 192, 192, 0.1)');
+          return gradient;
+        },
         borderColor: 'rgba(75, 192, 192, 1)',
         pointBackgroundColor: 'rgba(75, 192, 192, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+        tension: 0.4,
       },
     ],
   };
 
-  const chartOptions = {
+  const chartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -151,24 +159,66 @@ const EditableTable: React.FC = () => {
         title: {
           display: true,
           text: 'Total Size (GB)',
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+          color: 'rgba(255, 255, 255, 0.8)',
+        },
+        ticks: {
+          font: {
+            size: 12,
+          },
+          color: 'rgba(255, 255, 255, 0.6)',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
         },
       },
       x: {
         title: {
           display: true,
           text: 'Month',
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+          color: 'rgba(255, 255, 255, 0.8)',
+        },
+        ticks: {
+          font: {
+            size: 12,
+          },
+          color: 'rgba(255, 255, 255, 0.6)',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
         },
       },
     },
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          font: {
+            size: 14,
+          },
+          color: 'rgba(255, 255, 255, 0.8)',
+        },
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${context.raw.toFixed(3)} GB`,
+          label: (context: any) => `Total Size: ${context.raw.toFixed(3)} GB`,
         },
       },
+    },
+    animation: {
+      duration: 1000,
+      easing: 'easeInOutQuart',
+    },
+    hover: {
+      mode: 'nearest' as const,
+      intersect: true,
     },
   };
 

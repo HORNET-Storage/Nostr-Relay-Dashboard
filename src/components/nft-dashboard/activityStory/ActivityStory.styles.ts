@@ -32,3 +32,10 @@ export const EmptyState = styled.div`
   font-size: ${FONT_SIZE.md};
   color: var(--text-secondary);
 `;
+
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
