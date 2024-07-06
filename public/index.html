@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="%PUBLIC_URL%/themes/main.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="H.O.R.N.E.T Storage Nostr Relay💾 Powered by Scionic Merkle Trees and Blossom🎄🌸"
+    />
+    <meta name="keywords" content="nostr, multimedia, storage, relay, secure, responsive" />
+    <meta itemprop="title" content="H.O.R.N.E.T Storage" />
+    <meta
+      itemprop="description"
+      content="H.O.R.N.E.T Storage Nostr Relay💾 Powered by Scionic Merkle Trees and Blossom🎄🌸"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo-dark-192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <noscript id="inject-styles-here"></noscript>
+    <style>
+      body {
+        margin: 0;
+      }
+      #initSpinner {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 99999;
+        background: #2d2c3e;
+      }
+    </style>
+    <title>H.O.R.N.E.T Storage</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+      <div id="initSpinner">
+        <img src="%PUBLIC_URL%/spinners/spinner.svg" alt="Initializing H.O.R.N.E.T Storage..." />
+      </div>
+    </div>
+  </body>
+</html>
