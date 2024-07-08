@@ -512,7 +512,7 @@ const RelaySettingsPage: React.FC = () => {
         <BaseCol xs={24}>
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kinds'}
+              header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
               key="notes"
               className="centered-header"
             >
