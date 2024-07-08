@@ -455,7 +455,7 @@ const RelaySettingsPage: React.FC = () => {
                     {settings.chunked.includes('unchunked') && (
                       <>
                         <div style={{ marginTop: '1rem' }}>
-                          <strong>Specify Max Unchunked File Size:</strong>
+                          <strong>Max Unchunked File Size:</strong>
                           <S.Space />
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
@@ -483,7 +483,7 @@ const RelaySettingsPage: React.FC = () => {
                     {settings.chunked.includes('chunked') && (
                       <>
                         <div style={{ marginTop: '1rem' }}>
-                          <strong>Specify Max Chunked File Size:</strong>
+                          <strong>Max Chunked File Size:</strong>
                           <S.Space />
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
@@ -807,7 +807,7 @@ const RelaySettingsPage: React.FC = () => {
                     onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '8.5rem auto',
+                      gridTemplateColumns: '9rem auto',
                       paddingRight: '0',
                       justifyContent: 'start',
                       fontSize: 'small',
@@ -827,7 +827,7 @@ const RelaySettingsPage: React.FC = () => {
                     onChange={(checkedValues) => handleChunkedChange(checkedValues as string[])}
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '8.5rem auto',
+                      gridTemplateColumns: '9rem auto',
                       paddingRight: '0',
                       justifyContent: 'start',
                       fontSize: 'small',
@@ -836,7 +836,7 @@ const RelaySettingsPage: React.FC = () => {
                   {settings.chunked.includes('unchunked') && (
                     <>
                       <div style={{ marginTop: '1rem' }}>
-                        <strong>Specify Max Unchunked File Size:</strong>
+                        <strong>Max Unchunked File Size:</strong>
                         <S.Space />
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
@@ -864,7 +864,7 @@ const RelaySettingsPage: React.FC = () => {
                   {settings.chunked.includes('chunked') && (
                     <>
                       <div style={{ marginTop: '1rem' }}>
-                        <strong>Specify Max Chunked File Size:</strong>
+                        <strong>Max Chunked File Size:</strong>
                         <S.Space />
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
