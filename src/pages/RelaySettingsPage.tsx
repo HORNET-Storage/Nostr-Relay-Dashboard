@@ -423,15 +423,15 @@ const RelaySettingsPage: React.FC = () => {
                       <S.LabelSpan style={{ width: '7rem' }}>{t('common.protocolSetting')}</S.LabelSpan>
                       <Checkbox.Group
                         options={[
-                          { label: 'WebSocket', value: 'WebSocket' },
-                          { label: 'Libp2p QUIC', value: 'QUIC' },
+                          { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.85rem' } },
+                          { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.85rem' } },
                         ]}
                         value={settings.protocol}
                         className="custom-checkbox-group"
                         onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '11rem auto', // Adjust the width as needed
+                          gridTemplateColumns: '10rem auto', // Adjust the width as needed
                         }}
                       />
                     </div>
@@ -441,14 +441,14 @@ const RelaySettingsPage: React.FC = () => {
                       <Checkbox.Group
                         className="custom-checkbox-group"
                         options={[
-                          { label: `Unchunked \u{1F338}`, value: 'unchunked' },
-                          { label: `Chunked \u{1F333}`, value: 'chunked' },
+                          { label: `Unchunked \u{1F338}`, value: 'unchunked', style: { fontSize: '.85rem' } },
+                          { label: `Chunked \u{1F333}`, value: 'chunked', style: { fontSize: '.85rem' } },
                         ]}
                         value={settings.chunked}
                         onChange={(checkedValues) => handleChunkedChange(checkedValues as string[])}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '11rem auto', // Adjust the width as needed
+                          gridTemplateColumns: '10rem auto', // Adjust the width as needed
                         }}
                       />
                     </div>
@@ -816,11 +816,17 @@ const RelaySettingsPage: React.FC = () => {
                 </div>
                 <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('common.chunkedSetting')}</S.LabelSpan>
+                  <S.LabelSpan style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }}>
+                    {t('common.chunkedSetting')}
+                  </S.LabelSpan>
                   <Checkbox.Group
                     className="custom-checkbox-group"
                     options={[
-                      { label: `Unchunked \u{1F338}`, value: 'unchunked', style: { fontSize: '.8rem' } },
+                      {
+                        label: `Unchunked \u{1F338}`,
+                        value: 'unchunked',
+                        style: { fontSize: '.8rem' },
+                      },
                       { label: `Chunked \u{1F333}`, value: 'chunked', style: { fontSize: '.8rem' } },
                     ]}
                     value={settings.chunked}
