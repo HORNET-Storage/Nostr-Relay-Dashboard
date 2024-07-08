@@ -84,6 +84,7 @@ const EditableTable: React.FC = () => {
       width: '25%',
       editable: false,
       sorter: true,
+      zIndex: 0,
       sortOrder: sortField === 'kindName' ? sortOrder : undefined,
     },
     {

@@ -279,4 +279,7 @@ export default createGlobalStyle`
     .custom-dropdown .ant-select-arrow{
     color: var(--text-nft-light-color)
     }
+  .custom-tooltip-class .ant-tooltip-content .ant-tooltip-inner {
+    background-color: rgba(0, 0, 0, 1);
+  }
 `;

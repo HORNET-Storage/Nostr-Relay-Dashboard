@@ -44,7 +44,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       symbolSize: 4,
       smooth: false,
       lineStyle: {
-        width: 2,
+        width: 1,
         color: themeObject[theme].chartColor3,
       },
       emphasis: {
