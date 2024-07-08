@@ -61,12 +61,12 @@ export const ActivityStory: React.FC = () => {
 
   const prepareChartData = () => {
     const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const labels = sortedStory.map(item => new Date(item.date).toLocaleDateString());
-    const amounts = sortedStory.map(item => {
+    const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
+    const amounts = sortedStory.map((item) => {
       const amount = parseFloat(item.value);
       return isNaN(amount) ? 0 : amount;
     });
-  
+
     return {
       labels,
       datasets: [
@@ -182,7 +182,6 @@ export const ActivityStory: React.FC = () => {
   );
 };
 
-
 // import React, { useEffect, useState } from 'react';
 // import { useTranslation } from 'react-i18next';
 // import ActivityStoryItem from './ActivityStoryItem/ActivityStoryItem';
@@ -249,7 +248,7 @@ export const ActivityStory: React.FC = () => {
 //       const amount = parseFloat(item.value);
 //       return isNaN(amount) ? 0 : amount;
 //     });
-  
+
 //     return {
 //       labels,
 //       datasets: [

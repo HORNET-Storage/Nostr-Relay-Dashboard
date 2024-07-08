@@ -40,10 +40,6 @@ serviceWorkerRegistration.register({
 
 reportWebVitals();
 
-
-
-
-
 // import App from './App';
 // import reportWebVitals from './reportWebVitals';
 // import './i18n';

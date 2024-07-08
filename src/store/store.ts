@@ -26,8 +26,6 @@ store.subscribe(() => {
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-
-
 // import { configureStore } from '@reduxjs/toolkit';
 // import { errorLoggingMiddleware } from '@app/store/middlewares/errorLogging.middleware';
 // import rootReducer from '@app/store/slices'; // Ensure this imports the combined reducer

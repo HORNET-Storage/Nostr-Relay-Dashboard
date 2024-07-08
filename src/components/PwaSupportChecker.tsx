@@ -8,7 +8,7 @@ const PwaSupportChecker: React.FC = () => {
 
   useEffect(() => {
     const checkPWASupport = () => {
-      const isSupported = ('serviceWorker' in navigator) && ('BeforeInstallPromptEvent' in window);
+      const isSupported = 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;
       console.log('PWA support check:', isSupported);
       dispatch(setPWASupported(isSupported));
     };
@@ -20,5 +20,3 @@ const PwaSupportChecker: React.FC = () => {
 };
 
 export default PwaSupportChecker;
-
-
