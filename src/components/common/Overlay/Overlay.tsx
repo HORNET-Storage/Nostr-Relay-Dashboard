@@ -12,6 +12,7 @@ export const Overlay = styled.div<OverlayProps>`
   ${(props) =>
     props.show &&
     css`
+      z-index: 2;
       backdrop-filter: blur(6px);
       width: 100vw;
       height: 100vh;

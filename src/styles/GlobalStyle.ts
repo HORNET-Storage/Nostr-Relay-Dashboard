@@ -255,8 +255,14 @@ export default createGlobalStyle`
   .grid-checkbox-group {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1.8rem;
+  }
+  .grid-mobile-checkbox-group{
+  display: grid;
+  grid-template-columns: 9rem auto;
+  gap: 1.2rem;
+
   }
 
   .grid-checkbox-group.large-label {
@@ -279,4 +285,7 @@ export default createGlobalStyle`
     .custom-dropdown .ant-select-arrow{
     color: var(--text-nft-light-color)
     }
+  .custom-tooltip-class .ant-tooltip-content .ant-tooltip-inner {
+    background-color: rgba(0, 0, 0, 1);
+  }
 `;

@@ -29,6 +29,7 @@ const SiderMenu: React.FC<SiderContentProps> = ({ setCollapsed }) => {
 
   return (
     <S.Menu
+      style={{ zIndex: 3 }}
       mode="inline"
       defaultSelectedKeys={defaultSelectedKeys}
       defaultOpenKeys={defaultOpenKeys}

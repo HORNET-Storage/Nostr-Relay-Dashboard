@@ -11,6 +11,7 @@ export const RightSideCol = styled(BaseCol)`
   height: calc(100vh - ${LAYOUT.desktop.headerHeight});
   background-color: var(--sider-background-color);
   overflow-y: auto;
+  z-index: 5;
   &::-webkit-scrollbar {
     width: 6px;
     display: none; // Hide scrollbar by default
