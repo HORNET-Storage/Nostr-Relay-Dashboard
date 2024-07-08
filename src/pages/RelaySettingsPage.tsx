@@ -881,9 +881,7 @@ const RelaySettingsPage: React.FC = () => {
             </S.Card>
           </StyledPanel>
         </Collapse>
-      </BaseCol>
 
-      <BaseCol span={24}>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel
             header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
