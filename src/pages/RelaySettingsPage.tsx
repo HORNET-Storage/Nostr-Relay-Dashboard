@@ -412,7 +412,7 @@ const RelaySettingsPage: React.FC = () => {
                       <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
                       <S.LargeSwitch
                         className="modeSwitch"
-                        checkedChildren="Smart"
+                        checkedChildren="Strict"
                         unCheckedChildren="Unlimited"
                         checked={settings.mode === 'smart'}
                         onChange={(e) => handleModeChange(e)}
@@ -782,7 +782,7 @@ const RelaySettingsPage: React.FC = () => {
                   <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
                   <S.LargeSwitch
                     className="modeSwitch"
-                    checkedChildren="Smart"
+                    checkedChildren="Strict"
                     unCheckedChildren="Unlimited"
                     checked={settings.mode === 'smart'}
                     onChange={(e) => handleModeChange(e)}
