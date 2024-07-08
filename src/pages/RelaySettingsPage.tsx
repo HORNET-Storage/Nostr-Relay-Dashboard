@@ -429,7 +429,10 @@ const RelaySettingsPage: React.FC = () => {
                         value={settings.protocol}
                         className="custom-checkbox-group"
                         onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
-                        style={{ display: 'flex', flexDirection: 'row', gap: '1rem', justifyContent: 'start' }}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '11rem auto', // Adjust the width as needed
+                        }}
                       />
                     </div>
                     <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
@@ -438,12 +441,15 @@ const RelaySettingsPage: React.FC = () => {
                       <Checkbox.Group
                         className="custom-checkbox-group"
                         options={[
-                          { label: 'Unchunked', value: 'unchunked' },
-                          { label: 'Chunked', value: 'chunked' },
+                          { label: `Unchunked \u{1F338}`, value: 'unchunked' },
+                          { label: `Chunked \u{1F333}`, value: 'chunked' },
                         ]}
                         value={settings.chunked}
                         onChange={(checkedValues) => handleChunkedChange(checkedValues as string[])}
-                        style={{ display: 'flex', flexDirection: 'row', gap: '1rem', justifyContent: 'start' }}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '11rem auto', // Adjust the width as needed
+                        }}
                       />
                     </div>
                     {settings.chunked.includes('unchunked') && (
@@ -729,7 +735,7 @@ const RelaySettingsPage: React.FC = () => {
                   />
                 </div>
                 <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group large-label ${
+                  className={`custom-checkbox-group grid-checkbox-group ${
                     settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                   }`}
                   options={audioFormatOptions}
@@ -794,16 +800,17 @@ const RelaySettingsPage: React.FC = () => {
                   <Checkbox.Group
                     className="custom-checkbox-group"
                     options={[
-                      { label: 'WebSocket', value: 'WebSocket' },
-                      { label: 'Libp2p QUIC', value: 'QUIC' },
+                      { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.8rem' } },
+                      { label: 'Libp2p QUIC', value: 'QUIC', style: { fontSize: '.8rem' } },
                     ]}
                     value={settings.protocol}
                     onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
                     style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      gap: '1rem',
+                      display: 'grid',
+                      gridTemplateColumns: '8.5rem auto',
+                      paddingRight: '0',
                       justifyContent: 'start',
+                      fontSize: 'small',
                     }}
                   />
                 </div>
@@ -813,12 +820,18 @@ const RelaySettingsPage: React.FC = () => {
                   <Checkbox.Group
                     className="custom-checkbox-group"
                     options={[
-                      { label: 'Unchunked', value: 'unchunked' },
-                      { label: 'Chunked', value: 'chunked' },
+                      { label: `Unchunked \u{1F338}`, value: 'unchunked', style: { fontSize: '.8rem' } },
+                      { label: `Chunked \u{1F333}`, value: 'chunked', style: { fontSize: '.8rem' } },
                     ]}
                     value={settings.chunked}
                     onChange={(checkedValues) => handleChunkedChange(checkedValues as string[])}
-                    style={{ display: 'flex', flexDirection: 'row', gap: '1rem', justifyContent: 'start' }}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '8.5rem auto',
+                      paddingRight: '0',
+                      justifyContent: 'start',
+                      fontSize: 'small',
+                    }}
                   />
                   {settings.chunked.includes('unchunked') && (
                     <>
@@ -1009,7 +1022,7 @@ const RelaySettingsPage: React.FC = () => {
 
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-checkbox-group ${
+                className={`custom-checkbox-group grid-mobile-checkbox-group ${
                   settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                 }`}
                 options={photoFormatOptions}
@@ -1037,7 +1050,7 @@ const RelaySettingsPage: React.FC = () => {
 
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-checkbox-group ${
+                className={`custom-checkbox-group grid-mobile-checkbox-group ${
                   settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                 }`}
                 options={videoFormatOptions}
@@ -1093,7 +1106,7 @@ const RelaySettingsPage: React.FC = () => {
               </div>
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-checkbox-group large-label ${
+                className={`custom-checkbox-group grid-mobile-checkbox-group ${
                   settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                 }`}
                 options={audioFormatOptions}
