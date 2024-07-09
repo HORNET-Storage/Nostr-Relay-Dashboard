@@ -6,6 +6,7 @@ interface StoriesInternalProps {
 
 export const CreatorButton = styled.button<StoriesInternalProps>`
   display: flex;
+  width: 100%;
   align-items: center;
   text-align: center;
   background: 0 0;
@@ -19,6 +20,8 @@ export const CreatorButton = styled.button<StoriesInternalProps>`
 
 export const Avatar = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: cover;
   border-radius: 50%;
 `;
