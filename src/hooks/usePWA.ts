@@ -15,6 +15,13 @@ export const usePWA = () => {
 
     window.addEventListener('beforeinstallprompt', handler);
 
+    console.log('Setting up global beforeinstallprompt listener');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      console.log('Global beforeinstallprompt event fired and stored');
+      (window as any).deferredPrompt = e;
+    });
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
       // Optionally, dispatch that PWA is no longer supported if the event is dismissed
