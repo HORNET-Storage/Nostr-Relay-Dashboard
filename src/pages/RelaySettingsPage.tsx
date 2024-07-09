@@ -400,7 +400,7 @@ const RelaySettingsPage: React.FC = () => {
         <BaseRow gutter={[60, 60]}>
           <BaseCol xs={24}>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
                     <S.SwitchContainer
@@ -776,7 +776,7 @@ const RelaySettingsPage: React.FC = () => {
     <BaseRow gutter={[20, 24]}>
       <BaseCol span={24}>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
                 <S.SwitchContainer
