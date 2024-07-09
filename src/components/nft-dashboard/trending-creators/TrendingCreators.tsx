@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Splide, SplideSlide } from '@splidejs/react-splide';
-import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
+import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
 import profile1 from '@app/assets/images/profile1.webp';
 import profile2 from '@app/assets/images/profile2.webp';
 import profile3 from '@app/assets/images/profile3.webp';
@@ -15,7 +14,6 @@ import profile12 from '@app/assets/images/profile12.webp';
 import profile13 from '@app/assets/images/profile13.webp';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { BaseCarousel } from '@app/components/common/BaseCarousel/Carousel';
 import { NFTCardHeader } from '@app/components/nft-dashboard/common/NFTCardHeader/NFTCardHeader';
 import { ViewAll } from '@app/components/nft-dashboard/common/ViewAll/ViewAll';
 import { TrendingCreatorsStory } from '@app/components/nft-dashboard/trending-creators/story/TrendingCreatorsStory';
@@ -24,12 +22,11 @@ import { getTrendingCreators, TrendingCreator } from '@app/api/trendingCreators'
 import * as S from './TrendingCreators.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+import { SplideCarousel } from '@app/components/common/SplideCarousel/SplideCarousel';
 
 export const TrendingCreators: React.FC = () => {
   const [stories, setStories] = useState<TrendingCreator[]>([]);
-  const [key, setKey] = useState(Math.random());
-  const [dragging, setDragging] = useState(false);
-  const sliderRef = useRef(null);
+  const sliderRef = useRef<Splide>(null);
 
   const profiles = {
     images: [
@@ -50,75 +47,104 @@ export const TrendingCreators: React.FC = () => {
   const { isTablet: isTabletOrHigher } = useResponsive();
   const { t } = useTranslation();
 
+  const goPrev = () => {
+    if (sliderRef.current && sliderRef.current.splide) {
+      sliderRef.current.splide.go('-1');
+    }
+  };
+
+  // Function to navigate to the next slide
+  const goNext = () => {
+    if (sliderRef.current && sliderRef.current.splide) {
+      sliderRef.current.splide.go('+1');
+    }
+  };
+
   useEffect(() => {
     getTrendingCreators().then((res) => setStories(res));
   }, []);
 
   return (
     <>
-      <NFTCardHeader title={t('nft.payingSubs')}>
-        <BaseRow align="middle">
-          <BaseCol>
-            <ViewAll bordered={false} />
-          </BaseCol>
+      <SplideCarousel
+        ref={sliderRef}
+        type="loop"
+        drag="free"
+        gap=".2rem"
+        snap="false"
+        flickPower="500"
+        breakpoints={{
+          1920: {
+            perPage: 7,
+          },
 
-          {isTabletOrHigher && (
+          1370: {
+            perPage: 6,
+          },
+
+          820: {
+            perPage: 5,
+          },
+          700: {
+            perPage: 4,
+          },
+        }}
+      >
+        <NFTCardHeader title={t('nft.payingSubs')}>
+          <BaseRow align="middle">
+            <BaseCol>
+              <ViewAll bordered={false} />
+            </BaseCol>
+
+            {isTabletOrHigher && (
+              <>
+                <BaseCol>
+                  <S.ArrowBtn
+                    type="text"
+                    size="small"
+                    onClick={() => {
+                      goPrev();
+                    }}
+                  >
+                    <LeftOutlined />
+                  </S.ArrowBtn>
+                </BaseCol>
+
+                <BaseCol>
+                  <S.ArrowBtn
+                    type="text"
+                    size="small"
+                    onClick={() => {
+                      goNext();
+                    }}
+                  >
+                    <RightOutlined />
+                  </S.ArrowBtn>
+                </BaseCol>
+              </>
+            )}
+          </BaseRow>
+        </NFTCardHeader>
+        <SplideTrack>
+          {stories.length > 0 && (
             <>
-              <BaseCol>
-                <S.ArrowBtn type="text" size="small" onClick={() => {}}>
-                  <LeftOutlined />
-                </S.ArrowBtn>
-              </BaseCol>
-
-              <BaseCol>
-                <S.ArrowBtn type="text" size="small" onClick={() => {}}>
-                  <RightOutlined />
-                </S.ArrowBtn>
-              </BaseCol>
+              {profiles.images.map((img: string) => (
+                <SplideSlide key={img}>
+                  <S.CardWrapper>
+                    <TrendingCreatorsStory
+                      onStoryOpen={() => {
+                        return;
+                      }}
+                      img={img}
+                      viewed={false}
+                    />
+                  </S.CardWrapper>
+                </SplideSlide>
+              ))}
             </>
           )}
-        </BaseRow>
-      </NFTCardHeader>
-
-      {stories.length > 0 && (
-        <BaseCarousel
-          ref={sliderRef}
-          type="loop"
-          drag="free"
-          snap="false"
-          autoScroll={{
-            speed: 0.8,
-          }}
-          breakpoints={{
-            1920: {
-              perPage: 7,
-            },
-
-            1370: {
-              perPage: 6,
-            },
-
-            820: {
-              perPage: 5,
-            },
-            700: {
-              perPage: 4,
-            },
-          }}
-        >
-          {profiles.images.map((img: string) => (
-            <S.CardWrapper key={img}>
-              <TrendingCreatorsStory
-                onStoryOpen={() => {
-                  return;
-                }}
-                img={img}
-                viewed={false}
-              />
-            </S.CardWrapper>
-          ))}
-        </BaseCarousel>
-      )}
+        </SplideTrack>
+      </SplideCarousel>
     </>
   );
 };

@@ -4,10 +4,10 @@ import { FONT_SIZE, media } from '@app/styles/themes/constants';
 import styled from 'styled-components';
 
 export const WrapperRow = styled(BaseRow)`
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 
   @media only screen and ${media.xl} {
-    margin-bottom: 2.625rem;
+    margin-bottom: 2rem;
   }
 `;
 

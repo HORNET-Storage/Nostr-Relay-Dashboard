@@ -1,105 +1,77 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import React, { useRef, useState, useEffect } from 'react';
-import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
-import '@splidejs/splide/dist/css/splide.min.css';
-import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Slider, { Settings } from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
-export const BaseCarousel = React.forwardRef(
-  (
-    {
-      slidesToShow = 4,
-      arrows = false,
-      dots = false,
-      infinite = true,
-      type = 'loop',
-      children,
-      swipeSpeed = 0.5, // Adjust swipe speed (higher value is faster)
-      ...props // Collecting all other props dynamically
-    },
-    ref,
-  ) => {
-    const [isAutoScrolling, setAutoScrolling] = useState(true); // State to manage auto scroll
+export const BaseCarousel = React.forwardRef<Slider, Settings>(
+  ({ slidesToShow = 1, arrows = false, dots = false, infinite = true, centerMode = true, children, ...props }, ref) => {
+    const carouselRef = useRef();
+    const [scrolling, setScrolling] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
 
-    const [autoScrollPaused, setAutoScrollPaused] = useState(false);
-    const [autoScrollTimeout, setAutoScrollTimeout] = useState(null);
+    const totalRef = ref || carouselRef;
 
-    // Function to toggle auto scroll on and off
-    const toggleAutoScroll = () => {
-      if (ref.current) {
-        ref.current.toggleAutoScroll(); // Toggle auto scroll
-        if (!autoScrollPaused) {
-          setAutoScrollPaused(true); // Set autoScrollPaused to true
-          clearTimeout(autoScrollTimeout); // Clear any existing timeout
-        }
-      }
-    };
+    const handleMouseDown = useCallback(
+      (event) => {
+        setScrolling(true);
+        setStartX(event.pageX - totalRef.current.innerSlider.list.offsetLeft);
+        setScrollLeft(totalRef.current.innerSlider.list.scrollLeft);
+      },
+      [totalRef],
+    );
 
-    // Function to resume auto scroll after timeout
-    const resumeAutoScroll = () => {
-      if (ref.current && autoScrollPaused) {
-        ref.current.toggleAutoScroll(); // Toggle auto scroll back on
-        setAutoScrollPaused(false); // Set autoScrollPaused to false
-      }
-    };
-
-    // Function to handle user interaction (pause auto scroll and set timeout to resume after 10s)
-    const handleInteraction = () => {
-      toggleAutoScroll(); // Pause auto scroll
-      if (autoScrollTimeout) {
-        clearTimeout(autoScrollTimeout); // Clear existing timeout
-      }
-      // Set new timeout to resume auto scroll after 10 seconds
-      setAutoScrollTimeout(
-        setTimeout(() => {
-          resumeAutoScroll(); // Resume auto scroll
-        }, 10000), // 10 seconds timeout
-      );
-    };
-
-    // Cleanup effect to clear timeout on unmount or re-render
-    useEffect(() => {
-      return () => {
-        if (autoScrollTimeout) {
-          clearTimeout(autoScrollTimeout); // Clear timeout on cleanup
-        }
-      };
+    const handleMouseLeave = useCallback(() => {
+      setScrolling(false);
     }, []);
 
-    // Reference to the Splide instance
-    const splideRef = useRef(null);
+    const handleMouseUp = useCallback(() => {
+      setScrolling(false);
+    }, []);
 
-    // Configure options for Splide carousel
-    const options = {
-      perPage: slidesToShow, // Number of slides to show at once
-      arrows: arrows, // Show navigation arrows
-      pagination: dots, // Show pagination dots
-      loop: infinite, // Enable infinite loop
-      gap: '1rem', // Space between slides
-      drag: 'free', // Default drag behavior
-      type: type, // Carousel type
-      autoScroll: {
-        speed: swipeSpeed, // Adjust swipe speed
+    const handleMouseMove = useCallback(
+      (event) => {
+        if (!scrolling) return;
+        event.preventDefault();
+        const x = event.pageX - totalRef.current.innerSlider.list.offsetLeft;
+        const walk = (x - startX) * 2; // Scroll-fast
+        totalRef.current.innerSlider.list.scrollLeft = scrollLeft - walk;
       },
-      ...props, // Merge all other props
-    };
+      [scrolling, startX, scrollLeft, totalRef],
+    );
+
+    useEffect(() => {
+      if (totalRef.current) {
+        const slickList = totalRef.current.innerSlider.list;
+
+        slickList.addEventListener('mousedown', handleMouseDown);
+        slickList.addEventListener('mouseleave', handleMouseLeave);
+        slickList.addEventListener('mouseup', handleMouseUp);
+        slickList.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+          slickList.removeEventListener('mousedown', handleMouseDown);
+          slickList.removeEventListener('mouseleave', handleMouseLeave);
+          slickList.removeEventListener('mouseup', handleMouseUp);
+          slickList.removeEventListener('mousemove', handleMouseMove);
+        };
+      }
+    }, [totalRef, handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove]);
 
     return (
-      <Splide
-        hasTrack={false}
-        options={options}
-        extensions={{ AutoScroll }}
-        ref={splideRef}
-        onMouseEnter={handleInteraction}
-        onTouchStart={handleInteraction}
+      <Slider
+        ref={totalRef}
+        slidesToShow={slidesToShow}
+        arrows={arrows}
+        dots={dots}
+        infinite={infinite}
+        centerMode={centerMode}
+        {...props}
       >
-        {/* Render each child slide */}
-        <SplideTrack>
-          {React.Children.map(children, (child, index) => (
-            <SplideSlide key={index}>{child}</SplideSlide>
-          ))}
-        </SplideTrack>
-      </Splide>
+        {children}
+      </Slider>
     );
   },
 );
