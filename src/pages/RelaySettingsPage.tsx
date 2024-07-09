@@ -400,7 +400,7 @@ const RelaySettingsPage: React.FC = () => {
         <BaseRow gutter={[60, 60]}>
           <BaseCol xs={24}>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
                     <S.SwitchContainer
@@ -776,7 +776,7 @@ const RelaySettingsPage: React.FC = () => {
     <BaseRow gutter={[20, 24]}>
       <BaseCol span={24}>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
                 <S.SwitchContainer
@@ -816,9 +816,7 @@ const RelaySettingsPage: React.FC = () => {
                 </div>
                 <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <S.LabelSpan style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }}>
-                    {t('common.chunkedSetting')}
-                  </S.LabelSpan>
+                  <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('common.chunkedSetting')}</S.LabelSpan>
                   <Checkbox.Group
                     className="custom-checkbox-group"
                     options={[
@@ -1016,7 +1014,7 @@ const RelaySettingsPage: React.FC = () => {
             header={settings.mode === 'unlimited' ? `Blacklisted Photo Extensions` : 'Photo Extensions'}
             key="2"
           >
-            <S.Card>
+            <S.Card style={{ flexDirection: 'column' }}>
               <div>
                 <BaseSwitch
                   checkedChildren="ON"
@@ -1044,7 +1042,7 @@ const RelaySettingsPage: React.FC = () => {
             header={settings.mode === 'unlimited' ? `Blacklisted Video Extensions` : 'Video Extensions'}
             key="3"
           >
-            <S.Card>
+            <S.Card style={{ flexDirection: 'column' }}>
               <div>
                 <BaseSwitch
                   checkedChildren="ON"

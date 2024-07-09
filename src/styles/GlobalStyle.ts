@@ -260,7 +260,8 @@ export default createGlobalStyle`
   }
   .grid-mobile-checkbox-group{
   display: grid;
-  grid-template-columns: 9rem auto;
+  width:100%;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   gap: 1.2rem;
 
   }
