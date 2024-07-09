@@ -27,7 +27,7 @@ export const SplideCarousel = forwardRef<Splide, PropsWithChildren<BaseCarouselP
       dots = false,
       infinite = true,
       type = 'loop',
-      swipeSpeed = 0.6,
+      swipeSpeed = 0.8,
       ...props
     },
     ref,
@@ -38,6 +38,7 @@ export const SplideCarousel = forwardRef<Splide, PropsWithChildren<BaseCarouselP
       pagination: dots,
       loop: infinite,
       interval: 5000,
+      flickMaxPages: 1.5,
       gap: '1rem',
       drag: 'free',
       type: type,
