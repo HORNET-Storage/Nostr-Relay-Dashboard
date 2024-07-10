@@ -416,7 +416,7 @@ const RelaySettingsPage: React.FC = () => {
               />
             </S.SwitchContainer>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
                     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -520,7 +520,7 @@ const RelaySettingsPage: React.FC = () => {
         <BaseCol xs={24}>
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
+              header={settings.mode === 'unlimited' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
               key="notes"
               className="centered-header"
             >
@@ -795,7 +795,7 @@ const RelaySettingsPage: React.FC = () => {
           />
         </S.SwitchContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -904,7 +904,7 @@ const RelaySettingsPage: React.FC = () => {
 
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel
-            header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
+            header={settings.mode === 'unlimited' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
             key="notes"
             className="centered-header"
           >
