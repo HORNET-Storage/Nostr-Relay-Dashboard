@@ -88,7 +88,7 @@ export const TrendingCreators: React.FC = () => {
           },
         }}
       >
-        <NFTCardHeader title={t('nft.payingSubs')}>
+        <NFTCardHeader title={t('nft.paidSubs')}>
           <BaseRow align="middle">
             <BaseCol>
               <ViewAll bordered={false} />

@@ -399,28 +399,28 @@ const RelaySettingsPage: React.FC = () => {
       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
         <BaseRow gutter={[60, 60]}>
           <BaseCol xs={24}>
+            <S.SwitchContainer
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '7rem 7rem',
+                marginBottom: '1.5rem',
+              }}
+            >
+              <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+              <S.LargeSwitch
+                className="modeSwitch"
+                checkedChildren="Strict"
+                unCheckedChildren="Unlimited"
+                checked={settings.mode === 'smart'}
+                onChange={(e) => handleModeChange(e)}
+              />
+            </S.SwitchContainer>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
-                    <S.SwitchContainer
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: '7rem 7rem',
-                      }}
-                    >
-                      <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-                      <S.LargeSwitch
-                        className="modeSwitch"
-                        checkedChildren="Strict"
-                        unCheckedChildren="Unlimited"
-                        checked={settings.mode === 'smart'}
-                        onChange={(e) => handleModeChange(e)}
-                      />
-                    </S.SwitchContainer>
-                    <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                      <S.LabelSpan style={{ width: '7rem' }}>{t('common.protocolSetting')}</S.LabelSpan>
+                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
+                      <S.LabelSpan style={{ width: '7rem', marginBottom: '1rem' }}>{'Transport'}</S.LabelSpan>
                       <Checkbox.Group
                         options={[
                           { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.85rem' } },
@@ -436,8 +436,10 @@ const RelaySettingsPage: React.FC = () => {
                       />
                     </div>
                     <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <S.LabelSpan style={{ width: '7rem' }}>{t('common.chunkedSetting')}</S.LabelSpan>{' '}
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <S.LabelSpan style={{ width: '7rem', marginBottom: '1rem' }}>
+                        {t('common.chunkedSetting')}
+                      </S.LabelSpan>{' '}
                       <Checkbox.Group
                         className="custom-checkbox-group"
                         options={[
@@ -454,7 +456,7 @@ const RelaySettingsPage: React.FC = () => {
                     </div>
                     {settings.chunked.includes('unchunked') && (
                       <>
-                        <div style={{ marginTop: '1rem' }}>
+                        <div style={{ marginTop: '1.5rem' }}>
                           <strong>Max Unchunked File Size:</strong>
                           <S.Space />
                         </div>
@@ -518,7 +520,7 @@ const RelaySettingsPage: React.FC = () => {
         <BaseCol xs={24}>
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
+              header={settings.mode === 'unlimited' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
               key="notes"
               className="centered-header"
             >
@@ -775,26 +777,27 @@ const RelaySettingsPage: React.FC = () => {
   const mobileAndTabletLayout = (
     <BaseRow gutter={[20, 24]}>
       <BaseCol span={24}>
+        <S.SwitchContainer
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '5rem 7rem',
+            marginBottom: '1.5rem',
+            marginTop: '1rem',
+          }}
+        >
+          <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+          <S.LargeSwitch
+            className="modeSwitch"
+            checkedChildren="Strict"
+            unCheckedChildren="Unlimited"
+            checked={settings.mode === 'smart'}
+            onChange={(e) => handleModeChange(e)}
+          />
+        </S.SwitchContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Config'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
-                <S.SwitchContainer
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '7rem 7rem',
-                  }}
-                >
-                  <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-                  <S.LargeSwitch
-                    className="modeSwitch"
-                    checkedChildren="Strict"
-                    unCheckedChildren="Unlimited"
-                    checked={settings.mode === 'smart'}
-                    onChange={(e) => handleModeChange(e)}
-                  />
-                </S.SwitchContainer>
-                <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
                   <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('common.transportSetting')}</S.LabelSpan>
                   <Checkbox.Group
@@ -901,7 +904,7 @@ const RelaySettingsPage: React.FC = () => {
 
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel
-            header={settings.mode === 'unlimited' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
+            header={settings.mode === 'unlimited' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
             key="notes"
             className="centered-header"
           >

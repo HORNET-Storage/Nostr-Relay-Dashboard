@@ -26,7 +26,7 @@ const handleTouchStart = (event: React.TouchEvent) => {
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({ toggleSider, isSiderOpened }) => {
   return (
-    <BaseRow onTouchStart={handleTouchStart} justify="space-between" align="middle">
+    <BaseRow style={{ width: '100%' }} onTouchStart={handleTouchStart} justify="space-between" align="middle">
       <BaseCol>
         <ProfileDropdown />
       </BaseCol>
