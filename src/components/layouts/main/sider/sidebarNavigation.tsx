@@ -27,13 +27,13 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
     {
       title: 'common.relay-settings',
       key: 'relay-settings',
-      url: '/relay-settings',
+      url: '/storage-settings',
       icon: <StorageSettingsIcon />,
     },
     {
-      title: 'Storage Statistics',
+      title: 'Nostr Statistics',
       key: 'dataTables',
-      url: '/data-tables',
+      url: '/nostr-stats',
       icon: <StatsIcon />,
     },
   ];
@@ -42,7 +42,7 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
     items.push({
       title: 'common.wallet',
       key: 'wallet',
-      url: '/balance',
+      url: '/wallet',
       icon: <BtcIcon />,
     });
   }
