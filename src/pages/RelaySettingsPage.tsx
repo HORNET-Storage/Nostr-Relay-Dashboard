@@ -526,14 +526,16 @@ const RelaySettingsPage: React.FC = () => {
             >
               <S.Card>
                 <div className="flex-col w-full">
-                  <div>
-                    <BaseSwitch
-                      checkedChildren="ON"
-                      unCheckedChildren="OFF"
-                      checked={settings.isKindsActive}
-                      onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
-                    />
-                  </div>
+                  {settings.mode == 'smart' && (
+                    <div>
+                      <BaseSwitch
+                        checkedChildren="ON"
+                        unCheckedChildren="OFF"
+                        checked={settings.isKindsActive}
+                        onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
+                      />
+                    </div>
+                  )}
                   <BaseCheckbox.Group
                     style={{ paddingLeft: '1rem' }}
                     className="large-label"
@@ -646,14 +648,16 @@ const RelaySettingsPage: React.FC = () => {
               key="2"
             >
               <S.Card>
-                <div>
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isPhotosActive}
-                    onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
-                  />
-                </div>
+                {settings.mode == 'smart' && (
+                  <div>
+                    <BaseSwitch
+                      checkedChildren="ON"
+                      unCheckedChildren="OFF"
+                      checked={settings.isPhotosActive}
+                      onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
+                    />
+                  </div>
+                )}
 
                 <BaseCheckbox.Group
                   className={`custom-checkbox-group grid-checkbox-group ${
@@ -673,14 +677,16 @@ const RelaySettingsPage: React.FC = () => {
               key="3"
             >
               <S.Card>
-                <div>
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isVideosActive}
-                    onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
-                  />
-                </div>
+                {settings.mode == 'smart' && (
+                  <div>
+                    <BaseSwitch
+                      checkedChildren="ON"
+                      unCheckedChildren="OFF"
+                      checked={settings.isVideosActive}
+                      onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
+                    />
+                  </div>
+                )}
 
                 <BaseCheckbox.Group
                   className={`custom-checkbox-group grid-checkbox-group ${
@@ -728,14 +734,16 @@ const RelaySettingsPage: React.FC = () => {
               key="5"
             >
               <S.Card>
-                <div>
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isAudioActive}
-                    onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
-                  />
-                </div>
+                {settings.mode == 'smart' && (
+                  <div>
+                    <BaseSwitch
+                      checkedChildren="ON"
+                      unCheckedChildren="OFF"
+                      checked={settings.isAudioActive}
+                      onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
+                    />
+                  </div>
+                )}
                 <BaseCheckbox.Group
                   className={`custom-checkbox-group grid-checkbox-group ${
                     settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
@@ -1018,14 +1026,16 @@ const RelaySettingsPage: React.FC = () => {
             key="2"
           >
             <S.Card style={{ flexDirection: 'column' }}>
-              <div>
-                <BaseSwitch
-                  checkedChildren="ON"
-                  unCheckedChildren="OFF"
-                  checked={settings.isPhotosActive}
-                  onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
-                />
-              </div>
+              {settings.mode === 'smart' && (
+                <div>
+                  <BaseSwitch
+                    checkedChildren="ON"
+                    unCheckedChildren="OFF"
+                    checked={settings.isPhotosActive}
+                    onChange={() => handleSwitchChange('isPhotosActive', !settings.isPhotosActive)}
+                  />
+                </div>
+              )}
 
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
@@ -1046,14 +1056,16 @@ const RelaySettingsPage: React.FC = () => {
             key="3"
           >
             <S.Card style={{ flexDirection: 'column' }}>
-              <div>
-                <BaseSwitch
-                  checkedChildren="ON"
-                  unCheckedChildren="OFF"
-                  checked={settings.isVideosActive}
-                  onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
-                />
-              </div>
+              {settings.mode === 'smart' && (
+                <div>
+                  <BaseSwitch
+                    checkedChildren="ON"
+                    unCheckedChildren="OFF"
+                    checked={settings.isVideosActive}
+                    onChange={() => handleSwitchChange('isVideosActive', !settings.isVideosActive)}
+                  />
+                </div>
+              )}
 
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
@@ -1103,14 +1115,16 @@ const RelaySettingsPage: React.FC = () => {
             key="5"
           >
             <S.Card>
-              <div>
-                <BaseSwitch
-                  checkedChildren="ON"
-                  unCheckedChildren="OFF"
-                  checked={settings.isAudioActive}
-                  onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
-                />
-              </div>
+              {settings.mode === 'smart' && (
+                <div>
+                  <BaseSwitch
+                    checkedChildren="ON"
+                    unCheckedChildren="OFF"
+                    checked={settings.isAudioActive}
+                    onChange={() => handleSwitchChange('isAudioActive', !settings.isAudioActive)}
+                  />
+                </div>
+              )}
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
                 className={`custom-checkbox-group grid-mobile-checkbox-group ${
