@@ -13,6 +13,9 @@ export const Card = styled(CommonCard)`
   .ant-card-head-title {
     padding-bottom: 0rem !important;
   }
+  .ant-table-tbody > tr > td {
+    padding: 0.8rem;
+  }
 
   div.ant-table.ant-table-bordered,
   div.ant-table-container,
