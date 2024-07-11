@@ -26,7 +26,7 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
     },
     {
       title: 'common.relay-settings',
-      key: 'relay-settings',
+      key: 'storage-settings',
       url: '/storage-settings',
       icon: <StorageSettingsIcon />,
     },
