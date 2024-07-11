@@ -98,6 +98,28 @@ const RelaySettingsPage: React.FC = () => {
     { kind: 9803, kindString: 'kind9803', description: 'Commit Notes', category: 3 },
   ];
 
+  const [settings, setSettings] = useState<Settings>({
+    mode: 'unlimited',
+    protocol: ['WebSocket'],
+    chunked: ['unchunked'],
+    chunksize: '2',
+    maxFileSize: 100,
+    maxFileSizeUnit: 'MB',
+    kinds: [],
+    dynamicKinds: [],
+    photos: [],
+    videos: [],
+    gitNestr: [],
+    audio: [],
+    isKindsActive: true,
+    isPhotosActive: true,
+    isVideosActive: true,
+    isGitNestrActive: true,
+    isAudioActive: true,
+  });
+
+  type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds';
+
   const groupedNoteOptions = categories.map((category) => ({
     ...category,
     notes: noteOptions.filter((note) => note.category === category.id),
@@ -120,8 +142,15 @@ const RelaySettingsPage: React.FC = () => {
   ].map((format) => ({
     label: (
       <S.CheckboxLabel
-        style={{ color: relaySettings.isPhotosActive ? themeObject[theme].textMain : themeObject[theme].textLight }}
-        isActive={relaySettings.isPhotosActive}
+        style={{
+          color:
+            settings.mode !== 'smart'
+              ? themeObject[theme].textMain
+              : relaySettings.isPhotosActive
+              ? themeObject[theme].textMain
+              : themeObject[theme].textLight,
+        }}
+        isActive={settings.mode !== 'smart' || '' ? true : settings.isPhotosActive}
       >
         {t(`checkboxes.${format}`)}
       </S.CheckboxLabel>
@@ -132,8 +161,15 @@ const RelaySettingsPage: React.FC = () => {
   const videoFormatOptions = ['avi', 'mp4', 'mov', 'wmv', 'mkv', 'flv', 'mpeg', '3gp', 'webm', 'ogg'].map((format) => ({
     label: (
       <S.CheckboxLabel
-        style={{ color: relaySettings.isVideosActive ? themeObject[theme].textMain : themeObject[theme].textLight }}
-        isActive={relaySettings.isVideosActive}
+        style={{
+          color:
+            settings.mode !== 'smart'
+              ? themeObject[theme].textMain
+              : relaySettings.isVideosActive
+              ? themeObject[theme].textMain
+              : themeObject[theme].textLight,
+        }}
+        isActive={settings.mode !== 'smart' ? true : settings.isVideosActive}
       >
         {t(`checkboxes.${format}`)}
       </S.CheckboxLabel>
@@ -158,8 +194,15 @@ const RelaySettingsPage: React.FC = () => {
   ].map((format) => ({
     label: (
       <S.CheckboxLabel
-        style={{ color: relaySettings.isAudioActive ? themeObject[theme].textMain : themeObject[theme].textLight }}
-        isActive={relaySettings.isAudioActive}
+        style={{
+          color:
+            settings.mode !== 'smart'
+              ? themeObject[theme].textMain
+              : relaySettings.isAudioActive
+              ? themeObject[theme].textMain
+              : themeObject[theme].textLight,
+        }}
+        isActive={settings.mode !== 'smart' ? true : settings.isAudioActive}
       >
         {t(`checkboxes.${format}`)}
       </S.CheckboxLabel>
@@ -175,8 +218,15 @@ const RelaySettingsPage: React.FC = () => {
   ].map(({ value, description }) => ({
     label: (
       <S.CheckboxLabel
-        style={{ color: relaySettings.isGitNestrActive ? themeObject[theme].textMain : themeObject[theme].textLight }}
-        isActive={relaySettings.isGitNestrActive}
+        style={{
+          color:
+            settings.mode !== 'smart'
+              ? themeObject[theme].textMain
+              : relaySettings.isGitNestrActive
+              ? themeObject[theme].textMain
+              : themeObject[theme].textLight,
+        }}
+        isActive={settings.mode !== 'smart' ? true : settings.isGitNestrActive}
       >
         {t(`checkboxes.${value}`)}
         {description && ` - ${description}`}
@@ -243,28 +293,6 @@ const RelaySettingsPage: React.FC = () => {
     }));
     updateSettings('chunked', checkedValues);
   };
-
-  const [settings, setSettings] = useState<Settings>({
-    mode: 'unlimited',
-    protocol: ['WebSocket'],
-    chunked: ['unchunked'],
-    chunksize: '2',
-    maxFileSize: 100,
-    maxFileSizeUnit: 'MB',
-    kinds: [],
-    dynamicKinds: [],
-    photos: [],
-    videos: [],
-    gitNestr: [],
-    audio: [],
-    isKindsActive: true,
-    isPhotosActive: true,
-    isVideosActive: true,
-    isGitNestrActive: true,
-    isAudioActive: true,
-  });
-
-  type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds';
 
   const handleSettingsChange = (category: Category, checkedValues: string[]) => {
     if (settings.mode === 'unlimited') {
@@ -520,14 +548,14 @@ const RelaySettingsPage: React.FC = () => {
         <BaseCol xs={24}>
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
+              header={settings.mode !== 'smart' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
               key="notes"
               className="centered-header"
             >
               <S.Card>
                 <div className="flex-col w-full">
-                  {settings.mode == 'smart' && (
-                    <div>
+                  {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                    <div  className ="switch-container">
                       <BaseSwitch
                         checkedChildren="ON"
                         unCheckedChildren="OFF"
@@ -541,10 +569,10 @@ const RelaySettingsPage: React.FC = () => {
                     className="large-label"
                     value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
                     onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
-                    disabled={!settings.isKindsActive}
+                    disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                   >
                     {groupedNoteOptions.map((group) => (
-                      <>
+                      <div style={{ paddingBottom: '2rem' }}>
                         <h3 className="checkboxHeader w-full">{group.name}</h3>
                         <div key={group.id} className="custom-checkbox-group grid-checkbox-group large-label">
                           {group.notes.map((note) => (
@@ -552,16 +580,20 @@ const RelaySettingsPage: React.FC = () => {
                               <BaseCheckbox
                                 value={note.kindString}
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                                disabled={!settings.isKindsActive}
+                                disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                               />
+
                               <S.CheckboxLabel
-                                isActive={relaySettings.isKindsActive}
+                                isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
                                 style={{
                                   paddingRight: '.8rem',
                                   paddingLeft: '.8rem',
-                                  color: relaySettings.isKindsActive
-                                    ? themeObject[theme].textMain
-                                    : themeObject[theme].textLight,
+                                  color:
+                                    settings.mode !== 'smart'
+                                      ? themeObject[theme].textMain
+                                      : relaySettings.isKindsActive
+                                      ? themeObject[theme].textMain
+                                      : themeObject[theme].textLight,
                                 }}
                               >
                                 {t(`kind${note.kind}`)} -{' '}
@@ -570,10 +602,10 @@ const RelaySettingsPage: React.FC = () => {
                             </div>
                           ))}
                         </div>
-                      </>
+                      </div>
                     ))}
                   </BaseCheckbox.Group>
-                  {settings.mode === 'unlimited' && (
+                  {settings.mode !== 'smart' && (
                     <div
                       style={{ padding: '2rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
                     >
@@ -644,12 +676,12 @@ const RelaySettingsPage: React.FC = () => {
 
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Photo Extension` : 'Photo Extensions'}
+              header={settings.mode !== 'smart' ? `Blacklisted Photo Extension` : 'Photo Extensions'}
               key="2"
             >
               <S.Card>
-                {settings.mode == 'smart' && (
-                  <div>
+                {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                  <div className ="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -666,19 +698,19 @@ const RelaySettingsPage: React.FC = () => {
                   options={photoFormatOptions}
                   value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
                   onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
-                  disabled={!settings.isPhotosActive}
+                  disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
                 />
               </S.Card>
             </StyledPanel>
           </Collapse>
           <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Video Extensions` : 'Video Extensions'}
+              header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'}
               key="3"
             >
               <S.Card>
-                {settings.mode == 'smart' && (
-                  <div>
+                {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                  <div  className ="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -695,7 +727,7 @@ const RelaySettingsPage: React.FC = () => {
                   options={videoFormatOptions}
                   value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
                   onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
-                  disabled={!settings.isVideosActive}
+                  disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
                 />
               </S.Card>
             </StyledPanel>
@@ -730,12 +762,13 @@ const RelaySettingsPage: React.FC = () => {
           </Collapse> */}
           <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
             <StyledPanel
-              header={settings.mode === 'unlimited' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
+              header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
               key="5"
             >
+              <>{console.log(settings.mode)}</>
               <S.Card>
-                {settings.mode == 'smart' && (
-                  <div>
+                {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                  <div  className ="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -751,7 +784,7 @@ const RelaySettingsPage: React.FC = () => {
                   options={audioFormatOptions}
                   value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
                   onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
-                  disabled={!settings.isAudioActive}
+                  disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
                 />
               </S.Card>
             </StyledPanel>
@@ -912,29 +945,30 @@ const RelaySettingsPage: React.FC = () => {
 
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel
-            header={settings.mode === 'unlimited' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
+            header={settings.mode !== 'smart' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
             key="notes"
             className="centered-header"
           >
             <S.Card>
               <div className="flex-col w-full">
-                <div>
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isKindsActive}
-                    onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
-                  />
-                </div>
+                {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                  <div className ="switch-container">
+                    <BaseSwitch
+                      checkedChildren="ON"
+                      unCheckedChildren="OFF"
+                      checked={settings.isKindsActive}
+                      onChange={() => handleSwitchChange('isKindsActive', !settings.isKindsActive)}
+                    />
+                  </div>
+                )}
                 <BaseCheckbox.Group
-                  style={{ paddingLeft: '1rem' }}
                   className="large-label"
                   value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
                   onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
-                  disabled={!settings.isKindsActive}
+                  disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                 >
                   {groupedNoteOptions.map((group) => (
-                    <>
+                    <div style={{ paddingBottom: '2rem' }}>
                       <h3 className="checkboxHeader w-full">{group.name}</h3>
                       <div key={group.id} className="custom-checkbox-group grid-checkbox-group large-label">
                         {group.notes.map((note) => (
@@ -942,16 +976,19 @@ const RelaySettingsPage: React.FC = () => {
                             <BaseCheckbox
                               value={note.kindString}
                               className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                              disabled={!settings.isKindsActive}
+                              disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                             />
                             <S.CheckboxLabel
-                              isActive={relaySettings.isKindsActive}
+                              isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
                               style={{
                                 paddingRight: '.8rem',
                                 paddingLeft: '.8rem',
-                                color: relaySettings.isKindsActive
-                                  ? themeObject[theme].textMain
-                                  : themeObject[theme].textLight,
+                                color:
+                                  settings.mode !== 'smart'
+                                    ? themeObject[theme].textMain
+                                    : relaySettings.isKindsActive
+                                    ? themeObject[theme].textMain
+                                    : themeObject[theme].textLight,
                               }}
                             >
                               {t(`kind${note.kind}`)} - <span style={{ fontWeight: 'normal' }}>{note.description}</span>
@@ -959,7 +996,7 @@ const RelaySettingsPage: React.FC = () => {
                           </div>
                         ))}
                       </div>
-                    </>
+                    </div>
                   ))}
                 </BaseCheckbox.Group>
               </div>
@@ -1021,13 +1058,10 @@ const RelaySettingsPage: React.FC = () => {
         </Collapse>
 
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel
-            header={settings.mode === 'unlimited' ? `Blacklisted Photo Extensions` : 'Photo Extensions'}
-            key="2"
-          >
+          <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Photo Extensions` : 'Photo Extensions'} key="2">
             <S.Card style={{ flexDirection: 'column' }}>
-              {settings.mode === 'smart' && (
-                <div>
+              {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                <div className ="switch-container">
                   <BaseSwitch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
@@ -1045,19 +1079,16 @@ const RelaySettingsPage: React.FC = () => {
                 options={photoFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
                 onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
-                disabled={!settings.isPhotosActive}
+                disabled={settings.mode !== 'smart' ? false : !settings.isPhotosActive}
               />
             </S.Card>
           </StyledPanel>
         </Collapse>
         <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-          <StyledPanel
-            header={settings.mode === 'unlimited' ? `Blacklisted Video Extensions` : 'Video Extensions'}
-            key="3"
-          >
+          <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'} key="3">
             <S.Card style={{ flexDirection: 'column' }}>
-              {settings.mode === 'smart' && (
-                <div>
+              {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                <div  className ="switch-container">
                   <BaseSwitch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
@@ -1075,7 +1106,7 @@ const RelaySettingsPage: React.FC = () => {
                 options={videoFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
                 onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
-                disabled={!settings.isVideosActive}
+                disabled={settings.mode !== 'smart' ? false : !settings.isVideosActive}
               />
             </S.Card>
           </StyledPanel>
@@ -1110,13 +1141,10 @@ const RelaySettingsPage: React.FC = () => {
           </StyledPanel>
         </Collapse> */}
         <Collapse bordered={false} style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }}>
-          <StyledPanel
-            header={settings.mode === 'unlimited' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
-            key="5"
-          >
+          <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'} key="5">
             <S.Card>
-              {settings.mode === 'smart' && (
-                <div>
+              {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                <div  className ="switch-container">
                   <BaseSwitch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
@@ -1133,7 +1161,7 @@ const RelaySettingsPage: React.FC = () => {
                 options={audioFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
                 onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
-                disabled={!settings.isAudioActive}
+                disabled={settings.mode !== 'smart' ? false : !settings.isAudioActive}
               />
             </S.Card>
           </StyledPanel>
