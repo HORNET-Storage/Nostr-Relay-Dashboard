@@ -66,8 +66,8 @@ const Logout = React.lazy(() => import('./Logout'));
 
 export const NFT_DASHBOARD_PATH = '/';
 export const MEDICAL_DASHBOARD_PATH = '/medical-dashboard';
-export const RELAY_SETTINGS_PATH = '/relay-settings';
-export const TABLES_PAGE_PATH = '/data-tables';
+export const RELAY_SETTINGS_PATH = '/storage-settings';
+export const TABLES_PAGE_PATH = '/nostr-stats';
 
 const MedicalDashboard = withLoading(MedicalDashboardPage);
 const NftDashboard = withLoading(NftDashboardPage);
@@ -139,7 +139,7 @@ export const AppRouter: React.FC = () => {
         <Route path={NFT_DASHBOARD_PATH} element={protectedLayout}>
           <Route index element={<NftDashboard />} />
           <Route path={MEDICAL_DASHBOARD_PATH} element={<MedicalDashboard />} />
-          <Route path="/balance" element={<BalancePage />} />
+          <Route path="/wallet" element={<BalancePage />} />
           <Route path="relay-stats" element={<RelayStats />} />
           <Route path={RELAY_SETTINGS_PATH} element={<RelaySettings />} />
           <Route path="apps">

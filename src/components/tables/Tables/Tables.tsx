@@ -12,7 +12,7 @@ export const Tables: React.FC = () => {
       <S.TablesWrapper>
         <S.Card
           id="editable-table"
-          title={'Kinds Stats Table'}
+          title={'Nostr Stats Table'}
           padding={isDesktop ? '1.25rem 1.25rem 1rem 1.25rem' : '1.25rem .5rem 1.25rem .5rem'}
         >
           <EditableTable />
