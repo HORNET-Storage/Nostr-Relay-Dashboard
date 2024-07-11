@@ -555,7 +555,7 @@ const RelaySettingsPage: React.FC = () => {
               <S.Card>
                 <div className="flex-col w-full">
                   {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                    <div  className ="switch-container">
+                    <div className="switch-container">
                       <BaseSwitch
                         checkedChildren="ON"
                         unCheckedChildren="OFF"
@@ -681,7 +681,7 @@ const RelaySettingsPage: React.FC = () => {
             >
               <S.Card>
                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className ="switch-container">
+                  <div className="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -710,7 +710,7 @@ const RelaySettingsPage: React.FC = () => {
             >
               <S.Card>
                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div  className ="switch-container">
+                  <div className="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -768,7 +768,7 @@ const RelaySettingsPage: React.FC = () => {
               <>{console.log(settings.mode)}</>
               <S.Card>
                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div  className ="switch-container">
+                  <div className="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -952,7 +952,7 @@ const RelaySettingsPage: React.FC = () => {
             <S.Card>
               <div className="flex-col w-full">
                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className ="switch-container">
+                  <div className="switch-container">
                     <BaseSwitch
                       checkedChildren="ON"
                       unCheckedChildren="OFF"
@@ -1061,7 +1061,7 @@ const RelaySettingsPage: React.FC = () => {
           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Photo Extensions` : 'Photo Extensions'} key="2">
             <S.Card style={{ flexDirection: 'column' }}>
               {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                <div className ="switch-container">
+                <div className="switch-container">
                   <BaseSwitch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
@@ -1088,7 +1088,7 @@ const RelaySettingsPage: React.FC = () => {
           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Video Extensions` : 'Video Extensions'} key="3">
             <S.Card style={{ flexDirection: 'column' }}>
               {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                <div  className ="switch-container">
+                <div className="switch-container">
                   <BaseSwitch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
@@ -1144,7 +1144,7 @@ const RelaySettingsPage: React.FC = () => {
           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'} key="5">
             <S.Card>
               {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                <div  className ="switch-container">
+                <div className="switch-container">
                   <BaseSwitch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
