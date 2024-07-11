@@ -572,9 +572,9 @@ const RelaySettingsPage: React.FC = () => {
                     disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                   >
                     {groupedNoteOptions.map((group) => (
-                      <div style={{ paddingBottom: '2rem' }}>
+                      <div key={group.id} style={{ paddingBottom: '2rem' }}>
                         <h3 className="checkboxHeader w-full">{group.name}</h3>
-                        <div key={group.id} className="custom-checkbox-group grid-checkbox-group large-label">
+                        <div className="custom-checkbox-group grid-checkbox-group large-label">
                           {group.notes.map((note) => (
                             <div key={note.kindString}>
                               <BaseCheckbox
@@ -968,9 +968,9 @@ const RelaySettingsPage: React.FC = () => {
                   disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                 >
                   {groupedNoteOptions.map((group) => (
-                    <div style={{ paddingBottom: '2rem' }}>
+                    <div key={group.id} style={{ paddingBottom: '2rem' }}>
                       <h3 className="checkboxHeader w-full">{group.name}</h3>
-                      <div key={group.id} className="custom-checkbox-group grid-checkbox-group large-label">
+                      <div className="custom-checkbox-group grid-checkbox-group large-label">
                         {group.notes.map((note) => (
                           <div key={note.kindString}>
                             <BaseCheckbox
