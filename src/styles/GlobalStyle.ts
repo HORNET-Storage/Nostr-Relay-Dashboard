@@ -70,7 +70,6 @@ export default createGlobalStyle`
   .ant-picker-cell {
     color: var(--text-main-color);
   }
-
   .ant-picker-cell-in-view .ant-picker-calendar-date-value {
     color: var(--text-main-color);
     font-weight: ${FONT_WEIGHT.bold};
@@ -205,6 +204,9 @@ export default createGlobalStyle`
     background-color: white;
     border-color: themeObject[theme].textMain;
 }
+  .ant-alert-message{
+  color: black
+  }
 
     .custom-checkbox-group .ant-checkbox-checked .ant-checkbox-inner {
     background-color: #1890ff; 
