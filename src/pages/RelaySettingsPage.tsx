@@ -88,6 +88,7 @@ const RelaySettingsPage: React.FC = () => {
     { kind: 10000, kindString: 'kind10000', description: 'Mute List', category: 1 },
     { kind: 10001, kindString: 'kind10001', description: 'Pin List', category: 1 },
     { kind: 1984, kindString: 'kind1984', description: 'Reporting', category: 1 },
+    { kind: 30000, kindString: 'kind30000', description: 'Follow List', category: 1 },
     { kind: 30008, kindString: 'kind30008', description: 'Profile Badge', category: 2 },
     { kind: 30009, kindString: 'kind30009', description: 'Badge Definition', category: 2 },
     { kind: 30023, kindString: 'kind30023', description: 'Long-Form Content', category: 1 },
