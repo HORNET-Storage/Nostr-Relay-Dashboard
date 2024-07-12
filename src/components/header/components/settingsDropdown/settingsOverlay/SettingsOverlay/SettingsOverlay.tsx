@@ -6,33 +6,28 @@ import { NightModeSettings } from '../nightModeSettings/NightModeSettings';
 import { ThemePicker } from '../ThemePicker/ThemePicker';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { useAppSelector } from '@app/hooks/reduxHooks';
+import { useAppDispatch } from '@app/hooks/reduxHooks';
+import { setShowAlert } from '@app/store/slices/pwaSlice';
 import * as S from './SettingsOverlay.styles';
+import { Alert } from 'antd';
 
 export const SettingsOverlay: React.FC = ({ ...props }) => {
   const { t } = useTranslation();
-  const { isPWASupported } = useAppSelector((state) => state.pwa);
-  const [promptEvent, setPromptEvent] = useState<Event | null>(null);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      console.log('beforeinstallprompt event fired');
-      setPromptEvent(e as any);
-    };
+  const dispatch = useAppDispatch();
+  const { isPWASupported, event } = useAppSelector((state) => state.pwa);
 
-    window.addEventListener('beforeinstallprompt', handler as EventListener);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler as EventListener);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (promptEvent) {
-      console.log('Prompt event set:', promptEvent);
+  const handleInstallClick = () => {
+    console.log('event', event);
+    if (event == null) {
+      // Display an alert if event is not available
+      console.log('Event is not available');
+      dispatch(setShowAlert(true));
+      return;
     }
-  }, [promptEvent]);
 
+    (event as BeforeInstallPromptEvent).prompt();
+  };
   return (
     <S.SettingsOverlayMenu {...props}>
       <DropdownCollapse bordered={false} expandIconPosition="end" ghost defaultActiveKey="themePicker">
@@ -46,9 +41,9 @@ export const SettingsOverlay: React.FC = ({ ...props }) => {
       <S.Text>
         <Link to="/logout">{t('header.logout')}</Link>
       </S.Text>
-      {isPWASupported && promptEvent && (
+      {isPWASupported && (
         <S.PwaInstallWrapper>
-          <BaseButton block type="primary" onClick={() => (promptEvent as any).prompt()}>
+          <BaseButton block type="primary" onClick={handleInstallClick}>
             {t('common.pwa')}
           </BaseButton>
         </S.PwaInstallWrapper>

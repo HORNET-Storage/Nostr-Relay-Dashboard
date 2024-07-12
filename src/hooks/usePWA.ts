@@ -1,32 +1,18 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setPWASupported } from '@app/store/slices/pwaSlice';
+import { addDeferredPrompt } from '@app/store/slices/pwaSlice';
 
-export const usePWA = () => {
+export const usePWA = (): void => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const handler = (e: Event) => {
+    const handler = (e: any) => {
       e.preventDefault();
-      // Assuming e is the BeforeInstallPromptEvent
-      // Instead of storing the event, we just indicate support is available
-      dispatch(setPWASupported(true));
+      console.log(e);
+      dispatch(addDeferredPrompt(e));
     };
 
     window.addEventListener('beforeinstallprompt', handler);
-
-    console.log('Setting up global beforeinstallprompt listener');
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      console.log('Global beforeinstallprompt event fired and stored');
-      (window as any).deferredPrompt = e;
-    });
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-      // Optionally, dispatch that PWA is no longer supported if the event is dismissed
-      dispatch(setPWASupported(false));
-    };
   }, [dispatch]);
 };
 
