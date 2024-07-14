@@ -8,6 +8,7 @@ interface BaseCarouselProps extends SplideProps {
   slidesToShow?: number;
   arrows?: boolean;
   dots?: boolean;
+  autoSpeed: number;
   infinite?: boolean;
   swipeSpeed?: number;
   type?: 'loop' | 'fade';
@@ -28,6 +29,7 @@ export const SplideCarousel = forwardRef<Splide, PropsWithChildren<BaseCarouselP
       infinite = true,
       type = 'loop',
       swipeSpeed = 0.8,
+      autoSpeed = 0.6,
       ...props
     },
     ref,
@@ -43,7 +45,7 @@ export const SplideCarousel = forwardRef<Splide, PropsWithChildren<BaseCarouselP
       drag: 'free',
       type: type,
       autoScroll: {
-        speed: swipeSpeed,
+        speed: autoSpeed,
       },
       ...props,
     };
