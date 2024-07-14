@@ -5,6 +5,7 @@ import { BaseChart } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import useBarChartData from '@app/hooks/useBarChartData';
+import { useResponsive } from '@app/hooks/useResponsive';
 
 // Helper function to get the last six months from the current date
 const getLastSixMonths = () => {
@@ -39,6 +40,7 @@ const getLastSixMonths = () => {
 export const BarAnimationDelayChart: React.FC = () => {
   const { t } = useTranslation();
   const theme = useAppSelector((state) => state.theme.theme);
+  const { isDesktop } = useResponsive();
 
   const { data, isLoading } = useBarChartData();
 
@@ -126,8 +128,9 @@ export const BarAnimationDelayChart: React.FC = () => {
         type: 'bar',
         data: data1,
         color: themeObject[theme].chartColor2,
+        legendHoverLink: isDesktop ? true : false,
         emphasis: {
-          focus: 'series',
+          disable: true,
         },
         barGap: '-10%', // Slightly overlap bars
         barCategoryGap: '30%',
@@ -139,8 +142,9 @@ export const BarAnimationDelayChart: React.FC = () => {
         data: data2,
         color: themeObject[theme].chartColor3,
         emphasis: {
-          focus: 'series',
+          disable: true,
         },
+        legendHoverLink: isDesktop ? true : false,
         barGap: '-10%', // Slightly overlap bars
         barCategoryGap: '30%',
         animationDelay: (idx: number) => idx * 10 + 100,
