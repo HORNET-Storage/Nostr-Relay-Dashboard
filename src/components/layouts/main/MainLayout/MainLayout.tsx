@@ -43,6 +43,17 @@ const MainLayout: React.FC = () => {
   const duration_in_minutes = 60; // 60 minutes
 
   useIdleTimer(duration_in_minutes * 60 * 1000, handleIdle);
+  useEffect(() => {
+    if (!siderCollapsed) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [siderCollapsed]);
 
   return (
     <S.LayoutMaster>

@@ -9,6 +9,10 @@ interface Header {
 
 export const Header = styled(BaseLayout.Header)<Header>`
   line-height: 1.5;
+  z-index: 100;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
 
   @media only screen and ${media.md} {
     display: block;

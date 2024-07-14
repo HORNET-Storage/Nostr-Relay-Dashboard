@@ -37,6 +37,9 @@ export default createGlobalStyle`
       display: none; 
     }
   }
+    body.no-scroll {
+  overflow: hidden;
+}
   
   .range-picker {
     & .ant-picker-panels {
