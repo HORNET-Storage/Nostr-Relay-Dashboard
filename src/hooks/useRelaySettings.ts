@@ -22,7 +22,7 @@ interface RelaySettings {
 }
 
 const getInitialSettings = (): RelaySettings => {
-  const savedSettings = localStorage.getItem('relaySettings');
+  const savedSettings = localStorage.getItem('settingsCache');
   return savedSettings
     ? JSON.parse(savedSettings)
     : {
@@ -53,6 +53,7 @@ const useRelaySettings = () => {
     localStorage.setItem('relaySettings', JSON.stringify(relaySettings));
   }, [relaySettings]);
 
+ 
   const fetchSettings = useCallback(async () => {
     try {
       const response = await fetch(`${config.baseURL}/relay-settings`, {
@@ -75,6 +76,7 @@ const useRelaySettings = () => {
           ? data.relay_settings.chunked
           : [data.relay_settings.chunked],
       });
+      localStorage.setItem('settingsCache', JSON.stringify(data.relay_settings));
       localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -100,6 +102,7 @@ const useRelaySettings = () => {
       if (!response.ok) {
         throw new Error(`Network response was not ok (status: ${response.status})`);
       }
+      localStorage.setItem('settingsCache', JSON.stringify(relaySettings));
       console.log('Settings saved successfully!');
     } catch (error) {
       console.error('Error saving settings:', error);
