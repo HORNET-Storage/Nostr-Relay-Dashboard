@@ -297,4 +297,9 @@ export default createGlobalStyle`
   .custom-tooltip-class .ant-tooltip-content .ant-tooltip-inner {
     background-color: rgba(0, 0, 0, 1);
   }
+    @media only screen and ${media.xs} {
+  .ant-menu-inline-collapsed-tooltip{
+    display: none !important;
+  }
+}
 `;
