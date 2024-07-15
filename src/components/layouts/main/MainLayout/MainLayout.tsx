@@ -4,6 +4,8 @@ import MainSider from '../sider/MainSider/MainSider';
 import MainContent from '../MainContent/MainContent';
 import { MainHeader } from '../MainHeader/MainHeader';
 import * as S from './MainLayout.styles';
+import { setShowAlert } from '@app/store/slices/pwaSlice';
+
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   MEDICAL_DASHBOARD_PATH,
@@ -16,15 +18,21 @@ import { References } from '@app/components/common/References/References';
 import { useAppDispatch } from '@app/hooks/reduxHooks';
 import { doLogout } from '@app/store/slices/authSlice';
 import useIdleTimer from '@app/hooks/useIdleTimer';
+import { Alert, theme } from 'antd';
+import { useAppSelector } from '@app/hooks/reduxHooks';
+import { themeObject } from '@app/styles/themes/themeVariables';
 
 const MainLayout: React.FC = () => {
   const [isTwoColumnsLayout, setIsTwoColumnsLayout] = useState(true);
   const [siderCollapsed, setSiderCollapsed] = useState(true);
+
   const { isDesktop } = useResponsive();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const { showAlert } = useAppSelector((state) => state.pwa);
+  const theme = useAppSelector((state) => state.theme.theme);
   const toggleSider = () => setSiderCollapsed(!siderCollapsed);
 
   useEffect(() => {
@@ -61,6 +69,33 @@ const MainLayout: React.FC = () => {
           </div>
           {!isTwoColumnsLayout && <References />}
         </MainContent>
+        {showAlert && (
+          <div
+            style={{
+              margin: '1rem',
+              display: 'flex',
+              flexDirection: 'row',
+              width: isDesktop ? '55%' : '90%',
+              justifyContent: 'center',
+              position: 'absolute',
+              bottom: '0',
+            }}
+          >
+            <Alert
+              message={'There was an error installing the app. Please verify that the app is not already installed.'}
+              type="warning"
+              showIcon
+              closable
+              onClose={() => dispatch(setShowAlert(false))}
+              style={{
+                color: 'black',
+                width: 'fit-content',
+
+                backgroundColor: themeObject[theme].notificationWarning,
+              }}
+            />
+          </div>
+        )}
       </S.LayoutMain>
     </S.LayoutMaster>
   );
