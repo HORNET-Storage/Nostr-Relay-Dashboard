@@ -72,7 +72,7 @@ export const TrendingCreators: React.FC = () => {
         drag="free"
         gap=".2rem"
         snap="false"
-        autoSpeed= {isDesktop ? .7 : .8}
+        autoSpeed={isDesktop ? 0.7 : 0.8}
         flickPower="500"
         breakpoints={{
           8000: {

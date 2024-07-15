@@ -53,7 +53,6 @@ const useRelaySettings = () => {
     localStorage.setItem('relaySettings', JSON.stringify(relaySettings));
   }, [relaySettings]);
 
- 
   const fetchSettings = useCallback(async () => {
     try {
       const response = await fetch(`${config.baseURL}/relay-settings`, {
