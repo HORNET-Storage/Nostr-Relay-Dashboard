@@ -17,12 +17,12 @@ import { useTranslation } from 'react-i18next';
 import { NFTCardHeader } from '@app/components/nft-dashboard/common/NFTCardHeader/NFTCardHeader';
 import { ViewAll } from '@app/components/nft-dashboard/common/ViewAll/ViewAll';
 import { TrendingCreatorsStory } from '@app/components/nft-dashboard/trending-creators/story/TrendingCreatorsStory';
-import { useResponsive } from '@app/hooks/useResponsive';
 import { getTrendingCreators, TrendingCreator } from '@app/api/trendingCreators';
 import * as S from './TrendingCreators.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { SplideCarousel } from '@app/components/common/SplideCarousel/SplideCarousel';
+import { useResponsive } from '@app/hooks/useResponsive';
 
 export const TrendingCreators: React.FC = () => {
   const [stories, setStories] = useState<TrendingCreator[]>([]);
@@ -44,7 +44,7 @@ export const TrendingCreators: React.FC = () => {
       profile11,
     ],
   };
-  const { isTablet: isTabletOrHigher } = useResponsive();
+  const { isTablet: isTabletOrHigher, isDesktop } = useResponsive();
   const { t } = useTranslation();
 
   const goPrev = () => {
@@ -72,6 +72,7 @@ export const TrendingCreators: React.FC = () => {
         drag="free"
         gap=".2rem"
         snap="false"
+        autoSpeed={isDesktop ? 0.7 : 0.8}
         flickPower="500"
         breakpoints={{
           8000: {

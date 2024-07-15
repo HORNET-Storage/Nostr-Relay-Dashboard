@@ -9,7 +9,7 @@ export const Sider = styled(BaseLayout.Sider)`
   position: fixed;
   overflow: visible;
   right: 0;
-  z-index: 5;
+  z-index: 102;
   min-height: 100vh;
   max-height: 100vh;
 
@@ -27,7 +27,6 @@ export const Sider = styled(BaseLayout.Sider)`
 
 export const CollapseButton = styled(BaseButton)<{ $isCollapsed: boolean }>`
   background: var(--collapse-background-color);
-
   border: 1px solid var(--border-color);
   transition: all 0.2s ease;
   position: absolute;

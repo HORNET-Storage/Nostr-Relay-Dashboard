@@ -44,7 +44,7 @@ export const DropdownCollapse = styled(BaseCollapse)`
 `;
 
 export const BurgerCol = styled(BaseCol)`
-  z-index: 999;
+  z-index: 105;
   display: flex;
 `;
 
@@ -57,6 +57,7 @@ export const MobileBurger = styled(BurgerIcon)`
   ${(props) =>
     props.isCross &&
     css`
+      z-index: 105;
       color: var(--text-secondary-color);
     `};
 `;

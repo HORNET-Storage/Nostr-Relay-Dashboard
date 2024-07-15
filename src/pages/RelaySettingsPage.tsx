@@ -17,7 +17,6 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
-
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -99,7 +98,7 @@ const RelaySettingsPage: React.FC = () => {
   ];
 
   const [settings, setSettings] = useState<Settings>({
-    mode: 'unlimited',
+    mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
     protocol: ['WebSocket'],
     chunked: ['unchunked'],
     chunksize: '2',
@@ -415,6 +414,11 @@ const RelaySettingsPage: React.FC = () => {
 
   const [newKind, setNewKind] = useState('');
 
+  useEffect(() => {
+    return () => {
+      localStorage.setItem('relaySettings', localStorage.getItem('settingsCache') || '{}');
+    };
+  }, []);
   const removeDynamicKind = (kind: string) => {
     setSettings((prevSettings) => ({
       ...prevSettings,

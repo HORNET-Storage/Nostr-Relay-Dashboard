@@ -116,7 +116,7 @@ const EditableTable: React.FC = () => {
     {
       title: t('tables.actions'),
       dataIndex: 'actions',
-      width: '15%',
+      width: '10%',
       render: (_: string, record: any) => (
         <BaseSpace>
           <BaseButton size={'small'} type="ghost" onClick={() => showModal(record.kindNumber)}>
