@@ -1,8 +1,10 @@
 // src/components/router/AppRouter.tsx
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthGuard } from '@app/components/AuthGuard';
+import AuthLayout from '@app/components/layouts/AuthLayout/AuthLayout';
 
-const AuthLayout = React.lazy(() => import('@app/components/layouts/AuthLayout/AuthLayout'));
+AuthLayout.displayName = 'AuthLayout';
 import LoginPage from '@app/pages/LoginPage';
 import SignUpPage from '@app/pages/SignUpPage';
 import ForgotPasswordPage from '@app/pages/ForgotPasswordPage';
@@ -18,6 +20,7 @@ import { withLoading } from '@app/hocs/withLoading.hoc';
 import NftDashboardPage from '@app/pages/DashboardPages/NftDashboardPage';
 import MedicalDashboardPage from '@app/pages/DashboardPages/MedicalDashboardPage';
 import BalancePage from '@app/pages/BalancePage';
+// import api from '@app/services/api';
 
 const NewsFeedPage = React.lazy(() => import('@app/pages/NewsFeedPage'));
 const DataTablesPage = React.lazy(() => import('@app/pages/DataTablesPage'));
@@ -127,17 +130,19 @@ const AuthLayoutFallback = withLoading(AuthLayout);
 const LogoutFallback = withLoading(Logout);
 
 export const AppRouter: React.FC = () => {
-  const protectedLayout = (
-    <RequireAuth>
-      <MainLayout />
-    </RequireAuth>
-  );
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={NFT_DASHBOARD_PATH} element={protectedLayout}>
-          <Route index element={<NftDashboard />} />
+        {/* Public routes */}
+        <Route path="/auth" element={<AuthLayoutFallback>{/* children if any */}</AuthLayoutFallback>}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="security-code" element={<SecurityCodePage />} />
+          <Route path="new-password" element={<NewPasswordPage />} />
+        </Route>
+        {/* Protected routes */}
+        <Route element={<AuthGuard><MainLayout /></AuthGuard>}>
+          <Route path={NFT_DASHBOARD_PATH} element={<NftDashboard />} />
           <Route path={MEDICAL_DASHBOARD_PATH} element={<MedicalDashboard />} />
           <Route path="/wallet" element={<BalancePage />} />
           <Route path="relay-stats" element={<RelayStats />} />
@@ -194,29 +199,29 @@ export const AppRouter: React.FC = () => {
             <Route path="skeleton" element={<Skeletons />} />
           </Route>
         </Route>
-        <Route path="/auth" element={<AuthLayoutFallback />}>
-          <Route path="login" element={<LoginPage />} />
+        <Route element={<AuthLayout />}>
+          {/* Other auth routes */}
           <Route
-            path="sign-up"
+            path="/auth/sign-up"
             element={
               <RequireAdminAuth>
                 <SignUpPage />
               </RequireAdminAuth>
             }
           />
-          <Route
-            path="lock"
-            element={
-              <RequireAuth>
-                <LockPage />
-              </RequireAuth>
-            }
-          />
-          <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="security-code" element={<SecurityCodePage />} />
-          <Route path="new-password" element={<NewPasswordPage />} />
         </Route>
+
+        <Route path="/auth/lock" element={
+          <RequireAuth>
+            <AuthLayoutFallback>
+              <LockPage />
+            </AuthLayoutFallback>
+          </RequireAuth>
+        } />
         <Route path="/logout" element={<LogoutFallback />} />
+
+        {/* Redirect any unmatched routes to the main dashboard */}
+        <Route path="*" element={<Navigate to={NFT_DASHBOARD_PATH} replace />} />
       </Routes>
     </BrowserRouter>
   );

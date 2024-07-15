@@ -9,7 +9,9 @@ const SignUpPage: React.FC = () => {
   return (
     <>
       <PageTitle>{t('common.signUp')}</PageTitle>
+      {console.log("About to render SignUpForm")}
       <SignUpForm />
+      {console.log("After rendering SignUpForm")}
     </>
   );
 };

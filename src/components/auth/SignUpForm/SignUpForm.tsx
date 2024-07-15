@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
-import { BaseForm } from '@app/components/common/forms/BaseForm/BaseForm';
 import { useSignUp } from '@app/hooks/useSignUp'; // Import the custom hook
-import { ReactComponent as GoogleIcon } from '@app/assets/icons/google.svg';
-import { ReactComponent as FacebookIcon } from '@app/assets/icons/facebook.svg';
 import * as Auth from '@app/components/layouts/AuthLayout/AuthLayout.styles';
 import * as S from './SignUpForm.styles';
 
@@ -87,43 +84,11 @@ export const SignUpForm: React.FC = () => {
         >
           <Auth.FormInputPassword placeholder={t('common.confirmPassword')} />
         </Form.Item>
-        {/* <Auth.ActionsWrapper>
-          <Form.Item name="termOfUse" valuePropName="checked" noStyle>
-            <Auth.FormCheckbox>
-              <Auth.Text>
-                {t('signup.agree')}{' '}
-                <Link to="/" target={'_blank'}>
-                  <Auth.LinkText>{t('signup.termOfUse')}</Auth.LinkText>
-                </Link>{' '}
-                and{' '}
-                <Link to="/" target={'_blank'}>
-                  <Auth.LinkText>{t('signup.privacyPolicy')}</Auth.LinkText>
-                </Link>
-              </Auth.Text>
-            </Auth.FormCheckbox>
-          </Form.Item>
-        </Auth.ActionsWrapper> */}
         <Form.Item noStyle>
           <Auth.SubmitButton type="primary" htmlType="submit" loading={isLoading}>
             {t('common.signUp')}
           </Auth.SubmitButton>
         </Form.Item>
-        {/* <Form.Item noStyle>
-          <Auth.SocialButton type="default" htmlType="button">
-            <Auth.SocialIconWrapper>
-              <GoogleIcon />
-            </Auth.SocialIconWrapper>
-            {t('signup.googleLink')}
-          </Auth.SocialButton>
-        </Form.Item>
-        <Form.Item noStyle>
-          <Auth.SocialButton type="default" htmlType="button">
-            <Auth.SocialIconWrapper>
-              <FacebookIcon />
-            </Auth.SocialIconWrapper>
-            {t('signup.facebookLink')}
-          </Auth.SocialButton>
-        </Form.Item> */}
         <Auth.FooterWrapper>
           <Auth.Text>
             {t('signup.alreadyHaveAccount')}{' '}

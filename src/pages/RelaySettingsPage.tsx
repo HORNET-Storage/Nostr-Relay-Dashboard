@@ -405,7 +405,8 @@ const RelaySettingsPage: React.FC = () => {
       audio: [],
     });
   }, [settings.mode]);
-
+  
+  
   useEffect(() => {
     const updateDynamicKinds = async () => {
       await performSaveSettings();
