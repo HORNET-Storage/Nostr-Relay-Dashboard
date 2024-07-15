@@ -5,11 +5,18 @@ import styled, { css } from 'styled-components';
 
 interface Header {
   $isTwoColumnsLayoutHeader: boolean;
+  $isSiderOpened: boolean;
 }
 
 export const Header = styled(BaseLayout.Header)<Header>`
   line-height: 1.5;
   z-index: 100;
+  ${(props) =>
+    props.$isSiderOpened &&
+    css`
+      background-color: rgba(0, 0, 0, 0) !important;
+      z-index: 105;
+    `}
   position: sticky;
   position: -webkit-sticky;
   top: 0;

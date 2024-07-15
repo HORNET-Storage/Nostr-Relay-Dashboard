@@ -57,9 +57,8 @@ const MainLayout: React.FC = () => {
 
   return (
     <S.LayoutMaster>
-      <MainSider isCollapsed={siderCollapsed} setCollapsed={setSiderCollapsed} />
       <S.LayoutMain>
-        <MainHeader isTwoColumnsLayout={isTwoColumnsLayout}>
+        <MainHeader isSiderOpened={!siderCollapsed} isTwoColumnsLayout={isTwoColumnsLayout}>
           <Header toggleSider={toggleSider} isSiderOpened={!siderCollapsed} isTwoColumnsLayout={isTwoColumnsLayout} />
         </MainHeader>
         <MainContent
@@ -73,6 +72,7 @@ const MainLayout: React.FC = () => {
           {!isTwoColumnsLayout && <References />}
         </MainContent>
       </S.LayoutMain>
+      <MainSider isCollapsed={siderCollapsed} setCollapsed={setSiderCollapsed} />
     </S.LayoutMaster>
   );
 };
