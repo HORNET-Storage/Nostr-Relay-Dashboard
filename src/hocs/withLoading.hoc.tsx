@@ -1,13 +1,23 @@
 import React, { Suspense } from 'react';
 import { Loading } from '@app/components/common/Loading/Loading';
 
-type ReturnType<T> = (props: T) => JSX.Element;
+type WithLoadingProps<T> = T & { children?: React.ReactNode };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const withLoading = <T extends object>(Component: React.ComponentType<T>): ReturnType<T> => {
-  return (props: T) => (
-    <Suspense fallback={<Loading />}>
-      <Component {...props} />
-    </Suspense>
-  );
+const withLoading = <T extends object>(Component: React.ComponentType<T>) => {
+  const WithLoadingComponent = (props: WithLoadingProps<T>) => {
+    console.log(`Rendering withLoading for`, Component.displayName || Component.name || 'UnnamedComponent');
+    return (
+      <Suspense fallback={<Loading />}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
+
+  // Set a display name for easier debugging
+  WithLoadingComponent.displayName = `WithLoading(${Component.displayName || Component.name || 'UnnamedComponent'})`;
+
+  return WithLoadingComponent;
 };
+
+export { withLoading };
+

@@ -7,6 +7,7 @@ const testUser: UserModel = {
   lastName: 'Johnson',
   userName: '@john1989',
   email: 'chris.johnson@altence.com',
+  role: 'user',
 };
 
 export const persistToken = (token: string): void => {

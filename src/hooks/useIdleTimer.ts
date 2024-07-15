@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 const useIdleTimer = (timeout: number, onIdle: () => void) => {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
     timerRef.current = setTimeout(onIdle, timeout);
-  };
+  }, [onIdle, timeout]);
 
   useEffect(() => {
     const handleActivity = () => resetTimer();
@@ -31,7 +31,8 @@ const useIdleTimer = (timeout: number, onIdle: () => void) => {
       window.removeEventListener('scroll', handleActivity);
       window.removeEventListener('touchstart', handleActivity);
     };
-  }, [timeout, onIdle]);
+  }, [resetTimer]); // Now we can safely add resetTimer to the dependency array
+
 };
 
 export default useIdleTimer;
