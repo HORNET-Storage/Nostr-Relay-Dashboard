@@ -40,7 +40,7 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
   ];
 
   if (!isDesktop) {
-    items.splice(1, 0, {
+    items.push({
       title: 'common.wallet',
       key: 'wallet',
       url: '/wallet',
