@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 import { FONT_SIZE } from '@app/styles/themes/constants';
 import { BaseMenu } from '@app/components/common/BaseMenu/BaseMenu';
+interface MenuProps {
+  $tabletOnly: boolean;
+}
 
-export const Menu = styled(BaseMenu)`
+export const Menu = styled(BaseMenu)<MenuProps>`
   background: transparent;
   border-right: 0;
 
@@ -56,6 +59,14 @@ export const Menu = styled(BaseMenu)`
     }
   }
 
+  ${(props) =>
+    props.$tabletOnly &&
+    `
+    .ant-menu-inline,
+    .ant-menu-item::after {
+      border-right: none;
+    }
+  `}
   .ant-menu-item-selected {
     background-color: transparent !important;
 
