@@ -1,5 +1,4 @@
 import React from 'react';
-import { DashboardOutlined, TableOutlined } from '@ant-design/icons';
 import { ReactComponent as NestIcon } from '@app/assets/icons/hive.svg';
 import { ReactComponent as BtcIcon } from '@app/assets/icons/btc.svg';
 import { ReactComponent as StatsIcon } from '@app/assets/icons/stats.svg';
