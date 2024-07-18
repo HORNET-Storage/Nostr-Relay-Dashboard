@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import { NFTCard } from '@app/components/nft-dashboard/common/NFTCard/NFTCard';
@@ -15,6 +15,7 @@ import { useBitcoinRates } from '@app/hooks/useBitcoinRates';
 export const TotalEarning: React.FC = () => {
   const { t } = useTranslation();
   const { rates: bitcoinRates, isLoading, error } = useBitcoinRates();
+  const currency = useAppSelector((state) => state.currency.currency);
 
   const { totalEarningData, days } = useMemo(() => {
     const earningData = {
@@ -66,7 +67,7 @@ export const TotalEarning: React.FC = () => {
         </BaseCol>
 
         <BaseCol span={24}>
-          <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, CurrencyTypeEnum.USD)}</S.Text>
+          <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, currency)}</S.Text>
         </BaseCol>
 
         <BaseCol span={24}>
