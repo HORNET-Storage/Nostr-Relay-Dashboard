@@ -32,7 +32,7 @@ const useFiatRates = (currency: CurrencyTypeEnum) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  useEffect(() => { //mock data
     const fetchRates = () => {
       setIsLoading(true);
       setTimeout(() => {

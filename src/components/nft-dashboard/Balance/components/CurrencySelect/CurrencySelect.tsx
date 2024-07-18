@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@app/hooks/reduxHooks';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import { BaseSelect, Option } from '@app/components/common/selects/BaseSelect/BaseSelect';
-import { setCurrency } from '@app/store/slices/currencySlice';
+import { setCurrency, setRates } from '@app/store/slices/currencySlice';
 import useFiatRates from '@app/hooks/useFiatRates';
 useFiatRates;
 interface CurrencySelectProps {
@@ -16,6 +16,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({ currencies }) => {
 
   useEffect(() => {
     console.log(rates);
+    dispatch(setRates);
   }, [rates]);
 
   const handleChange = (value: CurrencyTypeEnum) => {

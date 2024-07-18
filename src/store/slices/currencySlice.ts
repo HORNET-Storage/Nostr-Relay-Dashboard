@@ -22,8 +22,11 @@ const currencySlice = createSlice({
       state.currency = action.payload;
       state.rates = [];
     },
+    setRates: (state, action: PayloadAction<FiatRate[]>) => {
+      state.rates = action.payload;
+    },
   },
 });
 
-export const { setCurrency } = currencySlice.actions;
+export const { setCurrency, setRates } = currencySlice.actions;
 export default currencySlice.reducer;
