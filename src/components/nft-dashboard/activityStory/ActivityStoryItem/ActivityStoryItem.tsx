@@ -7,10 +7,11 @@ import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import * as S from './ActivityStoryItem.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+import { useAppSelector } from '@app/hooks/reduxHooks';
 
 export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
   const { t } = useTranslation();
-
+  const currency = useAppSelector((state) => state.currency.currency);
   // Convert value to number
   const numericValue = parseFloat(value);
 
@@ -31,7 +32,7 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
         </BaseCol>
         <BaseCol span={12} style={{ textAlign: 'right' }}>
           <S.Label>{t('Value')}:</S.Label>
-          <S.Value>{getCurrencyPrice(formatNumberWithCommas(numericValue), CurrencyTypeEnum.USD)}</S.Value>
+          <S.Value>{getCurrencyPrice(formatNumberWithCommas(numericValue), currency)}</S.Value>
         </BaseCol>
       </BaseRow>
     </S.TransactionCard>

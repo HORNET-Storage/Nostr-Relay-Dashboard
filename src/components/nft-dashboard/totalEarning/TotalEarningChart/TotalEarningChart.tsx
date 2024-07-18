@@ -5,7 +5,6 @@ import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { ChartData, CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
-// import { formatDate } from '@app/utils/dateFormatter';
 
 interface LineData {
   data: ChartData;
@@ -18,6 +17,7 @@ interface TotalEarningChartProps {
 
 export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData, earningData }) => {
   const theme = useAppSelector((state) => state.theme.theme);
+  const currency = useAppSelector((state) => state.currency.currency);
   const { t } = useTranslation();
 
   console.log('xAxisData:', xAxisData);
@@ -68,10 +68,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       formatter: (data: any) => {
         const currentSeries = data[0];
         const roundedValue = Math.round(currentSeries.value[1]); // Round to nearest dollar
-        return `${currentSeries.name} - ${getCurrencyPrice(
-          formatNumberWithCommas(roundedValue),
-          CurrencyTypeEnum.USD,
-        )}`;
+        return `${currentSeries.name} - ${getCurrencyPrice(formatNumberWithCommas(roundedValue), currency)}`;
       },
     },
     grid: {

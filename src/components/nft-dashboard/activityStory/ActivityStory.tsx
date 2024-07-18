@@ -8,6 +8,7 @@ import { Modal } from 'antd';
 import { ViewTransactions } from '@app/components/nft-dashboard/common/ViewAll/ViewTransactions';
 import styled from 'styled-components';
 import { Line } from 'react-chartjs-2';
+import { useAppSelector } from '@app/hooks/reduxHooks';
 import { ChartOptions } from 'chart.js';
 import {
   Chart as ChartJS,
@@ -20,6 +21,9 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
+import CurrencySelect from '../Balance/components/CurrencySelect/CurrencySelect';
+import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
+const availableCurrencies: CurrencyTypeEnum[] = [CurrencyTypeEnum.USD, CurrencyTypeEnum.BTC, CurrencyTypeEnum.EUR, CurrencyTypeEnum.GBP ];
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -33,6 +37,7 @@ const TitleContainer = styled.div`
 export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const currency = useAppSelector((state) => state.currency.currency);  
 
   const { t } = useTranslation();
 
@@ -100,7 +105,7 @@ export const ActivityStory: React.FC = () => {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Amount',
+          text: currency, // TODO: Set to selected currency
           font: {
             size: 14,
             weight: 'bold',
@@ -172,6 +177,7 @@ export const ActivityStory: React.FC = () => {
       </TitleContainer>
 
       <Modal title="Your Transactions" open={isModalVisible} onCancel={handleCancel} footer={null} width={800}>
+        <CurrencySelect currencies={availableCurrencies}></CurrencySelect>
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />
         </div>
