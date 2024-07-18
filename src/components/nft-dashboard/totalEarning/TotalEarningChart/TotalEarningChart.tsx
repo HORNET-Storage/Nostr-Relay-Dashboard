@@ -5,6 +5,7 @@ import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { ChartData, CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
+import { currencies } from '@app/constants/config/currencies';
 
 interface LineData {
   data: ChartData;
@@ -109,7 +110,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
         },
       },
       axisLabel: {
-        formatter: (value: number) => `$${formatNumberWithCommas(value)}`,
+        formatter: (value: number) => `${currencies[currency].icon}${formatNumberWithCommas(value)}`,
         color: themeObject[theme].chartAxisLabel,
         fontSize: 13,
         fontFamily: 'Arial',
