@@ -8,7 +8,7 @@ import * as S from './ActivityStoryItem.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 
-export const ActivityStoryItem: React.FC<WalletTransaction> = ({ address, date, output, value }) => {
+export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
   const { t } = useTranslation();
 
   // Convert value to number
@@ -18,8 +18,8 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ address, date, 
     <S.TransactionCard>
       <BaseRow gutter={[20, 20]} wrap={true} align="middle">
         <BaseCol span={24}>
-          <S.Label>{t('Address')}:</S.Label>
-          <S.Address style={{ color: 'var(--text-main)' }}>{address}</S.Address>
+          <S.Label>{t('Witness Transaction ID')}:</S.Label>
+          <S.Address style={{ color: 'var(--text-main)' }}>{witness_tx_id}</S.Address>
         </BaseCol>
         <BaseCol span={24}>
           <S.Label>{t('Output')}:</S.Label>
