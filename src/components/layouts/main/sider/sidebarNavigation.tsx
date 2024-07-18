@@ -5,6 +5,7 @@ import { ReactComponent as BtcIcon } from '@app/assets/icons/btc.svg';
 import { ReactComponent as StatsIcon } from '@app/assets/icons/stats.svg';
 import { ReactComponent as StorageSettingsIcon } from '@app/assets/icons/storage-settings.svg';
 import { useResponsive } from '@app/hooks/useResponsive';
+import { table } from 'console';
 
 export interface SidebarNavigationItem {
   title: string;
@@ -15,7 +16,7 @@ export interface SidebarNavigationItem {
 }
 
 export const useSidebarNavigation = (): SidebarNavigationItem[] => {
-  const { mobileOnly } = useResponsive();
+  const { isDesktop } = useResponsive();
 
   const items: SidebarNavigationItem[] = [
     {
@@ -38,7 +39,7 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
     },
   ];
 
-  if (mobileOnly) {
+  if (!isDesktop) {
     items.push({
       title: 'common.wallet',
       key: 'wallet',
@@ -46,6 +47,5 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
       icon: <BtcIcon />,
     });
   }
-
   return items;
 };
