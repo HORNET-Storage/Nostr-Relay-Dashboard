@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
 import profile1 from '@app/assets/images/profile1.webp';
-import profile2 from '@app/assets/images/profile2.webp';
+import profile2 from '@app/assets/images/profile2.jpg';
 import profile3 from '@app/assets/images/profile3.webp';
 import profile4 from '@app/assets/images/profile4.webp';
 import profile5 from '@app/assets/images/profile5.jpg';

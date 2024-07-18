@@ -67,6 +67,9 @@ export const Table = styled(AntdTable)`
   .ant-table-column-sort {
     background-color: transparent;
   }
+  .ant-table-column-title {
+    z-index: 0;
+  }
 
   .ant-pagination-item-container .ant-pagination-item-ellipsis {
     color: var(--disabled-color);

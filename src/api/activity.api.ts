@@ -5,7 +5,7 @@ import config from '@app/config/config';
 
 export interface WalletTransaction {
   id: number;
-  address: string;
+  witness_tx_id: string;
   date: number;
   output: string;
   value: string;
@@ -28,7 +28,7 @@ export const getUserActivities = (): Promise<WalletTransaction[]> => {
       // eslint-disable-next-line
       return data.map((item: any) => ({
         id: item.ID,
-        address: item.Address,
+        witness_tx_id: item.WitnessTxId,
         date: new Date(item.Date).getTime(),
         output: item.Output,
         value: item.Value,

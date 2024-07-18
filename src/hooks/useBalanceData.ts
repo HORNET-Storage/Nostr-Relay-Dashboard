@@ -3,7 +3,7 @@ import config from '@app/config/config';
 
 interface Transaction {
   id: number;
-  address: string;
+  witness_tx_id: string;
   date: string;
   output: string;
   value: number;
@@ -32,12 +32,13 @@ const useBalanceData = () => {
         setBalanceData(balanceData);
 
         // Fetch transaction data
-        const transactionsResponse = await fetch('http://localhost:5000/transactions/latest');
+        const transactionsResponse = await fetch(`${config.baseURL}/transactions/latest`);
         if (!transactionsResponse.ok) {
           throw new Error(`Network response was not ok (status: ${transactionsResponse.status})`);
         }
         const transactionsData: Transaction[] = await transactionsResponse.json();
         setTransactions(transactionsData);
+        console.log('Transactions data:', transactionsData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
