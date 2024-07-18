@@ -1,28 +1,29 @@
- import {createSlice, PayloadAction} from '@reduxjs/toolkit';
- import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
-
- interface CurrencyState {
-    currency: CurrencyTypeEnum;
-    rate: number | null;
-    date: number | null;
-     }
-
-const initialState: CurrencyState = {
-    currency: CurrencyTypeEnum.USD,
-    rate: null,
-    date: null,
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
+interface FiatRate {
+  rate: number;
+  date: number;
+}
+interface CurrencyState {
+  currency: CurrencyTypeEnum;
+  rates: FiatRate[];
 }
 
+const initialState: CurrencyState = {
+  currency: CurrencyTypeEnum.USD,
+  rates: [],
+};
+
 const currencySlice = createSlice({
-    name: 'currency',
-    initialState,
-    reducers: {
-        setCurrency: (state, action: PayloadAction<CurrencyState>) => {
-            state.currency = action.payload.currency;
-            state.rate = action.payload.rate;
-            state.date = action.payload.date;
-        },
+  name: 'currency',
+  initialState,
+  reducers: {
+    setCurrency: (state, action: PayloadAction<CurrencyTypeEnum>) => {
+      state.currency = action.payload;
+      state.rates = [];
     },
+  },
 });
-export const { setCurrency } = currencySlice.actions;   
+
+export const { setCurrency } = currencySlice.actions;
 export default currencySlice.reducer;
