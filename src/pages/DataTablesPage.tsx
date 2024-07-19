@@ -36,7 +36,7 @@ const DataTablesPage: React.FC = () => {
 
   return (
     <>
-      <PageTitle>{t('common.dataTables')}</PageTitle>
+      <PageTitle>{t('Nostr Statistics')}</PageTitle>
       {isDesktop ? (
         desktopLayout
       ) : (
