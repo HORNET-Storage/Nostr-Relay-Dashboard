@@ -10,13 +10,13 @@ interface Header {
 
 export const Header = styled(BaseLayout.Header)<Header>`
   line-height: 1.5;
- 
+  z-index: 105;
+
   @media only screen and ${media.xs} {
     ${(props) =>
       props.$isSiderOpened &&
       css`
         background-color: rgba(0, 0, 0, 0) !important;
-        z-index: 105;
       `}
   }
   position: sticky;
@@ -25,8 +25,8 @@ export const Header = styled(BaseLayout.Header)<Header>`
 
   @media only screen and ${media.md} {
     display: block;
-     z-index: 100;
-
+    z-index: 100;
+     background-color: var(--layout-body-bg-color) !important;
     padding: ${LAYOUT.desktop.paddingVertical} ${LAYOUT.desktop.paddingHorizontal};
     height: ${LAYOUT.desktop.headerHeight};
   }
