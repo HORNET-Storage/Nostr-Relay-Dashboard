@@ -23,7 +23,12 @@ import {
 } from 'chart.js';
 import CurrencySelect from '../Balance/components/CurrencySelect/CurrencySelect';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
-const availableCurrencies: CurrencyTypeEnum[] = [CurrencyTypeEnum.USD, CurrencyTypeEnum.BTC, CurrencyTypeEnum.EUR, CurrencyTypeEnum.GBP ];
+const availableCurrencies: CurrencyTypeEnum[] = [
+  CurrencyTypeEnum.USD,
+  CurrencyTypeEnum.BTC,
+  CurrencyTypeEnum.EUR,
+  CurrencyTypeEnum.GBP,
+];
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -37,7 +42,7 @@ const TitleContainer = styled.div`
 export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const currency = useAppSelector((state) => state.currency.currency);  
+  const currency = useAppSelector((state) => state.currency.currency);
 
   const { t } = useTranslation();
 

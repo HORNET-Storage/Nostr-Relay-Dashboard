@@ -24,7 +24,12 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({ currencies }) => {
   };
 
   return (
-    <BaseSelect size="small" value={currency} onChange={(value) => handleChange(value as CurrencyTypeEnum)}>
+    <BaseSelect
+      style={{ marginLeft: '1rem', fontSize: '.95rem', fontWeight: '500' }}
+      size="small"
+      value={currency}
+      onChange={(value) => handleChange(value as CurrencyTypeEnum)}
+    >
       {currencies.map((currency) => (
         <Option key={currency} value={currency}>
           {currency}
