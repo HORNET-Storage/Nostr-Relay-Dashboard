@@ -189,3 +189,9 @@ export const mapBadgeStatus = (status: BaseBadgeProps['status']): Severity => {
 
   return status;
 };
+
+export const convertSatsToCurrency = (sats: number, btcPrice: number): number => {
+  const satoshisInBitcoin = 100000000; // 1 Bitcoin = 100,000,000 satoshis
+  const btcAmount = sats / satoshisInBitcoin;
+  return parseFloat((btcAmount * btcPrice).toFixed(2));
+};

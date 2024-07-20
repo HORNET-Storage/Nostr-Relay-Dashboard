@@ -7,11 +7,13 @@ interface FiatRate {
 interface CurrencyState {
   currency: CurrencyTypeEnum;
   rates: FiatRate[];
+  currentPrice: number;
 }
 
 const initialState: CurrencyState = {
   currency: CurrencyTypeEnum.USD,
   rates: [],
+  currentPrice: 0,
 };
 
 const currencySlice = createSlice({
@@ -25,8 +27,11 @@ const currencySlice = createSlice({
     setRates: (state, action: PayloadAction<FiatRate[]>) => {
       state.rates = action.payload;
     },
+    setCurrentPrice: (state, action: PayloadAction<number>) => {
+      state.currentPrice = action.payload;
+    },
   },
 });
 
-export const { setCurrency, setRates } = currencySlice.actions;
+export const { setCurrency, setRates, setCurrentPrice} = currencySlice.actions;
 export default currencySlice.reducer;

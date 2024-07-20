@@ -12,16 +12,29 @@ import { formatBalance } from '@app/utils/balanceFormatter';
 import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch'; // Import BaseSwitch
 import CurrencySelect from './components/CurrencySelect/CurrencySelect';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
+import { convertSatsToCurrency } from '@app/utils/utils';
 
 //Needs to be centralized somewhere TODO
-const availableCurrencies: CurrencyTypeEnum[] = [CurrencyTypeEnum.USD, CurrencyTypeEnum.BTC, CurrencyTypeEnum.EUR, CurrencyTypeEnum.GBP, CurrencyTypeEnum.JPY, CurrencyTypeEnum.AUD, CurrencyTypeEnum.CAD, CurrencyTypeEnum.CHF, CurrencyTypeEnum.CNY, CurrencyTypeEnum.SEK, CurrencyTypeEnum.NZD];
+const availableCurrencies: CurrencyTypeEnum[] = [
+  CurrencyTypeEnum.USD,
+  CurrencyTypeEnum.BTC,
+  CurrencyTypeEnum.EUR,
+  CurrencyTypeEnum.GBP,
+  CurrencyTypeEnum.JPY,
+  CurrencyTypeEnum.AUD,
+  CurrencyTypeEnum.CAD,
+  CurrencyTypeEnum.CHF,
+  CurrencyTypeEnum.CNY,
+  CurrencyTypeEnum.SEK,
+  CurrencyTypeEnum.NZD,
+];
 
 export const Balance: React.FC = () => {
   const { balanceData, transactions, isLoading } = useBalanceData();
   const [displayUSD, setDisplayUSD] = useState(true); // State to toggle between USD and SATs
-
+  console.log(balanceData?.latest_balance);
   const userId = useAppSelector((state) => state.user.user?.id);
-  const currency = useAppSelector((state) => state.currency.currency);
+  const currency = useAppSelector((state) => state.currency);
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -44,7 +57,13 @@ export const Balance: React.FC = () => {
             <BaseCol>
               <S.TitleBalanceText level={3}>
                 {displayUSD
-                  ? balanceData && getCurrencyPrice(formatNumberWithCommas(balanceData.balance_usd), currency, false)
+                  ? balanceData &&
+                    currency.currentPrice &&
+                    getCurrencyPrice(
+                      formatNumberWithCommas(convertSatsToCurrency(balanceData.latest_balance, currency.currentPrice)),
+                      currency.currency,
+                      false,
+                    )
                   : balanceData && formatBalance(balanceData.latest_balance ?? 0)}
               </S.TitleBalanceText>
             </BaseCol>
@@ -63,7 +82,7 @@ export const Balance: React.FC = () => {
                     {displayUSD
                       ? balanceData && formatBalance(balanceData.latest_balance ?? 0)
                       : balanceData &&
-                        getCurrencyPrice(formatNumberWithCommas(balanceData.balance_usd), currency, false)}
+                        getCurrencyPrice(formatNumberWithCommas(balanceData.balance_usd), currency.currency, false)}
                   </S.SubtitleBalanceText>
                 </BaseCol>
               </BaseRow>
