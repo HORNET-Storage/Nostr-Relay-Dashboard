@@ -1,6 +1,6 @@
 // Update the api/earnings.api.ts file
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
-
+import config from '@app/config/config';
 export interface Balance {
   USD: number;
   ETH: number;
@@ -83,5 +83,17 @@ export const getBitcoinRatesForLast30Days = (): Promise<Earning[]> => {
         date: new Date(item.Timestamp).getTime(),
         usd_value: item.Rate,
       }));
+    });
+};
+export const getBitcoinPriceByCurrency = (currency: CurrencyTypeEnum): Promise<number> => {
+  return fetch(`${config.baseURL}/bitcoin-price/${currency.toLocaleLowerCase()}`)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('Received data:', data); // Add log statement to see the data
+      return data.price;
+    })
+    .catch((error) => {
+      console.error('Error fetching bitcoin price:', error);
+      return 0;
     });
 };
