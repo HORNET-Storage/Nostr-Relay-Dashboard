@@ -451,7 +451,7 @@ const RelaySettingsPage: React.FC = () => {
               />
             </S.SwitchContainer>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Settings'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
                     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -841,7 +841,7 @@ const RelaySettingsPage: React.FC = () => {
           />
         </S.SwitchContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Configuration'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Settings'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
