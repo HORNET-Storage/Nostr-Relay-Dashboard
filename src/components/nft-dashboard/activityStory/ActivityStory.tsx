@@ -65,6 +65,22 @@ export const ActivityStory: React.FC = () => {
     setIsModalVisible(false);
   };
 
+  const TransactionSkeletons = () => {
+    return (
+      <>
+        <BaseSkeleton>
+          <BaseCol span={24}>
+            <TransactionCard></TransactionCard>
+          </BaseCol>
+        </BaseSkeleton>
+        <BaseSkeleton>
+          <BaseCol span={24}>
+            <TransactionCard></TransactionCard>
+          </BaseCol>
+        </BaseSkeleton>
+      </>
+    );
+  };
   const prepareChartData = () => {
     const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
@@ -181,24 +197,9 @@ export const ActivityStory: React.FC = () => {
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />
         </div>
-        <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
+         {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
       </Modal>
-      {isLoading ? (
-        <>
-          <BaseSkeleton>
-            <BaseCol span={24}>
-              <TransactionCard></TransactionCard>
-            </BaseCol>
-          </BaseSkeleton>
-          <BaseSkeleton>
-            <BaseCol span={24}>
-              <TransactionCard></TransactionCard>
-            </BaseCol>
-          </BaseSkeleton>
-        </>
-      ) : (
-        <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
-      )}
+      {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
     </S.Wrapper>
   );
 };
