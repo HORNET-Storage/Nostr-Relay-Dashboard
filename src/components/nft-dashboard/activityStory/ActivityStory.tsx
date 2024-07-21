@@ -8,6 +8,7 @@ import { Modal } from 'antd';
 import { ViewTransactions } from '@app/components/nft-dashboard/common/ViewAll/ViewTransactions';
 import styled from 'styled-components';
 import { Line } from 'react-chartjs-2';
+import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
 import { ChartOptions } from 'chart.js';
 import {
   Chart as ChartJS,
@@ -20,6 +21,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
+import { TransactionCard } from './ActivityStoryItem/ActivityStoryItem.styles';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -33,11 +35,15 @@ const TitleContainer = styled.div`
 export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    getUserActivities().then((res) => setStory(res));
+    getUserActivities().then((res) => {
+      setStory(res);
+      setIsLoading(false);
+    });
   }, []);
 
   const activityContent =
@@ -177,7 +183,22 @@ export const ActivityStory: React.FC = () => {
         </div>
         <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
       </Modal>
-      <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
+      {isLoading ? (
+        <>
+          <BaseSkeleton>
+            <BaseCol span={24}>
+              <TransactionCard></TransactionCard>
+            </BaseCol>
+          </BaseSkeleton>
+          <BaseSkeleton>
+            <BaseCol span={24}>
+              <TransactionCard></TransactionCard>
+            </BaseCol>
+          </BaseSkeleton>
+        </>
+      ) : (
+        <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
+      )}
     </S.Wrapper>
   );
 };
