@@ -404,8 +404,7 @@ const RelaySettingsPage: React.FC = () => {
       audio: [],
     });
   }, [settings.mode]);
-  
-  
+
   useEffect(() => {
     const updateDynamicKinds = async () => {
       await performSaveSettings();
@@ -456,7 +455,7 @@ const RelaySettingsPage: React.FC = () => {
                 <S.Card>
                   <BaseCol span={24}>
                     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
-                      <S.LabelSpan style={{ width: '7rem', marginBottom: '1rem' }}>{'Transport'}</S.LabelSpan>
+                      <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('common.transportSetting')}</S.LabelSpan>
                       <Checkbox.Group
                         options={[
                           { label: 'WebSocket', value: 'WebSocket', style: { fontSize: '.85rem' } },
@@ -473,9 +472,7 @@ const RelaySettingsPage: React.FC = () => {
                     </div>
                     <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <S.LabelSpan style={{ width: '7rem', marginBottom: '1rem' }}>
-                        {t('common.chunkedSetting')}
-                      </S.LabelSpan>{' '}
+                      <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('common.chunkedSetting')}</S.LabelSpan>{' '}
                       <Checkbox.Group
                         className="custom-checkbox-group"
                         options={[
