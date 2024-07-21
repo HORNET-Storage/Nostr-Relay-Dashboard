@@ -26,7 +26,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <meta name="theme-color" content={themeObject[theme].primary} />
+      <meta name="theme-color" content={themeObject[theme].layoutBodyBg} />
       <GlobalStyle />
       <HelmetProvider>
         <ConfigProvider locale={language === 'en' ? enUS : deDe}>
