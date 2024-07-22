@@ -14,8 +14,9 @@ import { useBitcoinRates } from '@app/hooks/useBitcoinRates';
 
 export const TotalEarning: React.FC = () => {
   const { t } = useTranslation();
-  const { rates: bitcoinRates, isLoading, error } = useBitcoinRates();
+
   const currency = useAppSelector((state) => state.currency.currency);
+  const { rates: bitcoinRates, isLoading, error } = useBitcoinRates(currency);
 
   const { totalEarningData, days } = useMemo(() => {
     const earningData = {

@@ -32,7 +32,6 @@ const availableCurrencies: CurrencyTypeEnum[] = [
 export const Balance: React.FC = () => {
   const { balanceData, transactions, isLoading } = useBalanceData();
   const [displayUSD, setDisplayUSD] = useState(true); // State to toggle between USD and SATs
-  console.log(balanceData?.latest_balance);
   const userId = useAppSelector((state) => state.user.user?.id);
   const currency = useAppSelector((state) => state.currency);
   const { t } = useTranslation();
@@ -58,12 +57,7 @@ export const Balance: React.FC = () => {
               <S.TitleBalanceText level={3}>
                 {displayUSD
                   ? balanceData &&
-                    currency.currentPrice &&
-                    getCurrencyPrice(
-                      formatNumberWithCommas(convertSatsToCurrency(balanceData.latest_balance, currency.currentPrice)),
-                      currency.currency,
-                      false,
-                    )
+                  getCurrencyPrice(formatNumberWithCommas(balanceData.balance_currency), currency.currency, false)
                   : balanceData && formatBalance(balanceData.latest_balance ?? 0)}
               </S.TitleBalanceText>
             </BaseCol>
@@ -82,7 +76,7 @@ export const Balance: React.FC = () => {
                     {displayUSD
                       ? balanceData && formatBalance(balanceData.latest_balance ?? 0)
                       : balanceData &&
-                        getCurrencyPrice(formatNumberWithCommas(balanceData.balance_usd), currency.currency, false)}
+                        getCurrencyPrice(formatNumberWithCommas(balanceData.balance_currency), currency.currency, false)}
                   </S.SubtitleBalanceText>
                 </BaseCol>
               </BaseRow>

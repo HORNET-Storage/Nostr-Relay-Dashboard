@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
-
+import { useAppSelector } from './reduxHooks';
 interface Transaction {
   id: number;
   witness_tx_id: string;
@@ -10,7 +10,7 @@ interface Transaction {
 }
 
 interface BalanceData {
-  balance_usd: number;
+  balance_currency: number;
   latest_balance: number; // Add this field to include latest balance in SATs
 }
 
@@ -18,13 +18,14 @@ const useBalanceData = () => {
   const [balanceData, setBalanceData] = useState<BalanceData | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const currency = useAppSelector((state) => state.currency.currency);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         // Fetch balance data
-        const balanceResponse = await fetch(`${config.baseURL}/balance/usd`);
+        const balanceResponse = await fetch(`${config.baseURL}/balance/${currency.toLocaleLowerCase()}`);
         if (!balanceResponse.ok) {
           throw new Error(`Network response was not ok (status: ${balanceResponse.status})`);
         }
@@ -47,7 +48,7 @@ const useBalanceData = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currency]);
 
   return { balanceData, transactions, isLoading };
 };
