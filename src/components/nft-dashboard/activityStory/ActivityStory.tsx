@@ -25,9 +25,15 @@ import CurrencySelect from '../Balance/components/CurrencySelect/CurrencySelect'
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.USD,
-  CurrencyTypeEnum.BTC,
   CurrencyTypeEnum.EUR,
   CurrencyTypeEnum.GBP,
+  CurrencyTypeEnum.JPY,
+  CurrencyTypeEnum.AUD,
+  CurrencyTypeEnum.CAD,
+  CurrencyTypeEnum.CHF,
+  CurrencyTypeEnum.CNY,
+  CurrencyTypeEnum.SEK,
+  CurrencyTypeEnum.NZD,
 ];
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);

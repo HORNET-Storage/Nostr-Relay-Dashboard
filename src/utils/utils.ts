@@ -190,8 +190,10 @@ export const mapBadgeStatus = (status: BaseBadgeProps['status']): Severity => {
   return status;
 };
 
+import Decimal from 'decimal.js';
+
 export const convertSatsToCurrency = (sats: number, btcPrice: number): number => {
   const satoshisInBitcoin = 100000000; // 1 Bitcoin = 100,000,000 satoshis
-  const btcAmount = sats / satoshisInBitcoin;
-  return parseFloat((btcAmount * btcPrice).toFixed(2));
+  const btcAmount = new Decimal(sats).div(satoshisInBitcoin);
+  return btcAmount.mul(btcPrice).toDecimalPlaces(2).toNumber(); // Limit to 2 decimal places
 };

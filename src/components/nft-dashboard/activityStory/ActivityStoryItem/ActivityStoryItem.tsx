@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WalletTransaction } from '@app/api/activity.api';
 import { Dates } from '@app/constants/Dates';
@@ -8,12 +8,17 @@ import * as S from './ActivityStoryItem.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useAppSelector } from '@app/hooks/reduxHooks';
+import { convertSatsToCurrency } from '@app/utils/utils';
 
 export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
   const { t } = useTranslation();
-  const currency = useAppSelector((state) => state.currency.currency);
-  // Convert value to number
+  const currency = useAppSelector((state) => state.currency);
   const numericValue = parseFloat(value);
+  const [currentValue, setCurrentValue] = useState<number>(() => convertSatsToCurrency(numericValue, currency.currentPrice));
+
+  useEffect(() => {
+    setCurrentValue(convertSatsToCurrency(numericValue, currency.currentPrice));
+  }, [currency.currentPrice, numericValue]);
 
   return (
     <S.TransactionCard>
@@ -32,7 +37,7 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
         </BaseCol>
         <BaseCol span={12} style={{ textAlign: 'right' }}>
           <S.Label>{t('Value')}:</S.Label>
-          <S.Value>{getCurrencyPrice(formatNumberWithCommas(numericValue), currency)}</S.Value>
+          <S.Value>{getCurrencyPrice(formatNumberWithCommas(currentValue), currency.currency)}</S.Value>
         </BaseCol>
       </BaseRow>
     </S.TransactionCard>

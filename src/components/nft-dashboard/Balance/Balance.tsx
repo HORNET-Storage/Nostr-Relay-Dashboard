@@ -17,7 +17,6 @@ import { convertSatsToCurrency } from '@app/utils/utils';
 //Needs to be centralized somewhere TODO
 const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.USD,
-  CurrencyTypeEnum.BTC,
   CurrencyTypeEnum.EUR,
   CurrencyTypeEnum.GBP,
   CurrencyTypeEnum.JPY,
