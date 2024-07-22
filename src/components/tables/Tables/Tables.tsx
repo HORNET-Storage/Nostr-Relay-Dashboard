@@ -13,7 +13,7 @@ export const Tables: React.FC = () => {
         <S.Card
           className={isDesktop ? '' : 'table-mobile'}
           id="editable-table"
-          title={'Storage Statistics - Nostr Kinds'}
+          title={'Kind Number Stats'}
           padding={isDesktop ? '1.25rem 1.25rem 1rem 1.25rem' : '1.25rem .5rem 1.25rem .5rem'}
         >
           <EditableTable />

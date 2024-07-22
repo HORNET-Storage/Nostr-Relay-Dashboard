@@ -21,7 +21,7 @@ import {
 import useKindData from '@app/hooks/useKindData';
 import useKindTrendData from '@app/hooks/useKindTrendData';
 import { Breakpoint } from 'antd/lib/_util/responsiveObserve';
-
+import { useResponsive } from '@app/hooks/useResponsive';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 interface KindData {
@@ -41,6 +41,7 @@ const EditableTable: React.FC = () => {
   const [currentKindNumber, setCurrentKindNumber] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend'>('descend');
   const [sortField, setSortField] = useState<string>('totalSize');
+  const { isMobile, isDesktop, isTablet } = useResponsive();
 
   const { trendData, isLoading: isTrendLoading } = useKindTrendData(currentKindNumber || 0);
 
@@ -228,7 +229,9 @@ const EditableTable: React.FC = () => {
       <BaseForm form={form} component={false}>
         {sortedData.length > 0 ? (
           <BaseTable
+            size={isDesktop || isTablet ? 'middle' : 'small'}
             bordered
+            style={{ padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem' }}
             dataSource={sortedData}
             columns={columns}
             rowClassName="editable-row"

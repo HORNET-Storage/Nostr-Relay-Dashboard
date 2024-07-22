@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import * as S from './SiderMenu.styles';
 import { useSidebarNavigation, SidebarNavigationItem } from '../sidebarNavigation';
 import { useResponsive } from '@app/hooks/useResponsive';
+
 interface SiderContentProps {
   setCollapsed: (isCollapsed: boolean) => void;
 }
@@ -14,27 +15,36 @@ const SiderMenu: React.FC<SiderContentProps> = ({ setCollapsed }) => {
   const { tabletOnly } = useResponsive();
   const sidebarNavigation = useSidebarNavigation(); // Call the function to get the navigation items
 
-  const sidebarNavFlat = sidebarNavigation.reduce(
-    (result: SidebarNavigationItem[], current: SidebarNavigationItem) =>
-      result.concat(current.children && current.children.length > 0 ? current.children : current),
-    [],
-  );
+  const sidebarNavFlat = useMemo(() => {
+    return sidebarNavigation.reduce(
+      (result: SidebarNavigationItem[], current: SidebarNavigationItem) =>
+        result.concat(current.children && current.children.length > 0 ? current.children : current),
+      [],
+    );
+  }, [sidebarNavigation]);
 
-  const currentMenuItem = sidebarNavFlat.find(({ url }) => url === location.pathname);
-  const defaultSelectedKeys = currentMenuItem ? [currentMenuItem.key] : [];
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  const openedSubmenu = sidebarNavigation.find(({ children }) =>
-    children?.some(({ url }) => url === location.pathname),
-  );
-  const defaultOpenKeys = openedSubmenu ? [openedSubmenu.key] : [];
+  useEffect(() => {
+    const currentMenuItem = sidebarNavFlat.find(({ url }) => url === location.pathname);
+    const newSelectedKeys = currentMenuItem ? [currentMenuItem.key] : [];
+    setSelectedKeys(newSelectedKeys);
+
+    const openedSubmenu = sidebarNavigation.find(({ children }) =>
+      children?.some(({ url }) => url === location.pathname),
+    );
+    const newOpenKeys = openedSubmenu ? [openedSubmenu.key] : [];
+    setOpenKeys(newOpenKeys);
+  }, [location.pathname, sidebarNavFlat, sidebarNavigation]);
 
   return (
     <S.Menu
       style={{ zIndex: 3 }}
       mode="inline"
       $tabletOnly={tabletOnly}
-      defaultSelectedKeys={defaultSelectedKeys}
-      defaultOpenKeys={defaultOpenKeys}
+      selectedKeys={selectedKeys}
+      openKeys={openKeys}
       onClick={() => setCollapsed(true)}
       items={sidebarNavigation.map((nav) => {
         const isSubMenu = nav.children?.length;
