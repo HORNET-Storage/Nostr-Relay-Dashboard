@@ -14,19 +14,21 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({ currencies }) => {
   const handleChange = (value: CurrencyTypeEnum) => {
     dispatch(setCurrency(value));
   };
+  
+  const options = currencies.map((currency) => ({
+    value: currency,
+    label: <span style={{fontWeight:"500", fontSize:".95rem", lineHeight:"1.5715", fontFamily: " Montserrat, sans-serif"}}>{currency}</span>,
+  }));
 
   return (
     <BaseSelect
-      style={{ marginLeft: '1rem', fontSize: '.95rem', fontWeight: '500' }}
+      style={{ marginLeft: '.6rem'}}
       size="small"
       value={currency}
+      options={options}
       onChange={(value) => handleChange(value as CurrencyTypeEnum)}
     >
-      {currencies.map((currency) => (
-        <Option key={currency} value={currency}>
-          {currency}
-        </Option>
-      ))}
+      
     </BaseSelect>
   );
 };

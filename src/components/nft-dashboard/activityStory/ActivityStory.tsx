@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { Line } from 'react-chartjs-2';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { ChartOptions } from 'chart.js';
+import { convertSatsToCurrency } from '@app/utils/utils';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,9 +32,9 @@ const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.AUD,
   CurrencyTypeEnum.CAD,
   CurrencyTypeEnum.CHF,
-  CurrencyTypeEnum.CNY,
-  CurrencyTypeEnum.SEK,
-  CurrencyTypeEnum.NZD,
+ // CurrencyTypeEnum.CNY,
+ // CurrencyTypeEnum.SEK,
+ // CurrencyTypeEnum.NZD,
 ];
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -48,7 +49,7 @@ const TitleContainer = styled.div`
 export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const currency = useAppSelector((state) => state.currency.currency);
+  const currency = useAppSelector((state) => state.currency);
 
   const { t } = useTranslation();
 
@@ -80,7 +81,8 @@ export const ActivityStory: React.FC = () => {
     const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
     const amounts = sortedStory.map((item) => {
       const amount = parseFloat(item.value);
-      return isNaN(amount) ? 0 : amount;
+       const res = convertSatsToCurrency(amount, currency.currentPrice)
+      return isNaN(res) ? 0 : res;
     });
 
     return {
@@ -116,7 +118,7 @@ export const ActivityStory: React.FC = () => {
         beginAtZero: true,
         title: {
           display: true,
-          text: currency, // TODO: Set to selected currency
+          text: currency.currency, // TODO: Set to selected currency
           font: {
             size: 14,
             weight: 'bold',

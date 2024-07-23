@@ -6,6 +6,7 @@ import { themeObject } from '@app/styles/themes/themeVariables';
 import { ChartData, CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
 import { currencies } from '@app/constants/config/currencies';
+import { formatGraphValue } from '@app/utils/utils';
 
 interface LineData {
   data: ChartData;
@@ -74,9 +75,9 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
     },
     grid: {
       top: 20,
-      left: 60,
+      left: 65,
       right: 20,
-      bottom: 30,
+      bottom: 30
     },
     xAxis: {
       type: 'category',
@@ -110,7 +111,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
         },
       },
       axisLabel: {
-        formatter: (value: number) => `${currencies[currency].icon}${formatNumberWithCommas(value)}`,
+        formatter: (value: number) => `${currencies[currency].icon}${formatGraphValue(value)}`,
         color: themeObject[theme].chartAxisLabel,
         fontSize: 13,
         fontFamily: 'Arial',

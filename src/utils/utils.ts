@@ -159,6 +159,15 @@ export const msToH = (ms: number): number => Math.floor(ms / 3600000);
 
 export const hToMS = (h: number): number => h * 3600000;
 
+export const formatGraphValue = (value: number): string => {
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1)}M`;
+  } else if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(1)}K`;
+  } else {
+    return value.toString();
+  }
+};
 export const getPaymentCardTypeIcon = (type: string): string | null => {
   switch (type) {
     case 'visa':

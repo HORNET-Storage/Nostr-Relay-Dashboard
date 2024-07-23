@@ -23,9 +23,9 @@ const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.AUD,
   CurrencyTypeEnum.CAD,
   CurrencyTypeEnum.CHF,
-  CurrencyTypeEnum.CNY,
-  CurrencyTypeEnum.SEK,
-  CurrencyTypeEnum.NZD,
+  // CurrencyTypeEnum.CNY,
+  // CurrencyTypeEnum.SEK,
+  //CurrencyTypeEnum.NZD,
 ];
 
 export const Balance: React.FC = () => {
@@ -56,7 +56,7 @@ export const Balance: React.FC = () => {
               <S.TitleBalanceText level={3}>
                 {displayUSD
                   ? balanceData &&
-                  getCurrencyPrice(formatNumberWithCommas(balanceData.balance_currency), currency.currency, false)
+                    getCurrencyPrice(formatNumberWithCommas(balanceData.balance_currency), currency.currency, false)
                   : balanceData && formatBalance(balanceData.latest_balance ?? 0)}
               </S.TitleBalanceText>
             </BaseCol>
@@ -75,7 +75,11 @@ export const Balance: React.FC = () => {
                     {displayUSD
                       ? balanceData && formatBalance(balanceData.latest_balance ?? 0)
                       : balanceData &&
-                        getCurrencyPrice(formatNumberWithCommas(balanceData.balance_currency), currency.currency, false)}
+                        getCurrencyPrice(
+                          formatNumberWithCommas(balanceData.balance_currency),
+                          currency.currency,
+                          false,
+                        )}
                   </S.SubtitleBalanceText>
                 </BaseCol>
               </BaseRow>
