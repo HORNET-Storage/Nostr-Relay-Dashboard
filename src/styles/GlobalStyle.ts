@@ -40,6 +40,9 @@ export default createGlobalStyle`
     body.no-scroll {
   overflow: hidden;
 }
+  html, body, :root {
+  background-color: var(--layout-body-bg-color);
+}
   
   .range-picker {
     & .ant-picker-panels {
