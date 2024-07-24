@@ -29,9 +29,8 @@ const availableCurrencies: CurrencyTypeEnum[] = [
 ];
 
 export const Balance: React.FC = () => {
-  const { balanceData, transactions, isLoading } = useBalanceData();
+  const { balanceData, isLoading } = useBalanceData();
   const [displayUSD, setDisplayUSD] = useState(true); // State to toggle between USD and SATs
-  const userId = useAppSelector((state) => state.user.user?.id);
   const currency = useAppSelector((state) => state.currency);
   const { t } = useTranslation();
 
