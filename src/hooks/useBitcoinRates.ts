@@ -35,6 +35,7 @@ export const useBitcoinRates = (currency: CurrencyTypeEnum) => {
       } catch (err: any) {
         setError(err.message);
         setIsLoading(false);
+        console.error(err);
       }
     };
 

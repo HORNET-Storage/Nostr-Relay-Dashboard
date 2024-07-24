@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BaseChart, getDefaultTooltipStyles } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
-import { ChartData, CurrencyTypeEnum } from '@app/interfaces/interfaces';
+import { ChartData } from '@app/interfaces/interfaces';
 import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
 import { currencies } from '@app/constants/config/currencies';
 import { formatGraphValue } from '@app/utils/utils';

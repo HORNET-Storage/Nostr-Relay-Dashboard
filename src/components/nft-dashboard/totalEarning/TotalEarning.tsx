@@ -6,7 +6,6 @@ import { TotalEarningChart } from '@app/components/nft-dashboard/totalEarning/To
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { Dates } from '@app/constants/Dates';
 import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
-import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import * as S from './TotalEarning.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
@@ -45,7 +44,7 @@ export const TotalEarning: React.FC = () => {
   if (error) {
     return (
       <div>
-        {t('common.error')}: {error}
+        {t('common.error')}: {"Unable to retrieve rates. Try again later."}
       </div>
     );
   }

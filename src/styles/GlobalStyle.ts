@@ -289,6 +289,13 @@ export default createGlobalStyle`
     display: flex;
     flex-direction: column;
   }
+  .flex-row{
+    display: flex;
+    flex-direction: row;
+  }
+  .align-center{ 
+    align-items: center;
+  }
 
   .centered-header .ant-collapse-header {
     justify-content: center;
