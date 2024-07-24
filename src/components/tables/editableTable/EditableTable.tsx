@@ -22,6 +22,7 @@ import useKindData from '@app/hooks/useKindData';
 import useKindTrendData from '@app/hooks/useKindTrendData';
 import { Breakpoint } from 'antd/lib/_util/responsiveObserve';
 import { useResponsive } from '@app/hooks/useResponsive';
+import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 interface KindData {
@@ -227,7 +228,8 @@ const EditableTable: React.FC = () => {
   return (
     <div>
       <BaseForm form={form} component={false}>
-        {sortedData.length > 0 ? (
+        {isLoading ? <BaseSkeleton /> : 
+        sortedData.length > 0 ? (
           <BaseTable
             size={isDesktop || isTablet ? 'middle' : 'small'}
             bordered
@@ -241,7 +243,8 @@ const EditableTable: React.FC = () => {
           />
         ) : (
           <div>{'No Data Available'}</div>
-        )}
+        )
+      }
       </BaseForm>
       <Modal
         title={`Kind ${currentKindNumber}`}

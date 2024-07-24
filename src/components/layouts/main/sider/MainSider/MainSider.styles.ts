@@ -11,8 +11,6 @@ export const Sider = styled(BaseLayout.Sider)`
   right: 0;
   z-index: 102;
   min-height: 100vh;
-  max-height: 100vh;
-
   color: var(--text-secondary-color);
 
   @media only screen and ${media.md} {

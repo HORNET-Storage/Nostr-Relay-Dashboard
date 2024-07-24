@@ -9,6 +9,7 @@ import { ViewTransactions } from '@app/components/nft-dashboard/common/ViewAll/V
 import styled from 'styled-components';
 import { Line } from 'react-chartjs-2';
 import { useAppSelector } from '@app/hooks/reduxHooks';
+import { BaseSkeleton } from '@app/components/common/BaseSkeleton/BaseSkeleton';
 import { ChartOptions } from 'chart.js';
 import { convertSatsToCurrency } from '@app/utils/utils';
 import {
@@ -24,6 +25,7 @@ import {
 } from 'chart.js';
 import CurrencySelect from '../Balance/components/CurrencySelect/CurrencySelect';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
+import { TransactionCard } from './ActivityStoryItem/ActivityStoryItem.styles';
 const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.USD,
   CurrencyTypeEnum.EUR,
@@ -36,6 +38,7 @@ const availableCurrencies: CurrencyTypeEnum[] = [
   // CurrencyTypeEnum.SEK,
   // CurrencyTypeEnum.NZD,
 ];
+
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -50,11 +53,15 @@ export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const currency = useAppSelector((state) => state.currency);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    getUserActivities().then((res) => setStory(res));
+    getUserActivities().then((res) => {
+      setStory(res);
+      setIsLoading(false);
+    });
   }, []);
 
   const activityContent =
@@ -76,6 +83,22 @@ export const ActivityStory: React.FC = () => {
     setIsModalVisible(false);
   };
 
+  const TransactionSkeletons = () => {
+    return (
+      <>
+        <BaseSkeleton>
+          <BaseCol span={24}>
+            <TransactionCard></TransactionCard>
+          </BaseCol>
+        </BaseSkeleton>
+        <BaseSkeleton>
+          <BaseCol span={24}>
+            <TransactionCard></TransactionCard>
+          </BaseCol>
+        </BaseSkeleton>
+      </>
+    );
+  };
   const prepareChartData = () => {
     const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
@@ -196,9 +219,9 @@ export const ActivityStory: React.FC = () => {
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />
         </div>
-        <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
+         {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
       </Modal>
-      <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>
+      {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
     </S.Wrapper>
   );
 };

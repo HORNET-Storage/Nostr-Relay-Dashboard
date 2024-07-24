@@ -1,12 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 import { Balance } from '@app/components/nft-dashboard/Balance/Balance';
 import { TotalEarning } from '@app/components/nft-dashboard/totalEarning/TotalEarning';
 import { ActivityStory } from '@app/components/nft-dashboard/activityStory/ActivityStory';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+import { useResponsive } from '@app/hooks/useResponsive';
+import { useNavigate } from 'react-router-dom';
 
 const BalancePage: React.FC = () => {
+  const { isDesktop } = useResponsive();
+  const navigate = useNavigate();
+
+  useEffect(() => { 
+if(isDesktop) {
+  navigate('/relay-dashbaoard');
+
+    }
+  }, [isDesktop]);
   return (
     <div
       style={{
