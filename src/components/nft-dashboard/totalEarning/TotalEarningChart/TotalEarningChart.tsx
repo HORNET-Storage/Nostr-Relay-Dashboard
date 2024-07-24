@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseChart, getDefaultTooltipStyles } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
@@ -36,6 +36,19 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
   const maxY = roundUp(maxYValue * 1.01, interval);
 
   const yAxisTickInterval = (maxY - minY) / 5;
+
+
+  const calcLeftPadding = () => {
+    const characterSize = 8.6;
+    const amountLength = formatGraphValue(maxY).length // Remove decimal points
+    const symbolSize = currencies[currency].icon.replace(/\./g, '').length;
+    return (amountLength + symbolSize) * characterSize;
+  }
+  const [leftPadding, setLeftPadding] = React.useState(calcLeftPadding());  
+  useEffect(() => {
+    setLeftPadding(calcLeftPadding());
+  }, [maxY]);
+    
 
   const seriesList = [
     {
@@ -75,7 +88,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
     },
     grid: {
       top: 20,
-      left: 65,
+      left: leftPadding,
       right: 20,
       bottom: 30
     },
