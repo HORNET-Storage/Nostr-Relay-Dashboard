@@ -38,7 +38,8 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
   const yAxisTickInterval = (maxY - minY) / 5;
 
 
-  const calcLeftPadding = () => {
+  const calcLeftPadding = () => { 
+    if(!maxY || !currency || !earningData) return 60
     const characterSize = 8.6;
     const amountLength = formatGraphValue(maxY).length // Remove decimal points
     const symbolSize = currencies[currency].icon.replace(/\./g, '').length;
