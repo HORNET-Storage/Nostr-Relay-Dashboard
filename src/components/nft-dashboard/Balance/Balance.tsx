@@ -55,14 +55,24 @@ export const Balance: React.FC = () => {
               <S.TitleBalanceText level={3}>
                 {displayUSD
                   ? balanceData &&
-                    getCurrencyPrice(formatNumberWithCommas(balanceData.balance_currency), currency.currency, false)
+                    getCurrencyPrice(
+                      formatNumberWithCommas(parseFloat(balanceData.balance_currency.toFixed(2))),
+                      currency.currency,
+                      false,
+                    )
                   : balanceData && formatBalance(balanceData.latest_balance ?? 0)}
               </S.TitleBalanceText>
             </BaseCol>
 
             <BaseCol>
-              <BaseSwitch className="balanceSwitch" checked={displayUSD} onChange={handleSwitchChange} />
-              {displayUSD ? <CurrencySelect currencies={availableCurrencies} /> : <S.LabelSpan> {'Sats'}</S.LabelSpan>}
+              <div className="flex-row align-center">
+                <BaseSwitch className="balanceSwitch" checked={displayUSD} onChange={handleSwitchChange} />
+                {displayUSD ? (
+                  <CurrencySelect currencies={availableCurrencies} />
+                ) : (
+                  <S.LabelSpan> {'Sats'}</S.LabelSpan>
+                )}
+              </div>
             </BaseCol>
           </BaseRow>
 
@@ -75,7 +85,7 @@ export const Balance: React.FC = () => {
                       ? balanceData && formatBalance(balanceData.latest_balance ?? 0)
                       : balanceData &&
                         getCurrencyPrice(
-                          formatNumberWithCommas(balanceData.balance_currency),
+                          formatNumberWithCommas(parseFloat(balanceData.balance_currency.toFixed(2))),
                           currency.currency,
                           false,
                         )}

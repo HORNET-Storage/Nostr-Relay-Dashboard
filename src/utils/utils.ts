@@ -16,7 +16,6 @@ export const camelize = (string: string): string => {
 
 export const getCurrencyPrice = (price: number | string, currency: CurrencyTypeEnum, isIcon = true): string => {
   const currencySymbol = currencies[currency][isIcon ? 'icon' : 'text'];
-
   return isIcon ? `${currencySymbol}${price}` : `${price} ${currency}`;
 };
 
