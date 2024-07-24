@@ -32,9 +32,9 @@ const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.AUD,
   CurrencyTypeEnum.CAD,
   CurrencyTypeEnum.CHF,
- // CurrencyTypeEnum.CNY,
- // CurrencyTypeEnum.SEK,
- // CurrencyTypeEnum.NZD,
+  // CurrencyTypeEnum.CNY,
+  // CurrencyTypeEnum.SEK,
+  // CurrencyTypeEnum.NZD,
 ];
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -80,8 +80,10 @@ export const ActivityStory: React.FC = () => {
     const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
     const amounts = sortedStory.map((item) => {
-      const amount = parseFloat(item.value);
-       const res = convertSatsToCurrency(amount, currency.currentPrice)
+      const res =
+        currency.currency == CurrencyTypeEnum.USD
+          ? parseFloat(item.value)
+          : convertSatsToCurrency(item.sats, currency.currentPrice);
       return isNaN(res) ? 0 : res;
     });
 

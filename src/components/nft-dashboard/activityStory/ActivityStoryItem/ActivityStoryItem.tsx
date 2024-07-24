@@ -10,15 +10,20 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { convertSatsToCurrency } from '@app/utils/utils';
 
-export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
+export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value, sats }) => {
   const { t } = useTranslation();
   const currency = useAppSelector((state) => state.currency);
-  const numericValue = parseFloat(value);
-  const [currentValue, setCurrentValue] = useState<number>(() => convertSatsToCurrency(numericValue, currency.currentPrice));
+  const [currentValue, setCurrentValue] = useState<number>(() =>
+    currency.currency == CurrencyTypeEnum.USD ? parseFloat(value) : convertSatsToCurrency(sats, currency.currentPrice),
+  );
 
   useEffect(() => {
-    setCurrentValue(convertSatsToCurrency(numericValue, currency.currentPrice));
-  }, [currency.currentPrice, numericValue]);
+    if (currency.currency === CurrencyTypeEnum.USD) {
+      setCurrentValue(parseFloat(value));
+    } else {
+      setCurrentValue(convertSatsToCurrency(sats, currency.currentPrice));
+    }
+  }, [currency.currentPrice, value, sats]);
 
   return (
     <S.TransactionCard>

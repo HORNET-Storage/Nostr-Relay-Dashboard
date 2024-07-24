@@ -9,6 +9,7 @@ export interface WalletTransaction {
   date: number;
   output: string;
   value: string;
+  sats: number;
 }
 
 export const getUserActivities = (): Promise<WalletTransaction[]> => {
@@ -32,6 +33,7 @@ export const getUserActivities = (): Promise<WalletTransaction[]> => {
         date: new Date(item.Date).getTime(),
         output: item.Output,
         value: item.Value,
+        sats: item.sats,
       }));
     })
     .catch((error) => {
