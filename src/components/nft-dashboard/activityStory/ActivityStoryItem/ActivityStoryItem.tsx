@@ -13,14 +13,19 @@ import { convertSatsToCurrency } from '@app/utils/utils';
 export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value, sats }) => {
   const { t } = useTranslation();
   const currency = useAppSelector((state) => state.currency);
+  const [currentCurrency, setCurrentCurrency] = useState<CurrencyTypeEnum>(currency.currency); //use state just incase no current price
   const [currentValue, setCurrentValue] = useState<number>(() =>
     currency.currency == CurrencyTypeEnum.USD ? parseFloat(value) : convertSatsToCurrency(sats, currency.currentPrice),
   );
 
   useEffect(() => {
-    if (currency.currency === CurrencyTypeEnum.USD) {
+    if (currency.currency === CurrencyTypeEnum.USD || !currency.currentPrice) {
+      setCurrentCurrency(currency.currency);
       setCurrentValue(parseFloat(value));
     } else {
+      if (currency.currency !== currentCurrency) {
+        setCurrentCurrency(currency.currency);
+      }
       setCurrentValue(convertSatsToCurrency(sats, currency.currentPrice));
     }
   }, [currency.currentPrice, value, sats]);
@@ -42,7 +47,7 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
         </BaseCol>
         <BaseCol span={12} style={{ textAlign: 'right' }}>
           <S.Label>{t('Value')}:</S.Label>
-          <S.Value>{getCurrencyPrice(formatNumberWithCommas(currentValue), currency.currency)}</S.Value>
+          <S.Value>{getCurrencyPrice(formatNumberWithCommas(currentValue), currentCurrency)}</S.Value>
         </BaseCol>
       </BaseRow>
     </S.TransactionCard>
