@@ -44,7 +44,7 @@ export const TrendingCreators: React.FC = () => {
       profile11,
     ],
   };
-  const { isTablet: isTabletOrHigher, isDesktop } = useResponsive();
+  const { isTablet: isTabletOrHigher } = useResponsive();
   const { t } = useTranslation();
 
   const goPrev = () => {
@@ -72,7 +72,7 @@ export const TrendingCreators: React.FC = () => {
         drag="free"
         gap=".2rem"
         snap="false"
-        autoSpeed={isDesktop ? 0.7 : 0.8}
+        autoSpeed={isTabletOrHigher ? 0.7 : 0.8}
         flickPower="500"
         breakpoints={{
           8000: {
