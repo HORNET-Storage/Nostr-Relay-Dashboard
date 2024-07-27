@@ -53,7 +53,9 @@ export const Balance: React.FC = () => {
           <BaseRow justify="space-between" align={'middle'}>
             <BaseCol>
               <S.TitleBalanceText level={3}>
-                {displayUSD
+                {!balanceData?.latest_balance
+                  ? getCurrencyPrice(0, currency.currency, false)
+                  : displayUSD
                   ? balanceData &&
                     getCurrencyPrice(
                       formatNumberWithCommas(parseFloat(balanceData.balance_currency.toFixed(2))),
