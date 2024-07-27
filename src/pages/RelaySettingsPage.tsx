@@ -94,7 +94,7 @@ const RelaySettingsPage: React.FC = () => {
     { kind: 30023, kindString: 'kind30023', description: 'Formatted Articles', category: 1 },
     { kind: 30079, kindString: 'kind30079', description: 'Event Paths', category: 1 },
     //{ kind: 9734, kindString: 'kind9734', description: 'Lightning Zap Request', category: 2 },
-    { kind: 9735, kindString: 'kind9735', description: 'Lightning Zap Invoice Receipts', category: 2 },
+    { kind: 9735, kindString: 'kind9735', description: 'Zap Receipt', category: 2 },
     { kind: 10011, kindString: 'kind10011', description: 'Issue Notes', category: 3 },
     { kind: 10022, kindString: 'kind10022', description: 'PR Notes', category: 3 },
     { kind: 9803, kindString: 'kind9803', description: 'Commit Notes', category: 3 },
