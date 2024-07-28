@@ -85,7 +85,7 @@ const RelaySettingsPage: React.FC = () => {
     { kind: 8, kindString: 'kind8', description: 'Badge Award', category: 2 },
     { kind: 16, kindString: 'kind16', description: 'Generic Repost', category: 1 },
     { kind: 10000, kindString: 'kind10000', description: 'Mute List', category: 1 },
-    { kind: 10001, kindString: 'kind10001', description: 'Pinned Note', category: 1 },
+    { kind: 10001, kindString: 'kind10001', description: 'Pinned Note(s)', category: 1 },
     { kind: 10002, kindString: 'kind10002', description: 'Tiny Relay List', category: 1 },
     { kind: 1984, kindString: 'kind1984', description: 'Reporting', category: 1 },
     { kind: 30000, kindString: 'kind30000', description: 'Custom Follow List', category: 1 },
@@ -581,7 +581,7 @@ const RelaySettingsPage: React.FC = () => {
                         <h3 className="checkboxHeader w-full">{group.name}</h3>
                         <div className="custom-checkbox-group grid-checkbox-group large-label">
                           {group.notes.map((note) => (
-                            <div key={note.kindString}>
+                            <div className = "checkbox-container" key={note.kindString}>
                               <BaseCheckbox
                                 value={note.kindString}
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -651,7 +651,7 @@ const RelaySettingsPage: React.FC = () => {
                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
                             key={kind}
                           >
-                            <div>
+                            <div className='checkbox-container'>
                               <BaseCheckbox
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
                                 value={kind}
@@ -977,7 +977,7 @@ const RelaySettingsPage: React.FC = () => {
                       <h3 className="checkboxHeader w-full">{group.name}</h3>
                       <div className="custom-checkbox-group grid-checkbox-group large-label">
                         {group.notes.map((note) => (
-                          <div key={note.kindString}>
+                          <div className='checkbox-container' key={note.kindString}>
                             <BaseCheckbox
                               value={note.kindString}
                               className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -1037,7 +1037,7 @@ const RelaySettingsPage: React.FC = () => {
                         style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
                         key={kind}
                       >
-                        <div>
+                        <div className='checkbox-container'>
                           <BaseCheckbox
                             style={{ paddingLeft: '1rem' }}
                             className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
