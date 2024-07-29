@@ -613,11 +613,11 @@ const RelaySettingsPage: React.FC = () => {
                   </BaseCheckbox.Group>
                   {settings.mode !== 'smart' && (
                     <div
-                      style={{ padding: '2rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
+                      style={{ padding: '1.5rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
                     >
                       <h3>{'Add to Blacklist'}</h3>
                       <div
-                        style={{ display: 'flex', paddingBottom: '1rem' }}
+                        style={{ display: 'flex', paddingBottom: '2.5rem' }}
                         className="custom-checkbox-group grid-checkbox-group large-label"
                       >
                         <Input
@@ -659,13 +659,13 @@ const RelaySettingsPage: React.FC = () => {
                               />
                               <S.CheckboxLabel
                                 isActive={true}
-                                style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+                                style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
                               >
-                                {kind}
+                                {`kind`+kind}
                               </S.CheckboxLabel>
                             </div>
                             <BaseButton
-                              style={{ height: '2rem', width: '5rem' }}
+                              style={{ height: '2rem', width: '5rem', marginRight:"1rem" }}
                               onClick={() => removeDynamicKind(kind)}
                             >
                               Remove
@@ -827,7 +827,7 @@ const RelaySettingsPage: React.FC = () => {
         <S.SwitchContainer
           style={{
             display: 'grid',
-            gridTemplateColumns: '5rem 7rem',
+            gridTemplateColumns: '5rem 6.5rem',
             marginBottom: '1.5rem',
             marginTop: '1rem',
           }}
@@ -978,7 +978,7 @@ const RelaySettingsPage: React.FC = () => {
                       <h3 className="checkboxHeader w-full">{group.name}</h3>
                       <div className="custom-checkbox-group grid-checkbox-group large-label">
                         {group.notes.map((note) => (
-                          <div className='checkbox-container' key={note.kindString}>
+                          <div className='checkbox-container' style={{paddingLeft:".6rem"}} key={note.kindString}>
                             <BaseCheckbox
                               value={note.kindString}
                               className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -1007,9 +1007,9 @@ const RelaySettingsPage: React.FC = () => {
                 </BaseCheckbox.Group>
               </div>
               {settings.mode === 'unlimited' && (
-                <div style={{ padding: '2rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+                <div style={{ padding: '0rem 0rem .5rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
                   <h3>{'Add to Blacklist'}</h3>
-                  <div style={{ display: 'flex', paddingBottom: '1rem' }}>
+                  <div style={{ display: 'flex', paddingBottom: '1.5rem', gap: ".5rem"}}>
                     <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
                     <BaseButton
                       onClick={() => {
@@ -1026,7 +1026,7 @@ const RelaySettingsPage: React.FC = () => {
                     </BaseButton>
                   </div>
                   <BaseCheckbox.Group
-                    style={{ paddingLeft: '1rem' }}
+                    style={{ paddingLeft:".6rem" }}
                     className={`custom-checkbox-group grid-checkbox-group large-label ${
                       settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                     }`}
@@ -1035,12 +1035,12 @@ const RelaySettingsPage: React.FC = () => {
                   >
                     {(settings.dynamicKinds || []).map((kind) => (
                       <div
-                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center', justifyContent:"space-between" }}
                         key={kind}
                       >
                         <div className='checkbox-container'>
                           <BaseCheckbox
-                            style={{ paddingLeft: '1rem' }}
+                            style={{ paddingLeft: '0rem' }}
                             className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
                             value={kind}
                           />
@@ -1048,7 +1048,7 @@ const RelaySettingsPage: React.FC = () => {
                             isActive={true}
                             style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
                           >
-                            {kind}
+                            {`kind`+kind}
                           </S.CheckboxLabel>
                         </div>
                         <BaseButton style={{ height: '2rem', width: '5rem' }} onClick={() => removeDynamicKind(kind)}>
