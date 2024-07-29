@@ -13,7 +13,7 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
 
   // Convert value to number
   const numericValue = parseFloat(value);
-  //function for dummy data until winness_tx_id is available
+  //function for dummy data until winness_tx_id is available !!! TODO: remove this function when winness_tx_id is available
   function makeHexId(length: number): string {
     const characters = 'abcdef0123456789';
     let result = '';

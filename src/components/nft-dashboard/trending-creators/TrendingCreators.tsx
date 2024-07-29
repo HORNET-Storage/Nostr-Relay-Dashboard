@@ -76,7 +76,10 @@ export const TrendingCreators: React.FC = () => {
         flickPower="500"
         breakpoints={{
           8000: {
-            perPage: 8, // Large desktops and above
+            perPage: 10, // Large desktops and above
+          },
+          1920: {
+            perPage: 10,
           },
           1600: {
             perPage: 8, // Smaller desktops
