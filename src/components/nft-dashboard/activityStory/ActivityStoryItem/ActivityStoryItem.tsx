@@ -13,13 +13,23 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
 
   // Convert value to number
   const numericValue = parseFloat(value);
+  //function for dummy data until winness_tx_id is available
+  function makeHexId(length: number): string {
+    const characters = 'abcdef0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
+
 
   return (
     <S.TransactionCard>
       <BaseRow gutter={[20, 20]} wrap={true} align="middle">
         <BaseCol span={24}>
           <S.Label>{t('Witness Transaction ID')}:</S.Label>
-          <S.Address style={{ color: 'var(--text-main)' }}>{witness_tx_id}</S.Address>
+          <S.Address style={{ color: 'var(--text-main)' }}>{witness_tx_id ? witness_tx_id : makeHexId(64)}</S.Address>
         </BaseCol>
         <BaseCol span={24}>
           <S.Label>{t('Output')}:</S.Label>
