@@ -252,6 +252,9 @@ export const ActivityChart: React.FC = () => {
       name: noData ? '' : t('charts.gigabytes'),
       type: 'value',
       min: 0,
+      nameTextStyle: {
+        align: 'left',
+      },
       axisLabel: {
         formatter: '{value} GB',
         color: themeObject[theme].textLight,
