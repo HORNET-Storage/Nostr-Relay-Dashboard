@@ -466,7 +466,9 @@ const RelaySettingsPage: React.FC = () => {
       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
         <BaseRow gutter={[60, 60]}>
           <BaseCol xs={24}>
-          <S.HeadingContainer><S.LabelSpan>{'Options'}</S.LabelSpan></S.HeadingContainer>
+            <S.HeadingContainer>
+              <S.LabelSpan>{'Options'}</S.LabelSpan>
+            </S.HeadingContainer>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
               <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
                 <S.Card>
@@ -564,12 +566,8 @@ const RelaySettingsPage: React.FC = () => {
                 </S.Card>
               </StyledPanel>
             </Collapse>
-            <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel
-                header={'App Buckets'}
-                key="appBuckets"
-                className="centered-header"
-              >
+            <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+              <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
                 <S.Card>
                   <div className="flex-col w-full">
                     {settings.mode !== 'unlimited' && settings.mode !== '' && (
@@ -583,8 +581,9 @@ const RelaySettingsPage: React.FC = () => {
                       </div>
                     )}
                     <BaseCheckbox.Group
-                      style={{ padding: '1rem 0rem' }}
-                      className="custom-checkbox-group grid-checkbox-group"
+                      className={`custom-checkbox-group grid-checkbox-group ${
+                        settings.dynamicKinds?.length ? 'dynamic-group' : ''
+                      } `}
                       //TODO value = settings app buckets (blacklit? )
                       value={[]}
                       onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
@@ -595,7 +594,7 @@ const RelaySettingsPage: React.FC = () => {
                     {settings.mode !== 'smart' && (
                       <div
                         style={{
-                          padding: '1.5rem 0rem 1rem 0rem',
+                          padding: '2rem 0rem 1rem 0rem',
                           display: 'flex',
                           flexDirection: 'column',
                           gap: '.5rem',
@@ -603,7 +602,7 @@ const RelaySettingsPage: React.FC = () => {
                       >
                         <h3>{'Add an App Bucket'}</h3>
                         <div
-                          style={{ display: 'flex', paddingBottom: '2.5rem' }}
+                          style={{ display: 'flex' }}
                           className="custom-checkbox-group grid-checkbox-group large-label"
                         >
                           <Input
@@ -628,8 +627,8 @@ const RelaySettingsPage: React.FC = () => {
                         <BaseCheckbox.Group
                           style={{ paddingLeft: '1rem' }}
                           className={`custom-checkbox-group grid-checkbox-group large-label ${
-                            settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                          }`}
+                            settings.dynamicKinds?.length ? 'dynamic-group' : ''
+                          } ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}`}
                           value={settings.dynamicKinds || []}
                           onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                         >
@@ -671,10 +670,10 @@ const RelaySettingsPage: React.FC = () => {
         <BaseCol xs={24}>
           <S.SwitchContainer
             style={{
-              width:"11rem",
+              width: '11rem',
               display: 'grid',
               paddingTop: '3rem',
-              gap:".5rem",
+              gap: '.5rem',
               gridTemplateColumns: '1fr 3fr',
               marginBottom: '1.5rem',
             }}
@@ -708,7 +707,7 @@ const RelaySettingsPage: React.FC = () => {
                   )}
                   <BaseCheckbox.Group
                     style={{ paddingLeft: '1rem' }}
-                    className="large-label"
+                    className="large-label "
                     value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
                     onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
                     disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
@@ -750,7 +749,7 @@ const RelaySettingsPage: React.FC = () => {
                   {settings.mode !== 'smart' && (
                     <div
                       style={{
-                        padding: '1.5rem 0rem 1rem 0rem',
+                        padding: '1.5rem 0rem 0rem 0rem',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '.5rem',
@@ -758,7 +757,7 @@ const RelaySettingsPage: React.FC = () => {
                     >
                       <h3>{'Add to Blacklist'}</h3>
                       <div
-                        style={{ display: 'flex', paddingBottom: '2.5rem' }}
+                        style={{ display: 'flex' }}
                         className="custom-checkbox-group grid-checkbox-group large-label"
                       >
                         <Input
@@ -784,8 +783,8 @@ const RelaySettingsPage: React.FC = () => {
                       <BaseCheckbox.Group
                         style={{ paddingLeft: '1rem' }}
                         className={`custom-checkbox-group grid-checkbox-group large-label ${
-                          settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                        }`}
+                          settings.dynamicKinds?.length ? 'dynamic-group ' : ''
+                        }${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
                         value={settings.dynamicKinds || []}
                         onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                       >
@@ -965,7 +964,9 @@ const RelaySettingsPage: React.FC = () => {
   const mobileAndTabletLayout = (
     <BaseRow gutter={[20, 24]}>
       <BaseCol span={24}>
-      <S.HeadingContainer><S.LabelSpan>{'Options'}</S.LabelSpan></S.HeadingContainer>
+        <S.HeadingContainer>
+          <S.LabelSpan>{'Options'}</S.LabelSpan>
+        </S.HeadingContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
             <S.Card>
@@ -1074,11 +1075,7 @@ const RelaySettingsPage: React.FC = () => {
           </StyledPanel>
         </Collapse>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel
-            header={'App Buckets'}
-            key="appBuckets"
-            className="centered-header"
-          >
+          <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>
               <div className="flex-col w-full">
                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
@@ -1093,7 +1090,9 @@ const RelaySettingsPage: React.FC = () => {
                 )}
                 <BaseCheckbox.Group
                   style={{ padding: '1rem 0rem' }}
-                  className="custom-checkbox-group grid-mobile-checkbox-group"
+                  className={`custom-checkbox-group grid-mobile-checkbox-group  ${
+                    settings.dynamicKinds?.length ? 'dynamic-container' : ''
+                  }`}
                   //TODO value = settings app buckets (blacklit? )
                   value={[]}
                   onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
@@ -1111,10 +1110,7 @@ const RelaySettingsPage: React.FC = () => {
                     }}
                   >
                     <h3>{'Add an App Bucket'}</h3>
-                    <div
-                      style={{ display: 'flex', paddingBottom: '2.5rem' }}
-                      className="large-label"
-                    >
+                    <div style={{ display: 'flex' }} className="large-label">
                       <Input
                         value={newKind}
                         onChange={(e) => {}} //TODO: handle changes
@@ -1137,8 +1133,8 @@ const RelaySettingsPage: React.FC = () => {
                     <BaseCheckbox.Group
                       style={{ paddingLeft: '1rem' }}
                       className={`custom-checkbox-group grid-checkbox-group large-label ${
-                        settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                      }`}
+                        settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
+                      }${settings.dynamicKinds?.length ? 'dynamic-group' : ''}`}
                       value={settings.dynamicKinds || []}
                       onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                     >
@@ -1177,7 +1173,7 @@ const RelaySettingsPage: React.FC = () => {
         <S.SwitchContainer
           style={{
             display: 'grid',
-            paddingTop:"2rem",
+            paddingTop: '2rem',
             gridTemplateColumns: '5rem 6.5rem',
             marginBottom: '1.5rem',
             marginTop: '1rem',
@@ -1254,7 +1250,7 @@ const RelaySettingsPage: React.FC = () => {
                   style={{ padding: '0rem 0rem .5rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
                 >
                   <h3>{'Add to Blacklist'}</h3>
-                  <div style={{ display: 'flex', paddingBottom: '1.5rem', gap: '.5rem' }}>
+                  <div style={{ display: 'flex', gap: '.5rem' }}>
                     <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
                     <BaseButton
                       onClick={() => {
@@ -1274,8 +1270,8 @@ const RelaySettingsPage: React.FC = () => {
                   <BaseCheckbox.Group
                     style={{ paddingLeft: '.6rem' }}
                     className={`custom-checkbox-group grid-checkbox-group large-label ${
-                      settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                    }`}
+                      settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
+                    }${settings.dynamicKinds?.length ? 'dynamic-group' : ''}`}
                     value={settings.dynamicKinds || []}
                     onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                   >

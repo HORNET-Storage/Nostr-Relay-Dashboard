@@ -260,6 +260,7 @@ export default createGlobalStyle`
   .checkboxHeader{
     padding: 0rem 0 .5rem 0;
   }
+    
   .grid-checkbox-group {
     width: 100%;
     display: grid;
@@ -281,7 +282,9 @@ export default createGlobalStyle`
   .checkbox-container{
     white-space: nowrap;  
   }
-
+  .dynamic-group{
+    padding-top: 1rem; 
+    }
   .grid-checkbox-group.large-label {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   }
