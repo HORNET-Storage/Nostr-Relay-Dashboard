@@ -594,7 +594,7 @@ const RelaySettingsPage: React.FC = () => {
                     {settings.mode !== 'smart' && (
                       <div
                         style={{
-                          padding: '2rem 0rem 1rem 0rem',
+                          padding: '2rem 0rem 0rem 0rem',
                           display: 'flex',
                           flexDirection: 'column',
                           gap: '.5rem',
@@ -1103,7 +1103,7 @@ const RelaySettingsPage: React.FC = () => {
                 {settings.mode !== 'smart' && (
                   <div
                     style={{
-                      padding: '1.5rem 0rem 1rem 0rem',
+                      padding: '1.5rem 0rem 0rem 0rem',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '.5rem',
@@ -1247,7 +1247,7 @@ const RelaySettingsPage: React.FC = () => {
               </div>
               {settings.mode === 'unlimited' && (
                 <div
-                  style={{ padding: '0rem 0rem .5rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
+                  style={{display: 'flex', flexDirection: 'column', gap: '.5rem' }}
                 >
                   <h3>{'Add to Blacklist'}</h3>
                   <div style={{ display: 'flex', gap: '.5rem' }}>

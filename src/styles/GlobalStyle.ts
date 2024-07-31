@@ -284,6 +284,7 @@ export default createGlobalStyle`
   }
   .dynamic-group{
     padding-top: 1rem; 
+    padding-bottom: 0rem;
     }
   .grid-checkbox-group.large-label {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
