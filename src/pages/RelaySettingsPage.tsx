@@ -17,6 +17,7 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
+
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -72,6 +73,18 @@ const RelaySettingsPage: React.FC = () => {
     { id: 1, name: 'Basic Nostr Features' },
     { id: 2, name: 'Extra Nostr Features' },
     { id: 3, name: 'GitNestr Features' },
+  ];
+
+  const appBuckets = [
+    { id: 'nostr', label: 'Nostr' },
+    {
+      id: 'gitnestr',
+      label: 'GitNestr',
+    },
+    {
+      id: 'NostrBox',
+      label: 'NostrBox',
+    },
   ];
 
   const noteOptions = [
@@ -177,6 +190,25 @@ const RelaySettingsPage: React.FC = () => {
       </S.CheckboxLabel>
     ),
     value: format,
+  }));
+
+  const appBucketOptions = appBuckets.map((bucket) => ({
+    label: (
+      <S.CheckboxLabel
+        style={{
+          color:
+            settings.mode !== 'smart'
+              ? themeObject[theme].textMain
+              : relaySettings.isKindsActive
+              ? themeObject[theme].textMain
+              : themeObject[theme].textLight,
+        }}
+        isActive={settings.mode !== 'smart' ? true : settings.isKindsActive} //TODO: isAppBucketActive
+      >
+        {bucket.label}
+      </S.CheckboxLabel>
+    ),
+    value: bucket.id,
   }));
 
   const audioFormatOptions = [
@@ -434,25 +466,9 @@ const RelaySettingsPage: React.FC = () => {
       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
         <BaseRow gutter={[60, 60]}>
           <BaseCol xs={24}>
-            <S.SwitchContainer
-              style={{
-                display: 'grid',
-
-                gridTemplateColumns: '4.7rem 7rem',
-                marginBottom: '1.5rem',
-              }}
-            >
-              <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-              <S.LargeSwitch
-                className="modeSwitch"
-                checkedChildren="Strict"
-                unCheckedChildren="Unlimited"
-                checked={settings.mode === 'smart'}
-                onChange={(e) => handleModeChange(e)}
-              />
-            </S.SwitchContainer>
+          <S.HeadingContainer><S.LabelSpan>{'Options'}</S.LabelSpan></S.HeadingContainer>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
                     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -548,10 +564,130 @@ const RelaySettingsPage: React.FC = () => {
                 </S.Card>
               </StyledPanel>
             </Collapse>
+            <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+              <StyledPanel
+                header={'App Buckets'}
+                key="appBuckets"
+                className="centered-header"
+              >
+                <S.Card>
+                  <div className="flex-col w-full">
+                    {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                      <div className="switch-container">
+                        <BaseSwitch
+                          checkedChildren="ON"
+                          unCheckedChildren="OFF"
+                          checked={settings.isKindsActive}
+                          onChange={() => {}} //TODO handle change
+                        />
+                      </div>
+                    )}
+                    <BaseCheckbox.Group
+                      style={{ padding: '1rem 0rem' }}
+                      className="custom-checkbox-group grid-checkbox-group"
+                      //TODO value = settings app buckets (blacklit? )
+                      value={[]}
+                      onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
+                      disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+                      options={appBucketOptions}
+                    />
+
+                    {settings.mode !== 'smart' && (
+                      <div
+                        style={{
+                          padding: '1.5rem 0rem 1rem 0rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '.5rem',
+                        }}
+                      >
+                        <h3>{'Add an App Bucket'}</h3>
+                        <div
+                          style={{ display: 'flex', paddingBottom: '2.5rem' }}
+                          className="custom-checkbox-group grid-checkbox-group large-label"
+                        >
+                          <Input
+                            value={newKind}
+                            onChange={(e) => {}} //TODO: handle changes
+                            placeholder="Enter new app bucket"
+                          />
+                          <BaseButton
+                            onClick={() => {
+                              if (newKind) {
+                                setSettings((prevSettings) => ({
+                                  ...prevSettings,
+                                  dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
+                                }));
+                                setNewKind('');
+                              }
+                            }}
+                          >
+                            Add bucket
+                          </BaseButton>
+                        </div>
+                        <BaseCheckbox.Group
+                          style={{ paddingLeft: '1rem' }}
+                          className={`custom-checkbox-group grid-checkbox-group large-label ${
+                            settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                          }`}
+                          value={settings.dynamicKinds || []}
+                          onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
+                        >
+                          {(settings.dynamicKinds || []).map((kind) => (
+                            <div
+                              style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+                              key={kind}
+                            >
+                              <div className="checkbox-container">
+                                <BaseCheckbox
+                                  className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+                                  value={kind}
+                                />
+                                <S.CheckboxLabel
+                                  isActive={true}
+                                  style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+                                >
+                                  {`kind` + kind}
+                                </S.CheckboxLabel>
+                              </div>
+                              <BaseButton
+                                style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+                                onClick={() => removeDynamicKind(kind)}
+                              >
+                                Remove
+                              </BaseButton>
+                            </div>
+                          ))}
+                        </BaseCheckbox.Group>
+                      </div>
+                    )}
+                  </div>
+                </S.Card>
+              </StyledPanel>
+            </Collapse>
           </BaseCol>
         </BaseRow>
 
         <BaseCol xs={24}>
+          <S.SwitchContainer
+            style={{
+              width:"11rem",
+              display: 'grid',
+              paddingTop: '3rem',
+              gap:".5rem",
+              gridTemplateColumns: '1fr 3fr',
+              marginBottom: '1.5rem',
+            }}
+          >
+            <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+            <S.LargeSwitch
+              className="modeSwitch"
+              checkedChildren="Strict"
+              unCheckedChildren="Unlimited"
+              checked={settings.mode === 'smart'}
+              onChange={(e) => handleModeChange(e)}
+            />
+          </S.SwitchContainer>
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
               header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
@@ -582,7 +718,7 @@ const RelaySettingsPage: React.FC = () => {
                         <h3 className="checkboxHeader w-full">{group.name}</h3>
                         <div className="custom-checkbox-group grid-checkbox-group large-label">
                           {group.notes.map((note) => (
-                            <div className = "checkbox-container" key={note.kindString}>
+                            <div className="checkbox-container" key={note.kindString}>
                               <BaseCheckbox
                                 value={note.kindString}
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -613,7 +749,12 @@ const RelaySettingsPage: React.FC = () => {
                   </BaseCheckbox.Group>
                   {settings.mode !== 'smart' && (
                     <div
-                      style={{ padding: '1.5rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
+                      style={{
+                        padding: '1.5rem 0rem 1rem 0rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '.5rem',
+                      }}
                     >
                       <h3>{'Add to Blacklist'}</h3>
                       <div
@@ -629,6 +770,7 @@ const RelaySettingsPage: React.FC = () => {
                           onClick={() => {
                             if (newKind) {
                               setSettings((prevSettings) => ({
+                                /// TODO: don't allow duplicates
                                 ...prevSettings,
                                 dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
                               }));
@@ -652,7 +794,7 @@ const RelaySettingsPage: React.FC = () => {
                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
                             key={kind}
                           >
-                            <div className='checkbox-container'>
+                            <div className="checkbox-container">
                               <BaseCheckbox
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
                                 value={kind}
@@ -661,11 +803,11 @@ const RelaySettingsPage: React.FC = () => {
                                 isActive={true}
                                 style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
                               >
-                                {`kind`+kind}
+                                {`kind` + kind}
                               </S.CheckboxLabel>
                             </div>
                             <BaseButton
-                              style={{ height: '2rem', width: '5rem', marginRight:"1rem" }}
+                              style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
                               onClick={() => removeDynamicKind(kind)}
                             >
                               Remove
@@ -771,7 +913,6 @@ const RelaySettingsPage: React.FC = () => {
               header={settings.mode !== 'smart' ? `Blacklisted Audio Extensions` : 'Audio Extensions'}
               key="5"
             >
-              <>{console.log(settings.mode)}</>
               <S.Card>
                 {settings.mode !== 'unlimited' && settings.mode !== '' && (
                   <div className="switch-container">
@@ -824,23 +965,7 @@ const RelaySettingsPage: React.FC = () => {
   const mobileAndTabletLayout = (
     <BaseRow gutter={[20, 24]}>
       <BaseCol span={24}>
-        <S.SwitchContainer
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '5rem 6.5rem',
-            marginBottom: '1.5rem',
-            marginTop: '1rem',
-          }}
-        >
-          <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
-          <S.LargeSwitch
-            className="modeSwitch"
-            checkedChildren="Strict"
-            unCheckedChildren="Unlimited"
-            checked={settings.mode === 'smart'}
-            onChange={(e) => handleModeChange(e)}
-          />
-        </S.SwitchContainer>
+      <S.HeadingContainer><S.LabelSpan>{'Options'}</S.LabelSpan></S.HeadingContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
             <S.Card>
@@ -948,7 +1073,125 @@ const RelaySettingsPage: React.FC = () => {
             </S.Card>
           </StyledPanel>
         </Collapse>
+        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+          <StyledPanel
+            header={'App Buckets'}
+            key="appBuckets"
+            className="centered-header"
+          >
+            <S.Card>
+              <div className="flex-col w-full">
+                {settings.mode !== 'unlimited' && settings.mode !== '' && (
+                  <div className="switch-container">
+                    <BaseSwitch
+                      checkedChildren="ON"
+                      unCheckedChildren="OFF"
+                      checked={settings.isKindsActive}
+                      onChange={() => {}} //TODO handle change
+                    />
+                  </div>
+                )}
+                <BaseCheckbox.Group
+                  style={{ padding: '1rem 0rem' }}
+                  className="custom-checkbox-group grid-mobile-checkbox-group"
+                  //TODO value = settings app buckets (blacklit? )
+                  value={[]}
+                  onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
+                  disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+                  options={appBucketOptions}
+                />
 
+                {settings.mode !== 'smart' && (
+                  <div
+                    style={{
+                      padding: '1.5rem 0rem 1rem 0rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '.5rem',
+                    }}
+                  >
+                    <h3>{'Add an App Bucket'}</h3>
+                    <div
+                      style={{ display: 'flex', paddingBottom: '2.5rem' }}
+                      className="large-label"
+                    >
+                      <Input
+                        value={newKind}
+                        onChange={(e) => {}} //TODO: handle changes
+                        placeholder="Enter new app bucket"
+                      />
+                      <BaseButton
+                        onClick={() => {
+                          if (newKind) {
+                            setSettings((prevSettings) => ({
+                              ...prevSettings,
+                              dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
+                            }));
+                            setNewKind('');
+                          }
+                        }}
+                      >
+                        Add bucket
+                      </BaseButton>
+                    </div>
+                    <BaseCheckbox.Group
+                      style={{ paddingLeft: '1rem' }}
+                      className={`custom-checkbox-group grid-checkbox-group large-label ${
+                        settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                      }`}
+                      value={settings.dynamicKinds || []}
+                      onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
+                    >
+                      {(settings.dynamicKinds || []).map((kind) => (
+                        <div
+                          style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+                          key={kind}
+                        >
+                          <div className="checkbox-container">
+                            <BaseCheckbox
+                              className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
+                              value={kind}
+                            />
+                            <S.CheckboxLabel
+                              isActive={true}
+                              style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+                            >
+                              {`kind` + kind}
+                            </S.CheckboxLabel>
+                          </div>
+                          <BaseButton
+                            style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+                            onClick={() => removeDynamicKind(kind)}
+                          >
+                            Remove
+                          </BaseButton>
+                        </div>
+                      ))}
+                    </BaseCheckbox.Group>
+                  </div>
+                )}
+              </div>
+            </S.Card>
+          </StyledPanel>
+        </Collapse>
+        <S.SwitchContainer
+          style={{
+            display: 'grid',
+            paddingTop:"2rem",
+            gridTemplateColumns: '5rem 6.5rem',
+            marginBottom: '1.5rem',
+            marginTop: '1rem',
+          }}
+        >
+          <S.LabelSpan>{t('common.serverSetting')}</S.LabelSpan>
+          <S.LargeSwitch
+            className="modeSwitch"
+            checkedChildren="Strict"
+            unCheckedChildren="Unlimited"
+            checked={settings.mode === 'smart'}
+            onChange={(e) => handleModeChange(e)}
+          />
+        </S.SwitchContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel
             header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
@@ -978,7 +1221,7 @@ const RelaySettingsPage: React.FC = () => {
                       <h3 className="checkboxHeader w-full">{group.name}</h3>
                       <div className="custom-checkbox-group grid-checkbox-group large-label">
                         {group.notes.map((note) => (
-                          <div className='checkbox-container' style={{paddingLeft:".6rem"}} key={note.kindString}>
+                          <div className="checkbox-container" style={{ paddingLeft: '.6rem' }} key={note.kindString}>
                             <BaseCheckbox
                               value={note.kindString}
                               className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -1007,14 +1250,17 @@ const RelaySettingsPage: React.FC = () => {
                 </BaseCheckbox.Group>
               </div>
               {settings.mode === 'unlimited' && (
-                <div style={{ padding: '0rem 0rem .5rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+                <div
+                  style={{ padding: '0rem 0rem .5rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
+                >
                   <h3>{'Add to Blacklist'}</h3>
-                  <div style={{ display: 'flex', paddingBottom: '1.5rem', gap: ".5rem"}}>
+                  <div style={{ display: 'flex', paddingBottom: '1.5rem', gap: '.5rem' }}>
                     <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
                     <BaseButton
                       onClick={() => {
                         if (newKind) {
                           setSettings((prevSettings) => ({
+                            //TODO: don't allow duplicates
                             ...prevSettings,
                             dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
                           }));
@@ -1026,7 +1272,7 @@ const RelaySettingsPage: React.FC = () => {
                     </BaseButton>
                   </div>
                   <BaseCheckbox.Group
-                    style={{ paddingLeft:".6rem" }}
+                    style={{ paddingLeft: '.6rem' }}
                     className={`custom-checkbox-group grid-checkbox-group large-label ${
                       settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                     }`}
@@ -1035,10 +1281,16 @@ const RelaySettingsPage: React.FC = () => {
                   >
                     {(settings.dynamicKinds || []).map((kind) => (
                       <div
-                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center', justifyContent:"space-between" }}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          gap: '.5rem',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
                         key={kind}
                       >
-                        <div className='checkbox-container'>
+                        <div className="checkbox-container">
                           <BaseCheckbox
                             style={{ paddingLeft: '0rem' }}
                             className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -1048,7 +1300,7 @@ const RelaySettingsPage: React.FC = () => {
                             isActive={true}
                             style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
                           >
-                            {`kind`+kind}
+                            {`kind` + kind}
                           </S.CheckboxLabel>
                         </div>
                         <BaseButton style={{ height: '2rem', width: '5rem' }} onClick={() => removeDynamicKind(kind)}>
@@ -1172,6 +1424,7 @@ const RelaySettingsPage: React.FC = () => {
             </S.Card>
           </StyledPanel>
         </Collapse>
+
         <BaseButton style={{ marginTop: '2rem' }} type="primary" loading={loadings[0]} onClick={onSaveClick}>
           {t('buttons.saveSettings')}
         </BaseButton>

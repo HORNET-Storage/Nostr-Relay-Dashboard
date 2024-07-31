@@ -133,3 +133,7 @@ export const LabelSpan = styled.span`
   align-items: center; // Center align to match switch height
   padding-right: 10px; // Optional padding for visual spacing
 `;
+export const HeadingContainer = styled.div`
+
+margin-bottom: 1.25rem;
+`;
