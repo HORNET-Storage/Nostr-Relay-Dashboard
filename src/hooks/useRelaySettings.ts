@@ -14,6 +14,7 @@ interface RelaySettings {
   videos: string[];
   gitNestr: string[];
   audio: string[];
+  appBuckets: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
@@ -22,7 +23,7 @@ interface RelaySettings {
 }
 
 const getInitialSettings = (): RelaySettings => {
-  const savedSettings = localStorage.getItem('settingsCache');
+  const savedSettings = localStorage.getItem('relaySettings');
   return savedSettings
     ? JSON.parse(savedSettings)
     : {
@@ -38,6 +39,7 @@ const getInitialSettings = (): RelaySettings => {
         videos: [],
         gitNestr: [],
         audio: [],
+        appBuckets: [],
         isKindsActive: true,
         isPhotosActive: true,
         isVideosActive: true,
@@ -75,7 +77,6 @@ const useRelaySettings = () => {
           ? data.relay_settings.chunked
           : [data.relay_settings.chunked],
       });
-      localStorage.setItem('settingsCache', JSON.stringify(data.relay_settings));
       localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
     } catch (error) {
       console.error('Error fetching settings:', error);

@@ -35,6 +35,7 @@ type Settings = {
   videos: string[];
   gitNestr: string[];
   audio: string[];
+  appBuckets: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
@@ -126,6 +127,7 @@ const RelaySettingsPage: React.FC = () => {
     videos: [],
     gitNestr: [],
     audio: [],
+    appBuckets: [],
     isKindsActive: true,
     isPhotosActive: true,
     isVideosActive: true,
@@ -423,6 +425,7 @@ const RelaySettingsPage: React.FC = () => {
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
         chunked: Array.isArray(relaySettings.chunked) ? relaySettings.chunked : [relaySettings.chunked],
+        appBuckets: [],
       });
     }
   }, [relaySettings]);
@@ -449,11 +452,6 @@ const RelaySettingsPage: React.FC = () => {
 
   const [newKind, setNewKind] = useState('');
 
-  useEffect(() => {
-    return () => {
-      localStorage.setItem('relaySettings', localStorage.getItem('settingsCache') || '{}');
-    };
-  }, []);
   const removeDynamicKind = (kind: string) => {
     setSettings((prevSettings) => ({
       ...prevSettings,
