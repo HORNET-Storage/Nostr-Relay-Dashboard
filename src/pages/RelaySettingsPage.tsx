@@ -428,7 +428,7 @@ const RelaySettingsPage: React.FC = () => {
       updateDynamicKinds();
     }
   }, [settings.dynamicKinds]);
-  
+
   const desktopLayout = (
     <BaseRow>
       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
@@ -538,14 +538,6 @@ const RelaySettingsPage: React.FC = () => {
               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
                 <S.Card>
                   <div className="flex-col w-full">
-                    <div className="switch-container">
-                      <BaseSwitch
-                        checkedChildren="ON"
-                        unCheckedChildren="OFF"
-                        checked={settings.isKindsActive}
-                        onChange={() => {}} //TODO handle change
-                      />
-                    </div>
                     <BaseCheckbox.Group
                       style={{ paddingTop: '1rem', paddingLeft: '1rem' }}
                       className={`custom-checkbox-group grid-checkbox-group`}
@@ -1031,14 +1023,6 @@ const RelaySettingsPage: React.FC = () => {
           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>
               <div className="flex-col w-full">
-                <div className="switch-container">
-                  <BaseSwitch
-                    checkedChildren="ON"
-                    unCheckedChildren="OFF"
-                    checked={settings.isKindsActive}
-                    onChange={() => {}} //TODO handle change
-                  />
-                </div>
                 <BaseCheckbox.Group
                   style={{ padding: '1rem 0rem 1rem 1rem' }}
                   className={`custom-checkbox-group grid-mobile-checkbox-group `}
@@ -1195,7 +1179,7 @@ const RelaySettingsPage: React.FC = () => {
                     <BaseButton
                       onClick={() => {
                         if (newKind) {
-                      handleNewDynamicKind(newKind);
+                          handleNewDynamicKind(newKind);
                           setNewKind('');
                         }
                       }}
