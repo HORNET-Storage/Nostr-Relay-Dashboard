@@ -15,6 +15,7 @@ interface RelaySettings {
   gitNestr: string[];
   audio: string[];
   appBuckets: string[];
+  dynamicAppBuckets: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
@@ -40,6 +41,7 @@ const getInitialSettings = (): RelaySettings => {
         gitNestr: [],
         audio: [],
         appBuckets: [],
+        dynamicAppBuckets: [],
         isKindsActive: true,
         isPhotosActive: true,
         isVideosActive: true,
@@ -66,8 +68,21 @@ const useRelaySettings = () => {
       if (!response.ok) {
         throw new Error(`Network response was not ok (status: ${response.status})`);
       }
+      
       const data = await response.json();
-      console.log('Fetched settings:', data.relay_settings);
+
+      const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
+      const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
+
+      const newAppBuckets = data.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
+      const newDynamicKinds = data.dynamicKinds.filter((kind :string) => !storedDynamicKinds.includes(kind));
+
+      if (newAppBuckets.length > 0) {
+        localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
+      }
+      if (newDynamicKinds.length > 0) {
+        localStorage.setItem('dynamicKinds', JSON.stringify([...storedDynamicKinds, ...newDynamicKinds]));
+      }
       setRelaySettings({
         ...data.relay_settings,
         protocol: Array.isArray(data.relay_settings.protocol)

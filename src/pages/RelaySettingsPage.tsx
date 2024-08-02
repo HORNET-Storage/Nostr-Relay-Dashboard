@@ -17,33 +17,10 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
-
+import { categories, noteOptions, appBuckets, Settings, Category } from '@app/constants/relaySettings';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
-
-type Settings = {
-  mode: string;
-  protocol: string[];
-  chunked: string[];
-  chunksize: string;
-  maxFileSize: number;
-  maxFileSizeUnit: string;
-  kinds: string[];
-  dynamicKinds: string[];
-  photos: string[];
-  videos: string[];
-  gitNestr: string[];
-  audio: string[];
-  appBuckets: string[];
-  isKindsActive: boolean;
-  isPhotosActive: boolean;
-  isVideosActive: boolean;
-  isGitNestrActive: boolean;
-  isAudioActive: boolean;
-};
-
-type RelaySettings = Settings; // Ensure RelaySettings matches the structure of Settings
 
 const RelaySettingsPage: React.FC = () => {
   const theme = useAppSelector((state) => state.theme.theme);
@@ -70,49 +47,12 @@ const RelaySettingsPage: React.FC = () => {
   const relaymode = useAppSelector((state) => state.mode.relayMode);
   const { isDesktop } = useResponsive();
 
-  const categories = [
-    { id: 1, name: 'Basic Nostr Features' },
-    { id: 2, name: 'Extra Nostr Features' },
-    { id: 3, name: 'GitNestr Features' },
-  ];
-
-  const appBuckets = [
-    { id: 'nostr', label: 'Nostr' },
-    {
-      id: 'gitnestr',
-      label: 'GitNestr',
-    },
-    {
-      id: 'NostrBox',
-      label: 'NostrBox',
-    },
-  ];
-
-  const noteOptions = [
-    { kind: 0, kindString: 'kind0', description: 'Metadata', category: 1 },
-    { kind: 1, kindString: 'kind1', description: 'Text Note', category: 1 },
-    { kind: 2, kindString: 'kind2', description: 'Recommend Relay', category: 1 },
-    { kind: 3, kindString: 'kind3', description: 'Follow List', category: 1 },
-    { kind: 5, kindString: 'kind5', description: 'Event Deletion', category: 1 },
-    { kind: 6, kindString: 'kind6', description: 'Repost', category: 1 },
-    { kind: 7, kindString: 'kind7', description: 'Reaction', category: 1 },
-    { kind: 8, kindString: 'kind8', description: 'Badge Award', category: 2 },
-    { kind: 16, kindString: 'kind16', description: 'Generic Repost', category: 1 },
-    { kind: 10000, kindString: 'kind10000', description: 'Mute List', category: 1 },
-    { kind: 10001, kindString: 'kind10001', description: 'Pinned Note(s)', category: 1 },
-    { kind: 10002, kindString: 'kind10002', description: 'Tiny Relay List', category: 1 },
-    { kind: 1984, kindString: 'kind1984', description: 'Reporting', category: 1 },
-    { kind: 30000, kindString: 'kind30000', description: 'Custom Follow List', category: 1 },
-    { kind: 30008, kindString: 'kind30008', description: 'Profile Badge', category: 2 },
-    { kind: 30009, kindString: 'kind30009', description: 'Badge Definition', category: 2 },
-    { kind: 30023, kindString: 'kind30023', description: 'Formatted Articles', category: 1 },
-    { kind: 30079, kindString: 'kind30079', description: 'Event Paths', category: 1 },
-    //{ kind: 9734, kindString: 'kind9734', description: 'Lightning Zap Request', category: 2 },
-    { kind: 9735, kindString: 'kind9735', description: 'Zap Receipt', category: 2 },
-    { kind: 10011, kindString: 'kind10011', description: 'Issue Notes', category: 3 },
-    { kind: 10022, kindString: 'kind10022', description: 'PR Notes', category: 3 },
-    { kind: 9803, kindString: 'kind9803', description: 'Commit Notes', category: 3 },
-  ];
+  const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
+    JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
+  );
+  const [storedAppBuckets, setStoredAppBuckets] = useState<string[]>(
+    JSON.parse(localStorage.getItem('appBuckets') || '[]'),
+  );
 
   const [settings, setSettings] = useState<Settings>({
     mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
@@ -128,15 +68,13 @@ const RelaySettingsPage: React.FC = () => {
     gitNestr: [],
     audio: [],
     appBuckets: [],
+    dynamicAppBuckets: [],
     isKindsActive: true,
     isPhotosActive: true,
     isVideosActive: true,
     isGitNestrActive: true,
     isAudioActive: true,
   });
-
-  type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds';
-
   const groupedNoteOptions = categories.map((category) => ({
     ...category,
     notes: noteOptions.filter((note) => note.category === category.id),
@@ -274,6 +212,8 @@ const RelaySettingsPage: React.FC = () => {
   const chunkSizeOptions = ['2', '4', '6', '8', '10', '12'];
   const maxFileSizeUnitOptions = ['MB', 'GB', 'TB'];
 
+  const [newKind, setNewKind] = useState('');
+  const [newBucket, setNewBucket] = useState('');
   const [blacklist, setBlacklist] = useState({
     kinds: [],
     photos: [],
@@ -307,7 +247,7 @@ const RelaySettingsPage: React.FC = () => {
   };
 
   const handleBlacklistChange = (category: Category, checkedValues: string[]) => {
-    const isDynamicKind = category === 'dynamicKinds';
+    const isDynamicKind = category === 'dynamicKinds' || 'appBuckets';
     if (isDynamicKind) {
       setSettings((prevSettings) => {
         const updatedSettings = { ...prevSettings, [category]: checkedValues };
@@ -374,6 +314,38 @@ const RelaySettingsPage: React.FC = () => {
     updateSettings('maxFileSizeUnit', value);
   };
 
+  const handleNewBucket = (bucket: string) => {
+    const currentBuckets = settings.appBuckets.concat(storedAppBuckets);
+    if (currentBuckets.includes(bucket)) {
+      return;
+    }
+    setStoredAppBuckets((prevBuckets) => [...prevBuckets, bucket]);
+    handleSettingsChange('appBuckets', [...settings.appBuckets, bucket]);
+  };
+  const handleRemovedBucket = (bucket: string) => {
+    setStoredAppBuckets((prevBuckets) => prevBuckets.filter((b) => b !== bucket));
+    handleSettingsChange(
+      'appBuckets',
+      settings.appBuckets.filter((b) => b !== bucket),
+    );
+  };
+
+  const handleNewDynamicKind = (kind: string) => {
+    const currentKinds = settings.dynamicKinds.concat(storedDynamicKinds);
+    if (currentKinds.includes(kind)) {
+      return;
+    }
+    setStoredDynamicKinds((prevKinds) => [...prevKinds, kind]);
+    handleSettingsChange('dynamicKinds', [...settings.dynamicKinds, kind]);
+  };
+  const removeDynamicKind = (kind: string) => {
+    setStoredDynamicKinds((prevKinds) => prevKinds.filter((k) => k !== kind));
+    handleSettingsChange(
+      'dynamicKinds',
+      settings.dynamicKinds.filter((k) => k !== kind),
+    );
+  };
+
   const performSaveSettings = async () => {
     await Promise.all([
       updateSettings('kinds', settings.isKindsActive ? settings.kinds : []),
@@ -386,7 +358,8 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('chunked', settings.chunked),
       updateSettings('maxFileSize', settings.maxFileSize),
       updateSettings('maxFileSizeUnit', settings.maxFileSizeUnit),
-      //TODO: update blacklist
+      updateSettings('appBuckets', settings.appBuckets),
+      updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
     ]);
 
     await saveSettings();
@@ -425,7 +398,6 @@ const RelaySettingsPage: React.FC = () => {
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
         chunked: Array.isArray(relaySettings.chunked) ? relaySettings.chunked : [relaySettings.chunked],
-        appBuckets: [],
       });
     }
   }, [relaySettings]);
@@ -441,6 +413,13 @@ const RelaySettingsPage: React.FC = () => {
   }, [settings.mode]);
 
   useEffect(() => {
+    localStorage.setItem('appBuckets', JSON.stringify(storedAppBuckets));
+  }, [storedAppBuckets]);
+  useEffect(() => {
+    localStorage.setItem('dynamicKinds', JSON.stringify(storedDynamicKinds));
+  }, [storedDynamicKinds]);
+
+  useEffect(() => {
     const updateDynamicKinds = async () => {
       await performSaveSettings();
     };
@@ -449,16 +428,7 @@ const RelaySettingsPage: React.FC = () => {
       updateDynamicKinds();
     }
   }, [settings.dynamicKinds]);
-
-  const [newKind, setNewKind] = useState('');
-
-  const removeDynamicKind = (kind: string) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      dynamicKinds: prevSettings.dynamicKinds.filter((k) => k !== kind),
-    }));
-  };
-
+  
   const desktopLayout = (
     <BaseRow>
       <S.LeftSideCol xl={16} xxl={17} id="desktop-content">
@@ -568,96 +538,86 @@ const RelaySettingsPage: React.FC = () => {
               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
                 <S.Card>
                   <div className="flex-col w-full">
-                    {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                      <div className="switch-container">
-                        <BaseSwitch
-                          checkedChildren="ON"
-                          unCheckedChildren="OFF"
-                          checked={settings.isKindsActive}
-                          onChange={() => {}} //TODO handle change
-                        />
-                      </div>
-                    )}
+                    <div className="switch-container">
+                      <BaseSwitch
+                        checkedChildren="ON"
+                        unCheckedChildren="OFF"
+                        checked={settings.isKindsActive}
+                        onChange={() => {}} //TODO handle change
+                      />
+                    </div>
                     <BaseCheckbox.Group
-                      className={`custom-checkbox-group grid-checkbox-group ${
-                        settings.dynamicKinds?.length ? 'dynamic-group' : ''
-                      } `}
-                      //TODO value = settings app buckets (blacklit? )
-                      value={[]}
-                      onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
-                      disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+                      style={{ paddingTop: '1rem', paddingLeft: '1rem' }}
+                      className={`custom-checkbox-group grid-checkbox-group`}
+                      onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
                       options={appBucketOptions}
                     />
 
-                    {settings.mode !== 'smart' && (
+                    <div
+                      style={{
+                        padding: '2rem 0rem 0rem 0rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '.5rem',
+                      }}
+                    >
+                      <h3>{'Add an App Bucket'}</h3>
                       <div
-                        style={{
-                          padding: '2rem 0rem 0rem 0rem',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '.5rem',
-                        }}
+                        style={{ display: 'flex' }}
+                        className="custom-checkbox-group grid-checkbox-group large-label"
                       >
-                        <h3>{'Add an App Bucket'}</h3>
-                        <div
-                          style={{ display: 'flex' }}
-                          className="custom-checkbox-group grid-checkbox-group large-label"
+                        <Input
+                          value={newBucket}
+                          onChange={(e) => {
+                            setNewBucket(e.target.value);
+                          }}
+                          placeholder="Enter new app bucket"
+                        />
+                        <BaseButton
+                          onClick={() => {
+                            if (newBucket) {
+                              handleNewBucket(newBucket);
+                              setNewBucket('');
+                            }
+                          }}
                         >
-                          <Input
-                            value={newKind}
-                            onChange={(e) => {}} //TODO: handle changes
-                            placeholder="Enter new app bucket"
-                          />
-                          <BaseButton
-                            onClick={() => {
-                              if (newKind) {
-                                setSettings((prevSettings) => ({
-                                  ...prevSettings,
-                                  dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
-                                }));
-                                setNewKind('');
-                              }
-                            }}
-                          >
-                            Add bucket
-                          </BaseButton>
-                        </div>
-                        <BaseCheckbox.Group
-                          style={{ paddingLeft: '1rem' }}
-                          className={`custom-checkbox-group grid-checkbox-group large-label ${
-                            settings.dynamicKinds?.length ? 'dynamic-group' : ''
-                          } ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}`}
-                          value={settings.dynamicKinds || []}
-                          onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
-                        >
-                          {(settings.dynamicKinds || []).map((kind) => (
-                            <div
-                              style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
-                              key={kind}
-                            >
-                              <div className="checkbox-container">
-                                <BaseCheckbox
-                                  className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                                  value={kind}
-                                />
-                                <S.CheckboxLabel
-                                  isActive={true}
-                                  style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-                                >
-                                  {`kind` + kind}
-                                </S.CheckboxLabel>
-                              </div>
-                              <BaseButton
-                                style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
-                                onClick={() => removeDynamicKind(kind)}
-                              >
-                                Remove
-                              </BaseButton>
-                            </div>
-                          ))}
-                        </BaseCheckbox.Group>
+                          Add bucket
+                        </BaseButton>
                       </div>
-                    )}
+                      <BaseCheckbox.Group
+                        style={{ paddingLeft: '1rem' }}
+                        className={`custom-checkbox-group grid-checkbox-group large-label ${
+                          storedAppBuckets?.length ? 'dynamic-group' : ''
+                        } `}
+                        value={settings.dynamicAppBuckets || []}
+                        onChange={(checkedValues) =>
+                          handleSettingsChange('dynamicAppBuckets', checkedValues as string[])
+                        }
+                      >
+                        {(storedAppBuckets || []).map((bucket) => (
+                          <div
+                            style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+                            key={bucket}
+                          >
+                            <div className="checkbox-container">
+                              <BaseCheckbox value={bucket} />
+                              <S.CheckboxLabel
+                                isActive={true}
+                                style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+                              >
+                                {bucket}
+                              </S.CheckboxLabel>
+                            </div>
+                            <BaseButton
+                              style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+                              onClick={() => handleRemovedBucket(bucket)}
+                            >
+                              Remove
+                            </BaseButton>
+                          </div>
+                        ))}
+                      </BaseCheckbox.Group>
+                    </div>
                   </div>
                 </S.Card>
               </StyledPanel>
@@ -704,7 +664,6 @@ const RelaySettingsPage: React.FC = () => {
                     </div>
                   )}
                   <BaseCheckbox.Group
-                    style={{ paddingLeft: '1rem' }}
                     className="large-label "
                     value={settings.mode == 'unlimited' ? blacklist.kinds : settings.kinds}
                     onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
@@ -715,7 +674,7 @@ const RelaySettingsPage: React.FC = () => {
                         <h3 className="checkboxHeader w-full">{group.name}</h3>
                         <div className="custom-checkbox-group grid-checkbox-group large-label">
                           {group.notes.map((note) => (
-                            <div className="checkbox-container" key={note.kindString}>
+                            <div className="checkbox-container" style={{ paddingLeft: '1rem' }} key={note.kindString}>
                               <BaseCheckbox
                                 value={note.kindString}
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -766,11 +725,7 @@ const RelaySettingsPage: React.FC = () => {
                         <BaseButton
                           onClick={() => {
                             if (newKind) {
-                              setSettings((prevSettings) => ({
-                                /// TODO: don't allow duplicates
-                                ...prevSettings,
-                                dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
-                              }));
+                              handleNewDynamicKind(newKind);
                               setNewKind('');
                             }
                           }}
@@ -781,12 +736,12 @@ const RelaySettingsPage: React.FC = () => {
                       <BaseCheckbox.Group
                         style={{ paddingLeft: '1rem' }}
                         className={`custom-checkbox-group grid-checkbox-group large-label ${
-                          settings.dynamicKinds?.length ? 'dynamic-group ' : ''
+                          storedDynamicKinds?.length ? 'dynamic-group ' : ''
                         }${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
                         value={settings.dynamicKinds || []}
                         onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                       >
-                        {(settings.dynamicKinds || []).map((kind) => (
+                        {(storedDynamicKinds || []).map((kind) => (
                           <div
                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
                             key={kind}
@@ -1076,94 +1031,83 @@ const RelaySettingsPage: React.FC = () => {
           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>
               <div className="flex-col w-full">
-                {settings.mode !== 'unlimited' && settings.mode !== '' && (
-                  <div className="switch-container">
-                    <BaseSwitch
-                      checkedChildren="ON"
-                      unCheckedChildren="OFF"
-                      checked={settings.isKindsActive}
-                      onChange={() => {}} //TODO handle change
-                    />
-                  </div>
-                )}
+                <div className="switch-container">
+                  <BaseSwitch
+                    checkedChildren="ON"
+                    unCheckedChildren="OFF"
+                    checked={settings.isKindsActive}
+                    onChange={() => {}} //TODO handle change
+                  />
+                </div>
                 <BaseCheckbox.Group
-                  style={{ padding: '1rem 0rem' }}
-                  className={`custom-checkbox-group grid-mobile-checkbox-group  ${
-                    settings.dynamicKinds?.length ? 'dynamic-container' : ''
-                  }`}
-                  //TODO value = settings app buckets (blacklit? )
-                  value={[]}
-                  onChange={(checkedValues) => handleSettingsChange('kinds', checkedValues as string[])}
-                  disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
+                  style={{ padding: '1rem 0rem 1rem 1rem' }}
+                  className={`custom-checkbox-group grid-mobile-checkbox-group `}
+                  value={settings.appBuckets || []}
+                  onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
+                  //disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                   options={appBucketOptions}
                 />
 
-                {settings.mode !== 'smart' && (
-                  <div
-                    style={{
-                      padding: '1.5rem 0rem 0rem 0rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '.5rem',
-                    }}
-                  >
-                    <h3>{'Add an App Bucket'}</h3>
-                    <div style={{ display: 'flex' }} className="large-label">
-                      <Input
-                        value={newKind}
-                        onChange={(e) => {}} //TODO: handle changes
-                        placeholder="Enter new app bucket"
-                      />
-                      <BaseButton
-                        onClick={() => {
-                          if (newKind) {
-                            setSettings((prevSettings) => ({
-                              ...prevSettings,
-                              dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
-                            }));
-                            setNewKind('');
-                          }
-                        }}
-                      >
-                        Add bucket
-                      </BaseButton>
-                    </div>
-                    <BaseCheckbox.Group
-                      style={{ paddingLeft: '1rem' }}
-                      className={`custom-checkbox-group grid-checkbox-group large-label ${
-                        settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
-                      }${settings.dynamicKinds?.length ? 'dynamic-group' : ''}`}
-                      value={settings.dynamicKinds || []}
-                      onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
+                <div
+                  style={{
+                    padding: '1.5rem 0rem 0rem 0rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '.5rem',
+                  }}
+                >
+                  <h3>{'Add an App Bucket'}</h3>
+                  <div style={{ display: 'flex' }} className="large-label">
+                    <Input
+                      value={newKind}
+                      onChange={(e) => {
+                        setNewBucket(e.target.value);
+                      }}
+                      placeholder="Enter new app bucket"
+                    />
+                    <BaseButton
+                      onClick={() => {
+                        if (newBucket) {
+                          handleNewBucket(newBucket);
+                          setNewKind('');
+                        }
+                      }}
                     >
-                      {(settings.dynamicKinds || []).map((kind) => (
-                        <div
-                          style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
-                          key={kind}
-                        >
-                          <div className="checkbox-container">
-                            <BaseCheckbox
-                              className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
-                              value={kind}
-                            />
-                            <S.CheckboxLabel
-                              isActive={true}
-                              style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
-                            >
-                              {`kind` + kind}
-                            </S.CheckboxLabel>
-                          </div>
-                          <BaseButton
-                            style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
-                            onClick={() => removeDynamicKind(kind)}
-                          >
-                            Remove
-                          </BaseButton>
-                        </div>
-                      ))}
-                    </BaseCheckbox.Group>
+                      Add bucket
+                    </BaseButton>
                   </div>
-                )}
+                  <BaseCheckbox.Group
+                    style={{ paddingLeft: '1rem' }}
+                    className={`custom-checkbox-group grid-checkbox-group large-label ${
+                      storedAppBuckets?.length ? 'dynamic-group' : ''
+                    }`}
+                    value={settings.dynamicAppBuckets || []}
+                    onChange={(checkedValues) => handleSettingsChange('dynamicAppBuckets', checkedValues as string[])}
+                  >
+                    {(storedAppBuckets || []).map((bucket) => (
+                      <div
+                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+                        key={bucket}
+                      >
+                        <div className="checkbox-container">
+                          <BaseCheckbox value={bucket} />
+                          <S.CheckboxLabel
+                            isActive={true}
+                            style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+                          >
+                            {bucket}
+                          </S.CheckboxLabel>
+                        </div>
+                        <BaseButton
+                          style={{ height: '2rem', width: '5rem', marginRight: '1rem' }}
+                          onClick={() => handleRemovedBucket(bucket)}
+                        >
+                          Remove
+                        </BaseButton>
+                      </div>
+                    ))}
+                  </BaseCheckbox.Group>
+                </div>
               </div>
             </S.Card>
           </StyledPanel>
@@ -1244,20 +1188,14 @@ const RelaySettingsPage: React.FC = () => {
                 </BaseCheckbox.Group>
               </div>
               {settings.mode === 'unlimited' && (
-                <div
-                  style={{display: 'flex', flexDirection: 'column', gap: '.5rem' }}
-                >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
                   <h3>{'Add to Blacklist'}</h3>
                   <div style={{ display: 'flex', gap: '.5rem' }}>
                     <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
                     <BaseButton
                       onClick={() => {
                         if (newKind) {
-                          setSettings((prevSettings) => ({
-                            //TODO: don't allow duplicates
-                            ...prevSettings,
-                            dynamicKinds: [...(prevSettings.dynamicKinds || []), newKind],
-                          }));
+                      handleNewDynamicKind(newKind);
                           setNewKind('');
                         }
                       }}
@@ -1269,11 +1207,11 @@ const RelaySettingsPage: React.FC = () => {
                     style={{ paddingLeft: '.6rem' }}
                     className={`custom-checkbox-group grid-checkbox-group large-label ${
                       settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
-                    }${settings.dynamicKinds?.length ? 'dynamic-group' : ''}`}
+                    }${storedDynamicKinds?.length ? 'dynamic-group' : ''}`}
                     value={settings.dynamicKinds || []}
                     onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                   >
-                    {(settings.dynamicKinds || []).map((kind) => (
+                    {(storedDynamicKinds || []).map((kind) => (
                       <div
                         style={{
                           display: 'flex',
