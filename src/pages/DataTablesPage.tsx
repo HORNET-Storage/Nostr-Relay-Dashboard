@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Tables } from '@app/components/tables/Tables/Tables';
 import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
-import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useResponsive } from '@app/hooks/useResponsive';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
