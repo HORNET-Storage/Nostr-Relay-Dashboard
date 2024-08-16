@@ -4,7 +4,7 @@ import { WalletTransaction } from '@app/api/activity.api';
 import { Dates } from '@app/constants/Dates';
 import { formatSatsWithCommas, getSatsCurrency } from '@app/utils/utils';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
-import * as S from './ActivityStoryItem.styles';
+import * as S from './TransactionItem.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 function makeHexId(length: number): string {
@@ -16,7 +16,7 @@ function makeHexId(length: number): string {
   return result;
 }
 
-export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
+export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
   const { t } = useTranslation();
   const [transactionId, setTransactionId] = useState<string | null>(null);
 
@@ -55,4 +55,4 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
   );
 };
 
-export default ActivityStoryItem;
+export default TransactionItem;

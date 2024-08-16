@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ActivityStoryItem from './ActivityStoryItem/TransactionItem';
+import TransactionItem from './TransactionItem/TransactionItem';
 import { getUserActivities, WalletTransaction } from '@app/api/activity.api';
-import * as S from './ActivityStory.styles';
+import * as S from './Transactions.styles';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { Modal } from 'antd';
 import { ViewTransactions } from '@app/components/relay-dashboard/common/ViewAll/ViewTransactions';
@@ -21,7 +21,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
-import { TransactionCard } from './ActivityStoryItem/ActivityStoryItem.styles';
+import { TransactionCard } from './TransactionItem/TransactionItem.styles';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -50,7 +50,7 @@ export const ActivityStory: React.FC = () => {
     story.length > 0 ? (
       story.map((item) => (
         <BaseCol key={item.id} span={24}>
-          <ActivityStoryItem {...item} />
+          <TransactionItem {...item} />
         </BaseCol>
       ))
     ) : (
