@@ -6,9 +6,9 @@ import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useResponsive } from '@app/hooks/useResponsive';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
-import { Balance } from '@app/components/nft-dashboard/Balance/Balance';
-import { TotalEarning } from '@app/components/nft-dashboard/totalEarning/TotalEarning';
-import { ActivityStory } from '@app/components/nft-dashboard/activityStory/ActivityStory';
+import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
+import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
+import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
 const DataTablesPage: React.FC = () => {
   const { t } = useTranslation();
   const { isDesktop } = useResponsive();
