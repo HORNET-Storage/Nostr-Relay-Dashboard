@@ -14,6 +14,15 @@ export const camelize = (string: string): string => {
     .join('');
 };
 
+export const getSatsCurrency = (price: number | string, currency: CurrencyTypeEnum, isIcon = true): string => {
+  const formattedPrice = typeof price === 'number' ? formatSatsWithCommas(price) : price;
+  const currencySymbol = currencies[currency][isIcon ? 'icon' : 'text'];
+
+  // Handle potential negative sign placement
+  return isIcon ? `${currencySymbol}${formattedPrice}` : `${formattedPrice} ${currency}`;
+};
+
+
 export const getCurrencyPrice = (price: number | string, currency: CurrencyTypeEnum, isIcon = true): string => {
   const currencySymbol = currencies[currency][isIcon ? 'icon' : 'text'];
 
@@ -151,6 +160,13 @@ export const hexToHSL = (hex: string): { h: number; s: number; l: number } => {
     throw new Error('Non valid HEX color');
   }
 };
+
+export const formatSatsWithCommas = (value: number): string => {
+  const parts = value.toFixed(8).split('.'); // Ensure 8 decimal places
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+};
+
 
 export const formatNumberWithCommas = (value: number): string => {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

@@ -13,4 +13,8 @@ export const currencies = {
     text: 'ETH',
     icon: 'Ξ',
   },
+  [CurrencyTypeEnum.SATS]: {
+    text: 'SATS',
+    icon: 'SAT ',
+  },
 };

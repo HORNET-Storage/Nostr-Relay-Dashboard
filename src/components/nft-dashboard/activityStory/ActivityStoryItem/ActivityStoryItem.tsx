@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { useTranslation } from 'react-i18next';
 import { WalletTransaction } from '@app/api/activity.api';
 import { Dates } from '@app/constants/Dates';
-import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
+import { formatSatsWithCommas, getSatsCurrency } from '@app/utils/utils';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import * as S from './ActivityStoryItem.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
@@ -35,11 +35,11 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
     <S.TransactionCard>
       <BaseRow gutter={[20, 20]} wrap={true} align="middle">
         <BaseCol span={24}>
-          <S.Label>{t('Witness Transaction ID')}:</S.Label>
+          <S.Label>{t('Transaction ID')}:</S.Label>
           <S.Address style={{ color: 'var(--text-main)' }}>  {witness_tx_id ? witness_tx_id : transactionId}</S.Address>
         </BaseCol>
         <BaseCol span={24}>
-          <S.Label>{t('Output')}:</S.Label>
+          <S.Label>{t('Address')}:</S.Label>
           <S.Output>{output}</S.Output>
         </BaseCol>
         <BaseCol span={12}>
@@ -48,7 +48,7 @@ export const ActivityStoryItem: React.FC<WalletTransaction> = ({ witness_tx_id, 
         </BaseCol>
         <BaseCol span={12} style={{ textAlign: 'right' }}>
           <S.Label>{t('Value')}:</S.Label>
-          <S.Value>{getCurrencyPrice(formatNumberWithCommas(numericValue), CurrencyTypeEnum.USD)}</S.Value>
+          <S.Value>{getSatsCurrency(formatSatsWithCommas(numericValue), CurrencyTypeEnum.SATS)}</S.Value>
         </BaseCol>
       </BaseRow>
     </S.TransactionCard>
