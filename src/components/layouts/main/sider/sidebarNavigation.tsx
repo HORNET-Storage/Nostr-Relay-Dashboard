@@ -20,8 +20,8 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
   return useMemo(() => {
     const items: SidebarNavigationItem[] = [
       {
-        title: 'common.nft-dashboard',
-        key: 'nft-dashboard',
+        title: 'common.relay-dashboard',
+        key: 'relay-dashboard',
         url: '/',
         icon: <NestIcon />,
       },
