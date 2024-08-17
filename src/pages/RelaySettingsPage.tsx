@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Collapse, Select, Input, Checkbox } from 'antd';
+import { Collapse, Select, Input, Checkbox, Typography } from 'antd';
 import styled from 'styled-components';
 import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
 import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
@@ -18,6 +18,7 @@ import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { categories, noteOptions, appBuckets, Settings, Category } from '@app/constants/relaySettings';
+import { InfoCircleOutlined } from '@ant-design/icons';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -537,6 +538,14 @@ const RelaySettingsPage: React.FC = () => {
             <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
                 <S.Card>
+                  <S.InfoCard  style={{paddingTop:'.2rem'}}>
+                    <InfoCircleOutlined />
+                    <span style={{ fontSize: 'small', color: themeObject[theme].textLight, marginLeft: '1rem' }}>
+                      {
+                        'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
+                      }
+                    </span>
+                  </S.InfoCard>
                   <div className="flex-col w-full">
                     <BaseCheckbox.Group
                       style={{ paddingTop: '1rem', paddingLeft: '1rem' }}
@@ -1022,6 +1031,14 @@ const RelaySettingsPage: React.FC = () => {
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>
+              <S.InfoCard>
+                <InfoCircleOutlined style={{paddingTop:'.2rem'}} />
+                <span style={{ fontSize: 'small', color: themeObject[theme].textLight, marginLeft: '1rem' }}>
+                  {
+                    'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
+                  }
+                </span>
+              </S.InfoCard>
               <div className="flex-col w-full">
                 <BaseCheckbox.Group
                   style={{ padding: '1rem 0rem 1rem 1rem' }}

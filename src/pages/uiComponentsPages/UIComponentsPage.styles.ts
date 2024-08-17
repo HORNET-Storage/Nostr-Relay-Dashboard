@@ -26,6 +26,31 @@ export const Card = styled(CommonCard)`
     border: 1px solid var(--border-color);
   }
 `;
+export const InfoCard = styled(CommonCard)`
+ width: 100%;
+  
+  .ant-card-head-title {
+    font-size: 1rem;
+  }
+  .ant-card-body {
+   flex-wrap: nowrap;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0rem;
+    align-items: flex-start;
+    padding:0;
+  }
+  .ant-card-body:before {
+    display: none;
+  }
+  .ant-card-body:after {
+    display: none;
+  }
+  &.ant-card-bordered {
+    border: 1px solid var(--border-color);
+  }
+`;
 
 export const InputsWrapper = styled.div`
   width: 30rem;
