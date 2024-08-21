@@ -92,7 +92,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     console.log('Sending data', formData);
     setTimeout(() => {
       setLoading(false);
-      onSend(true, formData.address, parseInt(formData.amount));
+      onSend(true, formData.address, amountWithFee ? amountWithFee : 0);
     }, 2000);
   };
 
@@ -185,17 +185,18 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
             {inValidAmount && selectedTier && <S.ErrorText>Invalid Amount</S.ErrorText>}
           </S.TextRow>
-        
+
           <div>
-            <BaseInput onChange={handleInputChange} name='amount' value={formData.amount} placeholder="Amount" />
+            <BaseInput onChange={handleInputChange} name="amount" value={formData.amount} placeholder="Amount" />
             <S.BalanceInfo>{` Balance: ${balanceData ? balanceData.latest_balance : 0}`} </S.BalanceInfo>
           </div>
         </S.InputWrapper>
         <S.TiersContainer>
           <S.InputHeader>Tiered Fees</S.InputHeader>
           <S.RBFWrapper>
-                <BaseCheckbox />
-            RBF Opt In</S.RBFWrapper>
+            <BaseCheckbox />
+            RBF Opt In
+          </S.RBFWrapper>
           {isDesktop || isTablet ? (
             <S.TiersRow>
               <TieredFees />
@@ -207,7 +208,12 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           )}
         </S.TiersContainer>
         <BaseRow justify={'center'}>
-          <S.SendFormButton disabled={loading || isLoading || inValidAmount} onClick={handleSend} size="large" type="primary">
+          <S.SendFormButton
+            disabled={loading || isLoading || inValidAmount}
+            onClick={handleSend}
+            size="large"
+            type="primary"
+          >
             Send
           </S.SendFormButton>
         </BaseRow>
@@ -226,7 +232,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
                 <br></br>
                 <S.AddressText>{truncateString(formData.address, 65)}</S.AddressText>
               </S.Recipient>
-             {detailsPanel()}
+              {detailsPanel()}
             </>
           ) : (
             receiverPanel()
