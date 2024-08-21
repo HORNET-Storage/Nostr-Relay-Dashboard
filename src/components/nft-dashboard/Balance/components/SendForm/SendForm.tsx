@@ -98,15 +98,20 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   useEffect(() => {
     if (selectedTier) {
-      const lowFee = parseInt(formData.amount) * testTiers[0].rate;
-      const medFee = parseInt(formData.amount) * testTiers[1].rate;
-      const highFee = parseInt(formData.amount) * testTiers[2].rate;
+      const vB = parseInt(formData.amount) / 50;
+      const lowFee = Math.ceil(vB * testTiers[0].rate);
+      const medFee = Math.ceil(vB * testTiers[1].rate);
+      const highFee = Math.ceil(vB * testTiers[2].rate);
 
       setFees({ low: lowFee, med: medFee, high: highFee });
-      setAmountWithFee(parseInt(formData.amount) + fees[selectedTier]);
     }
   }, [formData.amount, selectedTier]); //fetched fees should be used here
 
+  useEffect(() => {
+    if (selectedTier) {
+      setAmountWithFee(parseInt(formData.amount) + fees[selectedTier]);
+    }
+  }, [fees]);
   useEffect(() => {
     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
       setInvalidAmount(true);
