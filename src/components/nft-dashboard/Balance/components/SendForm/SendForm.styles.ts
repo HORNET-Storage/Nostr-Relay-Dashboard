@@ -117,3 +117,20 @@ export const AddressText = styled.span`
   text-decoration: underline;
   color: var(--text-main-color);
 `;
+
+export const RateValueWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+export const RateValue = styled.span`
+  color: green;
+`;
+export const RBFWrapper = styled.div`
+
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+`;

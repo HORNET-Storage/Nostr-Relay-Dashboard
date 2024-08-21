@@ -7,7 +7,7 @@ import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import * as S from './SendForm.styles';
 import { truncateString } from '@app/utils/utils';
 import useBalanceData from '@app/hooks/useBalanceData';
-
+import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
 interface SendFormProps {
   onSend: (status: boolean, address: string, amount: number) => void;
 }
@@ -16,44 +16,47 @@ interface SuccessScreenProps {
   amount: number;
   address: string;
 }
-const subscriptionDuration = 30; //1 month
 
 const testTiers = [
   {
-    id: 'tier1',
-    limit: '1 GB',
-    amount: 10000,
+    id: 'low',
+    rate: 4,
   },
   {
-    id: 'tier2',
-    limit: '5 GB',
-    amount: 40000,
+    id: 'med',
+    rate: 5,
   },
   {
-    id: 'tier3',
-    limit: '10 GB',
-    amount: 70000,
+    id: 'high',
+    rate: 5,
   },
 ];
 
-type tiers = 'tier1' | 'tier2' | 'tier3';
+type tiers = 'low' | 'med' | 'high';
+type Fees = {
+  [key in tiers]: number;
+};
 const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const { balanceData, isLoading } = useBalanceData();
   const { isTablet, isDesktop } = useResponsive();
   const [loading, setLoading] = useState(false);
-  const [selectedTier, setSelectedTier] = useState<tiers | null>(null);
+
+  const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
   const [inValidAmount, setInvalidAmount] = useState(false);
   const [addressError, setAddressError] = useState(false);
+
+  const [amountWithFee, setAmountWithFee] = useState<number | null>(null);
+
   const [formData, setFormData] = useState({
     address: '',
-    amount: '',
-    tier: '',
+    amount: '1',
   });
+  const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
 
   const handleTierChange = (tier: any) => {
     setSelectedTier(tier.id);
-    setFormData({ ...formData, amount: tier.amount });
   };
 
   const isValidAddress = (address: string) => {
@@ -75,6 +78,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     }
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -93,74 +97,117 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   };
 
   useEffect(() => {
+    if (selectedTier) {
+      const lowFee = parseInt(formData.amount) * testTiers[0].rate;
+      const medFee = parseInt(formData.amount) * testTiers[1].rate;
+      const highFee = parseInt(formData.amount) * testTiers[2].rate;
+
+      setFees({ low: lowFee, med: medFee, high: highFee });
+      setAmountWithFee(parseInt(formData.amount) + fees[selectedTier]);
+    }
+  }, [formData.amount, selectedTier]); //fetched fees should be used here
+
+  useEffect(() => {
     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
       setInvalidAmount(true);
     } else {
       setInvalidAmount(false);
     }
   }, [formData.amount]);
-  const ReceiverPanel = memo(() => {
+
+  const receiverPanel = () => {
     return (
       <>
         <S.InputWrapper>
-        <S.InputHeader>Address</S.InputHeader>
+          <S.InputHeader>Address</S.InputHeader>
           <BaseInput name="address" value={formData.address} onChange={handleInputChange} placeholder="Send to" />
         </S.InputWrapper>
         <BaseButton onClick={handleAddressSubmit}>Continue</BaseButton>
       </>
     );
-  });
-  const DetailsPanel = () => {
+  };
+  const TieredFees = () => {
+    return (
+      <>
+        <S.SubCard
+          onClick={() => handleTierChange(testTiers[0])}
+          className={`tier-hover ${selectedTier == testTiers[0].id ? 'selected' : ' '} ${
+            selectedTier == testTiers[0].id && inValidAmount ? 'invalidAmount' : ' '
+          } `}
+        >
+          <S.SubCardContent>
+            <S.SubCardAmount>{`Low Priority`}</S.SubCardAmount>
+            <S.RateValueWrapper>
+              <span> {`${testTiers[0].rate} sat/vB`}</span>
+              <S.RateValue>{`${fees?.low} Sats`}</S.RateValue>
+            </S.RateValueWrapper>
+          </S.SubCardContent>
+        </S.SubCard>
+
+        <S.SubCard
+          onClick={() => handleTierChange(testTiers[1])}
+          className={`tier-hover ${selectedTier == testTiers[1].id ? 'selected' : ' '} ${
+            selectedTier == testTiers[1].id && inValidAmount ? 'invalidAmount' : ' '
+          } `}
+        >
+          <S.SubCardContent>
+            <S.SubCardAmount>{`Medium Priority`}</S.SubCardAmount>
+            <S.RateValueWrapper>
+              <span> {`${testTiers[1].rate} sat/vB`}</span>
+              <S.RateValue>{`${fees?.med} Sats`}</S.RateValue>
+            </S.RateValueWrapper>
+          </S.SubCardContent>
+        </S.SubCard>
+
+        <S.SubCard
+          onClick={() => handleTierChange(testTiers[2])}
+          className={`tier-hover ${selectedTier == testTiers[2].id ? 'selected' : ' '} ${
+            selectedTier == testTiers[2].id && inValidAmount ? 'invalidAmount' : ' '
+          } `}
+        >
+          <S.SubCardContent>
+            <S.SubCardAmount>{`High Priority`}</S.SubCardAmount>
+            <S.RateValueWrapper>
+              <span> {`${testTiers[2].rate} sat/vB`}</span>
+              <S.RateValue>{`${fees?.high} Sats`}</S.RateValue>
+            </S.RateValueWrapper>
+          </S.SubCardContent>
+        </S.SubCard>
+      </>
+    );
+  };
+  const detailsPanel = () => {
     return (
       <S.FormSpacer>
         <S.InputWrapper>
           <S.TextRow>
-            <S.InputHeader>Amount</S.InputHeader>
-            {inValidAmount && selectedTier && <S.ErrorText>Amount exceeds balance</S.ErrorText>}
+            <S.InputHeader>{`Amount = ${selectedTier && amountWithFee ? amountWithFee : ''} `} </S.InputHeader>
+
+            {inValidAmount && selectedTier && <S.ErrorText>Invalid Amount</S.ErrorText>}
           </S.TextRow>
+        
           <div>
-            <BaseInput value={formData.amount} placeholder="Amount" />
+            <BaseInput onChange={handleInputChange} name='amount' value={formData.amount} placeholder="Amount" />
             <S.BalanceInfo>{` Balance: ${balanceData ? balanceData.latest_balance : 0}`} </S.BalanceInfo>
           </div>
         </S.InputWrapper>
         <S.TiersContainer>
-          <S.InputHeader>Tiers</S.InputHeader>
+          <S.InputHeader>Tiered Fees</S.InputHeader>
+          <S.RBFWrapper>
+                <BaseCheckbox />
+            RBF Opt In</S.RBFWrapper>
           {isDesktop || isTablet ? (
             <S.TiersRow>
-              {testTiers.map((tier) => (
-                <S.SubCard
-                  onClick={() => handleTierChange(tier)}
-                  className={`tier-hover ${selectedTier == tier.id ? 'selected' : ' '} ${
-                    selectedTier == tier.id && inValidAmount ? 'invalidAmount' : ' '
-                  } `}
-                >
-                  <S.SubCardContent>
-                    <S.SubCardAmount>{`${tier.amount} Sats`}</S.SubCardAmount>
-                    <span> {`${tier.limit} per Month`}</span>
-                  </S.SubCardContent>
-                </S.SubCard>
-              ))}
+              <TieredFees />
             </S.TiersRow>
           ) : (
             <S.TiersCol>
-              {testTiers.map((tier) => (
-                <S.SubCard
-                  onClick={() => handleTierChange(tier)}
-                  className={`tier-hover ${selectedTier == tier.id ? 'selected' : ' '} ${
-                    selectedTier == tier.id && inValidAmount ? 'invalidAmount' : ' '
-                  } `}
-                >
-                  <S.SubCardContent>
-                    <S.SubCardAmount>{`${tier.amount} Sats`}</S.SubCardAmount>
-                    <span> {`${tier.limit} per Month`}</span>
-                  </S.SubCardContent>
-                </S.SubCard>
-              ))}
+              <TieredFees />
             </S.TiersCol>
           )}
         </S.TiersContainer>
         <BaseRow justify={'center'}>
-          <S.SendFormButton disabled={loading || isLoading} onClick={handleSend} size="large" type="primary">
+          <S.SendFormButton disabled={loading || isLoading || inValidAmount} onClick={handleSend} size="large" type="primary">
             Send
           </S.SendFormButton>
         </BaseRow>
@@ -179,10 +226,10 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
                 <br></br>
                 <S.AddressText>{truncateString(formData.address, 65)}</S.AddressText>
               </S.Recipient>
-              <DetailsPanel></DetailsPanel>
+             {detailsPanel()}
             </>
           ) : (
-            <ReceiverPanel></ReceiverPanel>
+            receiverPanel()
           )}
         </S.FormSpacer>
       </S.SendBody>
