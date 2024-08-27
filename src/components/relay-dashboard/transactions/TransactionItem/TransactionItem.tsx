@@ -6,7 +6,9 @@ import * as S from './TransactionItem.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useBitcoinRates } from '@app/hooks/useBitcoinRates';
-
+import { useAppSelector } from '@app/hooks/reduxHooks';
+import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
+import { convertSatsToCurrency, getCurrencyPrice, formatNumberWithCommas } from '@app/utils/utils';
 function makeHexId(length: number): string {
   const characters = 'abcdef0123456789';
   let result = '';
@@ -25,16 +27,21 @@ function convertBtcToUsd(btcValue: string, btcPriceInUsd: number): string {
   } else {
     const wholeBtc = Math.floor(btcAmount);
     const satoshis = Math.round((btcAmount - wholeBtc) * 100000000);
-    const usdValue = (wholeBtc * btcPriceInUsd) + (satoshis / 100000000 * btcPriceInUsd);
+    const usdValue = wholeBtc * btcPriceInUsd + (satoshis / 100000000) * btcPriceInUsd;
     return usdValue.toFixed(2);
   }
 }
 
-export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
+export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value, sats }) => {
   const { t } = useTranslation();
   const [transactionId, setTransactionId] = useState<string | null>(null);
-  const [usdValue, setUsdValue] = useState<string>('');
-  const { rates, isLoading, error } = useBitcoinRates();
+  const [transactionValue, setTransactionValue] = useState<string>('');
+  const [currentCurrency, setCurrentCurrency] = useState<CurrencyTypeEnum>(CurrencyTypeEnum.USD);
+  const currency = useAppSelector((state) => state.currency);
+
+  useEffect(() => {
+    console.log(value);
+  }, [value]);
 
   useEffect(() => {
     if (!witness_tx_id) {
@@ -43,12 +50,24 @@ export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, da
   }, [witness_tx_id]);
 
   useEffect(() => {
-    if (!isLoading && !error && rates.length > 0) {
-      const btcPrice = rates[rates.length - 1].usd_value; // Get the most recent BTC price
-      const usdValueCalculated = convertBtcToUsd(value, btcPrice);
-      setUsdValue(usdValueCalculated);
+    if (currency.currency === CurrencyTypeEnum.USD || !currency.currentPrice) {
+      setCurrentCurrency(currency.currency);
+      setTransactionValue(value);
+    } else {
+      if (currency.currency !== currentCurrency) {
+        setCurrentCurrency(currency.currency);
+      }
+      setTransactionValue(convertSatsToCurrency(sats, currency.currentPrice).toString());
     }
-  }, [value, rates, isLoading, error]);
+  }, [currency.currentPrice, value, sats]);
+
+  // useEffect(() => {
+  //   if (!isLoading && !error && rates.length > 0) {
+  //     const btcPrice = rates[rates.length - 1].usd_value; // Get the most recent BTC price
+  //     const usdValueCalculated = convertBtcToUsd(value, btcPrice);
+  //     setTransactionValue(usdValueCalculated);
+  //   }
+  // }, [value, rates, isLoading, error]);
 
   // Skip rendering if the value is zero
   if (parseFloat(value) === 0) {
@@ -72,7 +91,7 @@ export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, da
         </BaseCol>
         <BaseCol span={12} style={{ textAlign: 'right' }}>
           <S.Label>{t('Value')}:</S.Label>
-          {usdValue && <S.Value>${usdValue}</S.Value>}
+          <S.Value>{getCurrencyPrice(formatNumberWithCommas(parseFloat(transactionValue)), currentCurrency)}</S.Value>
         </BaseCol>
       </BaseRow>
     </S.TransactionCard>

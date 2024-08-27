@@ -5,6 +5,9 @@ import { getUserActivities, WalletTransaction } from '@app/api/activity.api';
 import * as S from './Transactions.styles';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { Modal } from 'antd';
+import { useAppSelector } from '@app/hooks/reduxHooks';
+import CurrencySelect from '../Balance/components/CurrencySelect/CurrencySelect';
+import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 import { ViewTransactions } from '@app/components/relay-dashboard/common/ViewAll/ViewTransactions';
 import styled from 'styled-components';
 import { Line } from 'react-chartjs-2';
@@ -31,11 +34,24 @@ const TitleContainer = styled.div`
   justify-content: space-between;
   width: 100%;
 `;
+const availableCurrencies: CurrencyTypeEnum[] = [
+  CurrencyTypeEnum.USD,
+  CurrencyTypeEnum.EUR,
+  CurrencyTypeEnum.GBP,
+  CurrencyTypeEnum.JPY,
+  CurrencyTypeEnum.AUD,
+  CurrencyTypeEnum.CAD,
+  CurrencyTypeEnum.CHF,
+  // CurrencyTypeEnum.CNY,
+  // CurrencyTypeEnum.SEK,
+  // CurrencyTypeEnum.NZD,
+];
 
 export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const currency = useAppSelector((state) => state.currency);
 
   const { t } = useTranslation();
 
@@ -48,11 +64,12 @@ export const ActivityStory: React.FC = () => {
 
   const activityContent =
     story.length > 0 ? (
+      (console.log(story),
       story.map((item) => (
         <BaseCol key={item.id} span={24}>
           <TransactionItem {...item} />
         </BaseCol>
-      ))
+      )))
     ) : (
       <S.EmptyState>{t('No transaction data')}</S.EmptyState>
     );
@@ -89,16 +106,16 @@ export const ActivityStory: React.FC = () => {
         return amount > 0; // Filter only positive values
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
+
     const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
     const amounts = sortedStory.map((item) => {
       const amount = parseFloat(item.value);
       return isNaN(amount) ? 0 : amount;
     });
-  
+
     // Additional log to verify amounts array
     console.log('Chart Data Amounts:', amounts);
-  
+
     return {
       labels,
       datasets: [
@@ -123,7 +140,7 @@ export const ActivityStory: React.FC = () => {
       ],
     };
   };
-  
+
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -132,7 +149,7 @@ export const ActivityStory: React.FC = () => {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Amount',
+          text: currency.currency,
           font: {
             size: 14,
             weight: 'bold',
@@ -184,7 +201,7 @@ export const ActivityStory: React.FC = () => {
         callbacks: {
           label: function (tooltipItem) {
             // Customize tooltip display
-            return `Amount: ${tooltipItem.raw}`;  // Assuming that `tooltipItem.raw` holds the amount value
+            return `Amount: ${tooltipItem.raw}`; // Assuming that `tooltipItem.raw` holds the amount value
           },
         },
       },
@@ -198,7 +215,6 @@ export const ActivityStory: React.FC = () => {
       intersect: true,
     },
   };
-  
 
   return (
     <S.Wrapper>
@@ -210,12 +226,13 @@ export const ActivityStory: React.FC = () => {
       </TitleContainer>
 
       <Modal title="Your Transactions" open={isModalVisible} onCancel={handleCancel} footer={null} width={800}>
+        <CurrencySelect currencies={availableCurrencies}></CurrencySelect>
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />
         </div>
-         {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+        {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
       </Modal>
-      {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+      {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
     </S.Wrapper>
   );
 };

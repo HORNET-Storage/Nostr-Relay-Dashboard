@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseChart, getDefaultTooltipStyles } from '@app/components/common/charts/BaseChart';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { ChartData, CurrencyTypeEnum } from '@app/interfaces/interfaces';
-import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
+import { currencies } from '@app/constants/config/currencies';
+import { formatNumberWithCommas, getCurrencyPrice, formatGraphValue } from '@app/utils/utils';
 // import { formatDate } from '@app/utils/dateFormatter';
 
 interface LineData {
@@ -18,6 +19,7 @@ interface TotalEarningChartProps {
 
 export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData, earningData }) => {
   const theme = useAppSelector((state) => state.theme.theme);
+  const currency = useAppSelector((state) => state.currency.currency);
   const { t } = useTranslation();
 
   console.log('xAxisData:', xAxisData);
@@ -59,6 +61,18 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       },
     },
   ];
+  const calcLeftPadding = () => {
+    if (!maxY || !currency || !earningData) return 60;
+    const characterSize = 8.6;
+    const amountLength = formatGraphValue(maxY).length; // Remove decimal points
+    const symbolSize = currencies[currency].icon.replace(/\./g, '').length;
+    return (amountLength + symbolSize) * characterSize;
+  };
+  const [leftPadding, setLeftPadding] = React.useState(calcLeftPadding());
+
+  useEffect(() => {
+    setLeftPadding(calcLeftPadding());
+  }, [maxY]);
 
   const option = {
     tooltip: {
@@ -68,15 +82,12 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       formatter: (data: any) => {
         const currentSeries = data[0];
         const roundedValue = Math.round(currentSeries.value[1]); // Round to nearest dollar
-        return `${currentSeries.name} - ${getCurrencyPrice(
-          formatNumberWithCommas(roundedValue),
-          CurrencyTypeEnum.USD,
-        )}`;
+        return `${currentSeries.name} - ${getCurrencyPrice(formatNumberWithCommas(roundedValue), currency)}`;
       },
     },
     grid: {
       top: 20,
-      left: 60,
+      left: leftPadding,
       right: 20,
       bottom: 30,
     },
@@ -112,7 +123,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
         },
       },
       axisLabel: {
-        formatter: (value: number) => `$${formatNumberWithCommas(value)}`,
+        formatter: (value: number) => `${currencies[currency].icon}${formatGraphValue(value)}`,
         color: themeObject[theme].chartAxisLabel,
         fontSize: 13,
         fontFamily: 'Arial',

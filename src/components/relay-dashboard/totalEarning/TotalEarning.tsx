@@ -14,8 +14,8 @@ import { useBitcoinRates } from '@app/hooks/useBitcoinRates';
 
 export const TotalEarning: React.FC = () => {
   const { t } = useTranslation();
-  const { rates: bitcoinRates, isLoading, error } = useBitcoinRates();
-
+  const currency = useAppSelector((state) => state.currency.currency);
+  const { rates: bitcoinRates, isLoading, error } = useBitcoinRates(currency);
   const { totalEarningData, days } = useMemo(() => {
     const earningData = {
       data: bitcoinRates.map((item) => item.usd_value),
@@ -43,7 +43,7 @@ export const TotalEarning: React.FC = () => {
   if (error) {
     return (
       <div>
-        {t('common.error')}: {error}
+       {t('common.error')}: {"Unable to retrieve rates. Try again later."}
       </div>
     );
   }
@@ -66,7 +66,7 @@ export const TotalEarning: React.FC = () => {
         </BaseCol>
 
         <BaseCol span={24}>
-          <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, CurrencyTypeEnum.USD)}</S.Text>
+            <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, currency)}</S.Text>
         </BaseCol>
 
         <BaseCol span={24}>
