@@ -10,9 +10,9 @@ import { PageTitle } from '@app/components/common/PageTitle/PageTitle';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import { Balance } from '@app/components/nft-dashboard/Balance/Balance';
-import { TotalEarning } from '@app/components/nft-dashboard/totalEarning/TotalEarning';
-import { ActivityStory } from '@app/components/nft-dashboard/activityStory/ActivityStory';
+import { Balance } from '@app/components/relay-dashboard/Balance/Balance';
+import { TotalEarning } from '@app/components/relay-dashboard/totalEarning/TotalEarning';
+import { ActivityStory } from '@app/components/relay-dashboard/transactions/Transactions';
 import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
@@ -69,32 +69,32 @@ const RelaySettingsPage: React.FC = () => {
   const { isDesktop } = useResponsive();
 
   const categories = [
-    { id: 1, name: 'Basic Features' },
-    { id: 2, name: 'Extra Features' },
-    { id: 3, name: 'Git Features' },
+    { id: 1, name: 'Basic Nostr Features' },
+    { id: 2, name: 'Extra Nostr Features' },
+    { id: 3, name: 'GitNestr Features' },
   ];
 
   const noteOptions = [
     { kind: 0, kindString: 'kind0', description: 'Metadata', category: 1 },
     { kind: 1, kindString: 'kind1', description: 'Text Note', category: 1 },
     { kind: 2, kindString: 'kind2', description: 'Recommend Relay', category: 1 },
-    { kind: 3, kindString: 'kind3', description: 'Contacts', category: 1 },
+    { kind: 3, kindString: 'kind3', description: 'Follow List', category: 1 },
     { kind: 5, kindString: 'kind5', description: 'Event Deletion', category: 1 },
     { kind: 6, kindString: 'kind6', description: 'Repost', category: 1 },
     { kind: 7, kindString: 'kind7', description: 'Reaction', category: 1 },
     { kind: 8, kindString: 'kind8', description: 'Badge Award', category: 2 },
     { kind: 16, kindString: 'kind16', description: 'Generic Repost', category: 1 },
     { kind: 10000, kindString: 'kind10000', description: 'Mute List', category: 1 },
-    { kind: 10001, kindString: 'kind10001', description: 'Pin List', category: 1 },
-    { kind: 10002, kindString: 'kind10002', description: 'Relay List Metadata', category: 1 },
+    { kind: 10001, kindString: 'kind10001', description: 'Pinned Note(s)', category: 1 },
+    { kind: 10002, kindString: 'kind10002', description: 'Tiny Relay List', category: 1 },
     { kind: 1984, kindString: 'kind1984', description: 'Reporting', category: 1 },
-    { kind: 30000, kindString: 'kind30000', description: 'Follow List', category: 1 },
+    { kind: 30000, kindString: 'kind30000', description: 'Custom Follow List', category: 1 },
     { kind: 30008, kindString: 'kind30008', description: 'Profile Badge', category: 2 },
     { kind: 30009, kindString: 'kind30009', description: 'Badge Definition', category: 2 },
-    { kind: 30023, kindString: 'kind30023', description: 'Long-Form Content', category: 1 },
+    { kind: 30023, kindString: 'kind30023', description: 'Formatted Articles', category: 1 },
     { kind: 30079, kindString: 'kind30079', description: 'Event Paths', category: 1 },
-    { kind: 9734, kindString: 'kind9734', description: 'Lightning Zap Request', category: 2 },
-    { kind: 9735, kindString: 'kind9735', description: 'Lightning Zap Invoice Receipts', category: 2 },
+    //{ kind: 9734, kindString: 'kind9734', description: 'Lightning Zap Request', category: 2 },
+    { kind: 9735, kindString: 'kind9735', description: 'Zap Receipt', category: 2 },
     { kind: 10011, kindString: 'kind10011', description: 'Issue Notes', category: 3 },
     { kind: 10022, kindString: 'kind10022', description: 'PR Notes', category: 3 },
     { kind: 9803, kindString: 'kind9803', description: 'Commit Notes', category: 3 },
@@ -437,7 +437,8 @@ const RelaySettingsPage: React.FC = () => {
             <S.SwitchContainer
               style={{
                 display: 'grid',
-                gridTemplateColumns: '7rem 7rem',
+
+                gridTemplateColumns: '4.7rem 7rem',
                 marginBottom: '1.5rem',
               }}
             >
@@ -451,7 +452,7 @@ const RelaySettingsPage: React.FC = () => {
               />
             </S.SwitchContainer>
             <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-              <StyledPanel header={'Network Settings'} key="protocol" className="centered-header">
+              <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
                     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -553,7 +554,7 @@ const RelaySettingsPage: React.FC = () => {
         <BaseCol xs={24}>
           <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
             <StyledPanel
-              header={settings.mode !== 'smart' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
+              header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
               key="notes"
               className="centered-header"
             >
@@ -581,7 +582,7 @@ const RelaySettingsPage: React.FC = () => {
                         <h3 className="checkboxHeader w-full">{group.name}</h3>
                         <div className="custom-checkbox-group grid-checkbox-group large-label">
                           {group.notes.map((note) => (
-                            <div key={note.kindString}>
+                            <div className = "checkbox-container" key={note.kindString}>
                               <BaseCheckbox
                                 value={note.kindString}
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -612,11 +613,11 @@ const RelaySettingsPage: React.FC = () => {
                   </BaseCheckbox.Group>
                   {settings.mode !== 'smart' && (
                     <div
-                      style={{ padding: '2rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
+                      style={{ padding: '1.5rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
                     >
                       <h3>{'Add to Blacklist'}</h3>
                       <div
-                        style={{ display: 'flex', paddingBottom: '1rem' }}
+                        style={{ display: 'flex', paddingBottom: '2.5rem' }}
                         className="custom-checkbox-group grid-checkbox-group large-label"
                       >
                         <Input
@@ -651,20 +652,20 @@ const RelaySettingsPage: React.FC = () => {
                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
                             key={kind}
                           >
-                            <div>
+                            <div className='checkbox-container'>
                               <BaseCheckbox
                                 className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
                                 value={kind}
                               />
                               <S.CheckboxLabel
                                 isActive={true}
-                                style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
+                                style={{ fontSize: '1rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
                               >
-                                {kind}
+                                {`kind`+kind}
                               </S.CheckboxLabel>
                             </div>
                             <BaseButton
-                              style={{ height: '2rem', width: '5rem' }}
+                              style={{ height: '2rem', width: '5rem', marginRight:"1rem" }}
                               onClick={() => removeDynamicKind(kind)}
                             >
                               Remove
@@ -826,7 +827,7 @@ const RelaySettingsPage: React.FC = () => {
         <S.SwitchContainer
           style={{
             display: 'grid',
-            gridTemplateColumns: '5rem 7rem',
+            gridTemplateColumns: '5rem 6.5rem',
             marginBottom: '1.5rem',
             marginTop: '1rem',
           }}
@@ -841,7 +842,7 @@ const RelaySettingsPage: React.FC = () => {
           />
         </S.SwitchContainer>
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Settings'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -950,7 +951,7 @@ const RelaySettingsPage: React.FC = () => {
 
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel
-            header={settings.mode !== 'smart' ? `Blacklisted Nostr Kind Numbers` : 'Nostr Kind Numbers'}
+            header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
             key="notes"
             className="centered-header"
           >
@@ -977,7 +978,7 @@ const RelaySettingsPage: React.FC = () => {
                       <h3 className="checkboxHeader w-full">{group.name}</h3>
                       <div className="custom-checkbox-group grid-checkbox-group large-label">
                         {group.notes.map((note) => (
-                          <div key={note.kindString}>
+                          <div className='checkbox-container' style={{paddingLeft:".6rem"}} key={note.kindString}>
                             <BaseCheckbox
                               value={note.kindString}
                               className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
@@ -1006,9 +1007,9 @@ const RelaySettingsPage: React.FC = () => {
                 </BaseCheckbox.Group>
               </div>
               {settings.mode === 'unlimited' && (
-                <div style={{ padding: '2rem 0rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+                <div style={{ padding: '0rem 0rem .5rem 0rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
                   <h3>{'Add to Blacklist'}</h3>
-                  <div style={{ display: 'flex', paddingBottom: '1rem' }}>
+                  <div style={{ display: 'flex', paddingBottom: '1.5rem', gap: ".5rem"}}>
                     <Input value={newKind} onChange={(e) => setNewKind(e.target.value)} placeholder="Enter new kind" />
                     <BaseButton
                       onClick={() => {
@@ -1025,7 +1026,7 @@ const RelaySettingsPage: React.FC = () => {
                     </BaseButton>
                   </div>
                   <BaseCheckbox.Group
-                    style={{ paddingLeft: '1rem' }}
+                    style={{ paddingLeft:".6rem" }}
                     className={`custom-checkbox-group grid-checkbox-group large-label ${
                       settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
                     }`}
@@ -1034,12 +1035,12 @@ const RelaySettingsPage: React.FC = () => {
                   >
                     {(settings.dynamicKinds || []).map((kind) => (
                       <div
-                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
+                        style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center', justifyContent:"space-between" }}
                         key={kind}
                       >
-                        <div>
+                        <div className='checkbox-container'>
                           <BaseCheckbox
-                            style={{ paddingLeft: '1rem' }}
+                            style={{ paddingLeft: '0rem' }}
                             className={settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''}
                             value={kind}
                           />
@@ -1047,7 +1048,7 @@ const RelaySettingsPage: React.FC = () => {
                             isActive={true}
                             style={{ fontSize: '1.2rem', paddingRight: '.8rem', paddingLeft: '.8rem' }}
                           >
-                            {kind}
+                            {`kind`+kind}
                           </S.CheckboxLabel>
                         </div>
                         <BaseButton style={{ height: '2rem', width: '5rem' }} onClick={() => removeDynamicKind(kind)}>

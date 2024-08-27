@@ -50,4 +50,8 @@ export const currencies = {
     text: 'NZD',
     icon: 'NZ$',
   },
+  [CurrencyTypeEnum.SATS]: {
+    text: 'SATS',
+    icon: 'SAT ',
+  },
 };

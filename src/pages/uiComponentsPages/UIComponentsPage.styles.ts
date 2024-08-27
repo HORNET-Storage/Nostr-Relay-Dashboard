@@ -115,7 +115,7 @@ export const CheckboxLabel = styled.label<CheckboxLabelProps>`
 `;
 // Scaling up the BaseSwitch by increasing its dimensions
 export const LargeSwitch = styled(BaseSwitch)`
-  transform: scale(1.2); // Adjust the scale factor as needed
+  transform: scale(1.05); // Adjust the scale factor as needed
   transform-origin: center;
   & .modeSwitch{
    background-image: linear-gradient(to right,red,red), linear-gradient(to right,var(--background-color),var(--background-color));

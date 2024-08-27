@@ -41,6 +41,7 @@ export enum CurrencyTypeEnum {
   NZD = 'NZD', // New Zealand Dollar
   ETH = 'ETH',
   BTC = 'BTC',
+  SATS = 'SATS'
 }
 
 export interface PaymentCard {

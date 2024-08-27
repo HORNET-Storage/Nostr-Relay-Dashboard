@@ -110,7 +110,6 @@ export const BarAnimationDelayChart: React.FC = () => {
     yAxis: {
       name: noData ? '' : t('charts.gigabytes'),
       nameTextStyle: {
-        padding: noData ? [0, 0] : [0, -24],
         align: 'left',
       },
       axisLabel: {

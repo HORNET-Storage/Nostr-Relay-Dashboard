@@ -258,13 +258,14 @@ export default createGlobalStyle`
   opacity:.75;
   }
   .checkboxHeader{
-    padding: 0rem 0 1.4rem 0;
+    padding: 0rem 0 .5rem 0;
   }
   .grid-checkbox-group {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1.8rem;
+    column-gap: 1rem;
+    row-gap: 1.6rem;
   }
   .grid-mobile-checkbox-group{
   display: grid;
@@ -273,9 +274,16 @@ export default createGlobalStyle`
   gap: 1.2rem;
 
   }
+  .checkbox-container{
+    display: flex;
+    align-items: center;  
+    }
+  .checkbox-container{
+    white-space: nowrap;  
+  }
 
   .grid-checkbox-group.large-label {
-    grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   }
   .switch-container{
     padding-bottom: 1rem;
