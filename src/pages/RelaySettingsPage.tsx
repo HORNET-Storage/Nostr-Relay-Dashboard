@@ -538,14 +538,6 @@ const RelaySettingsPage: React.FC = () => {
             <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
                 <S.Card>
-                  <S.InfoCard  style={{paddingTop:'.2rem'}}>
-                    <InfoCircleOutlined />
-                    <span style={{ fontSize: 'small', color: themeObject[theme].textLight, marginLeft: '1rem' }}>
-                      {
-                        'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
-                      }
-                    </span>
-                  </S.InfoCard>
                   <div className="flex-col w-full">
                     <BaseCheckbox.Group
                       style={{ paddingTop: '1rem', paddingLeft: '1rem' }}
@@ -554,14 +546,15 @@ const RelaySettingsPage: React.FC = () => {
                       options={appBucketOptions}
                     />
 
-                    <div
-                      style={{
-                        padding: '2rem 0rem 0rem 0rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '.5rem',
-                      }}
-                    >
+                    <S.InfoCard>
+                      <S.InfoCircleOutlinedIcon />
+                      <small style={{ color: themeObject[theme].textLight, marginLeft: '1rem' }}>
+                        {
+                          'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
+                        }
+                      </small>
+                    </S.InfoCard>
+                    <S.NewBucketContainer>
                       <h3>{'Add an App Bucket'}</h3>
                       <div
                         style={{ display: 'flex' }}
@@ -618,7 +611,7 @@ const RelaySettingsPage: React.FC = () => {
                           </div>
                         ))}
                       </BaseCheckbox.Group>
-                    </div>
+                    </S.NewBucketContainer>
                   </div>
                 </S.Card>
               </StyledPanel>
@@ -1031,14 +1024,6 @@ const RelaySettingsPage: React.FC = () => {
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>
-              <S.InfoCard>
-                <InfoCircleOutlined style={{paddingTop:'.2rem'}} />
-                <span style={{ fontSize: 'small', color: themeObject[theme].textLight, marginLeft: '1rem' }}>
-                  {
-                    'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
-                  }
-                </span>
-              </S.InfoCard>
               <div className="flex-col w-full">
                 <BaseCheckbox.Group
                   style={{ padding: '1rem 0rem 1rem 1rem' }}
@@ -1048,15 +1033,15 @@ const RelaySettingsPage: React.FC = () => {
                   //disabled={settings.mode !== 'smart' ? false : !settings.isKindsActive}
                   options={appBucketOptions}
                 />
-
-                <div
-                  style={{
-                    padding: '1.5rem 0rem 0rem 0rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '.5rem',
-                  }}
-                >
+                <S.InfoCard>
+                  <S.InfoCircleOutlinedIcon />
+                  <small style={{ color: themeObject[theme].textLight, marginLeft: '1rem' }}>
+                    {
+                      'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
+                    }
+                  </small>
+                </S.InfoCard>
+                <S.NewBucketContainer>
                   <h3>{'Add an App Bucket'}</h3>
                   <div style={{ display: 'flex' }} className="large-label">
                     <Input
@@ -1108,7 +1093,7 @@ const RelaySettingsPage: React.FC = () => {
                       </div>
                     ))}
                   </BaseCheckbox.Group>
-                </div>
+                </S.NewBucketContainer>
               </div>
             </S.Card>
           </StyledPanel>
