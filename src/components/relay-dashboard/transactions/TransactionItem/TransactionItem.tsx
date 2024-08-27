@@ -50,14 +50,14 @@ export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, da
   }, [witness_tx_id]);
 
   useEffect(() => {
-    if (currency.currency === CurrencyTypeEnum.USD || !currency.currentPrice) {
+    if (!currency.currentPrice) {
       setCurrentCurrency(currency.currency);
       setTransactionValue(value);
     } else {
       if (currency.currency !== currentCurrency) {
         setCurrentCurrency(currency.currency);
       }
-      setTransactionValue(convertSatsToCurrency(sats, currency.currentPrice).toString());
+      setTransactionValue(convertSatsToCurrency(parseFloat(value), currency.currentPrice).toString());
     }
   }, [currency.currentPrice, value, sats]);
 
