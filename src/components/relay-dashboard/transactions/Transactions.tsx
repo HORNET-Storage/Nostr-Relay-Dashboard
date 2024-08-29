@@ -102,7 +102,6 @@ export const ActivityStory: React.FC = () => {
     const sortedStory = [...story]
       .filter((item) => {
         const amount = parseFloat(item.value);
-        console.log(`Parsed amount: ${amount} for transaction ID: ${item.id}`);
         return amount > 0; // Filter only positive values
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -112,9 +111,6 @@ export const ActivityStory: React.FC = () => {
       const amount = parseFloat(item.value);
       return isNaN(amount) ? 0 : amount;
     });
-
-    // Additional log to verify amounts array
-    console.log('Chart Data Amounts:', amounts);
 
     return {
       labels,
