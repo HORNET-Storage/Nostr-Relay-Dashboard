@@ -16,6 +16,7 @@ export const useBitcoinRates = (currency: CurrencyTypeEnum) => {
 
   useEffect(() => {
     const fetchBitcoinRates = async (currency: CurrencyTypeEnum) => {
+      if(!currency || currency === CurrencyTypeEnum.SATS) return  
       try {
         const response = await fetch(`${config.baseURL}/bitcoin-rates/last-30-days/${currency.toLocaleLowerCase()}`);
         if (!response.ok) {

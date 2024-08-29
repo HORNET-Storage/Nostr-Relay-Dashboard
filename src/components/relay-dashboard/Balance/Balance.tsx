@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NFTCard } from '@app/components/relay-dashboard/common/NFTCard/NFTCard';
 import { TopUpBalanceButton } from './components/TopUpBalanceButton/TopUpBalanceButton';
-import { useAppSelector } from '@app/hooks/reduxHooks';
+import { useAppSelector, useAppDispatch } from '@app/hooks/reduxHooks';
 import { formatNumberWithCommas, getCurrencyPrice } from '@app/utils/utils';
 import * as S from './Balance.styles';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
@@ -12,8 +12,7 @@ import { formatBalance } from '@app/utils/balanceFormatter';
 import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch'; // Import BaseSwitch
 import CurrencySelect from './components/CurrencySelect/CurrencySelect';
 import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
-import { convertSatsToCurrency } from '@app/utils/utils';
-
+import { setCurrency } from '@app/store/slices/currencySlice';
 //Needs to be centralized somewhere TODO
 const availableCurrencies: CurrencyTypeEnum[] = [
   CurrencyTypeEnum.USD,
@@ -29,6 +28,8 @@ const availableCurrencies: CurrencyTypeEnum[] = [
 ];
 
 export const Balance: React.FC = () => {
+  const dispatch = useAppDispatch();
+
   const { balanceData, isLoading } = useBalanceData();
   const [displayUSD, setDisplayUSD] = useState(true); // State to toggle between USD and SATs
   const currency = useAppSelector((state) => state.currency);
@@ -39,7 +40,18 @@ export const Balance: React.FC = () => {
   }
 
   const handleSwitchChange = () => {
-    setDisplayUSD(!displayUSD);
+    const newSwitchValue = !displayUSD;
+
+    if (newSwitchValue == false) {
+      localStorage.setItem('currency', currency.currency.toString());  
+      dispatch(setCurrency(CurrencyTypeEnum.SATS));
+    }else{
+      const savedCurrency = localStorage.getItem('currency'); 
+      dispatch(setCurrency(savedCurrency ? savedCurrency as CurrencyTypeEnum : CurrencyTypeEnum.USD));
+
+    }
+
+    setDisplayUSD(newSwitchValue);
   };
 
   return (

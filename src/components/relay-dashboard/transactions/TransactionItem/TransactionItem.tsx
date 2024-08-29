@@ -32,16 +32,12 @@ function convertBtcToUsd(btcValue: string, btcPriceInUsd: number): string {
   }
 }
 
-export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value, sats }) => {
+export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, date, output, value }) => {
   const { t } = useTranslation();
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [transactionValue, setTransactionValue] = useState<string>('');
   const [currentCurrency, setCurrentCurrency] = useState<CurrencyTypeEnum>(CurrencyTypeEnum.USD);
   const currency = useAppSelector((state) => state.currency);
-
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
 
   useEffect(() => {
     if (!witness_tx_id) {
@@ -57,9 +53,13 @@ export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, da
       if (currency.currency !== currentCurrency) {
         setCurrentCurrency(currency.currency);
       }
-      setTransactionValue(convertSatsToCurrency(parseFloat(value), currency.currentPrice).toString());
+      if (currency.currency === CurrencyTypeEnum.SATS) {
+        setTransactionValue(parseFloat(value).toString());
+      } else {
+        setTransactionValue(convertSatsToCurrency(parseFloat(value), currency.currentPrice).toString());
+      }
     }
-  }, [currency.currentPrice, value, sats]);
+  }, [currency.currentPrice, currency.currency, value]);
 
   // useEffect(() => {
   //   if (!isLoading && !error && rates.length > 0) {
@@ -91,7 +91,11 @@ export const TransactionItem: React.FC<WalletTransaction> = ({ witness_tx_id, da
         </BaseCol>
         <BaseCol span={12} style={{ textAlign: 'right' }}>
           <S.Label>{t('Value')}:</S.Label>
-          <S.Value>{getCurrencyPrice(formatNumberWithCommas(parseFloat(transactionValue)), currentCurrency)}</S.Value>
+          <S.Value>
+            {currency.currency === CurrencyTypeEnum.SATS
+              ? ` ${transactionValue} Sats`
+              : getCurrencyPrice(formatNumberWithCommas(parseFloat(transactionValue)), currentCurrency)}
+          </S.Value>
         </BaseCol>
       </BaseRow>
     </S.TransactionCard>

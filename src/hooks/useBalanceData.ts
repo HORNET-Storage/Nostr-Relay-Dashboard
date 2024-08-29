@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { useAppSelector } from './reduxHooks';
+import { CurrencyTypeEnum } from '@app/interfaces/interfaces';
 interface Transaction {
   id: number;
   witness_tx_id: string;
@@ -22,6 +23,7 @@ const useBalanceData = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if(!currency || currency === CurrencyTypeEnum.SATS) return 
       setIsLoading(true);
       try {
         // Fetch balance data

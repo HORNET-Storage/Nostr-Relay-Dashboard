@@ -22,6 +22,14 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
   const currency = useAppSelector((state) => state.currency.currency);
   const { t } = useTranslation();
 
+  const [currentCurrency, setCurrentCurrency] = React.useState<CurrencyTypeEnum>(currency);
+
+  useEffect(() => {
+    if(!currency || currency === CurrencyTypeEnum.SATS) return 
+    setCurrentCurrency(currency);
+
+  }, [currency]);
+
   console.log('xAxisData:', xAxisData);
   console.log('earningData:', earningData);
 
@@ -65,7 +73,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
     if (!maxY || !currency || !earningData) return 60;
     const characterSize = 8.6;
     const amountLength = formatGraphValue(maxY).length; // Remove decimal points
-    const symbolSize = currencies[currency].icon.replace(/\./g, '').length;
+    const symbolSize = currencies[currentCurrency].icon.replace(/\./g, '').length;
     return (amountLength + symbolSize) * characterSize;
   };
   const [leftPadding, setLeftPadding] = React.useState(calcLeftPadding());
@@ -82,7 +90,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
       formatter: (data: any) => {
         const currentSeries = data[0];
         const roundedValue = Math.round(currentSeries.value[1]); // Round to nearest dollar
-        return `${currentSeries.name} - ${getCurrencyPrice(formatNumberWithCommas(roundedValue), currency)}`;
+        return `${currentSeries.name} - ${getCurrencyPrice(formatNumberWithCommas(roundedValue), currentCurrency)}`;
       },
     },
     grid: {
@@ -123,7 +131,7 @@ export const TotalEarningChart: React.FC<TotalEarningChartProps> = ({ xAxisData,
         },
       },
       axisLabel: {
-        formatter: (value: number) => `${currencies[currency].icon}${formatGraphValue(value)}`,
+        formatter: (value: number) => `${currencies[currentCurrency].icon}${formatGraphValue(value)}`,
         color: themeObject[theme].chartAxisLabel,
         fontSize: 13,
         fontFamily: 'Arial',

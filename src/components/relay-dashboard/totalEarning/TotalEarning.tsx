@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect} from 'react';
 import { useTranslation } from 'react-i18next';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import { NFTCard } from '@app/components/relay-dashboard/common/NFTCard/NFTCard';
@@ -15,6 +15,7 @@ import { useBitcoinRates } from '@app/hooks/useBitcoinRates';
 export const TotalEarning: React.FC = () => {
   const { t } = useTranslation();
   const currency = useAppSelector((state) => state.currency.currency);
+  const [currentCurrency, setCurrentCurrency] = useState<CurrencyTypeEnum>(currency);
   const { rates: bitcoinRates, isLoading, error } = useBitcoinRates(currency);
   const { totalEarningData, days } = useMemo(() => {
     const earningData = {
@@ -28,6 +29,12 @@ export const TotalEarning: React.FC = () => {
     };
   }, [bitcoinRates]);
 
+  useEffect(() => {
+    if (!currency || currency === CurrencyTypeEnum.SATS) return;
+    setCurrentCurrency(currency);
+  }, [currency]);
+
+  
   const latestRate = bitcoinRates.length > 0 ? bitcoinRates[bitcoinRates.length - 1]?.usd_value : undefined;
   const previousRate = bitcoinRates.length > 1 ? bitcoinRates[bitcoinRates.length - 2]?.usd_value : undefined;
   const isIncreased = latestRate && previousRate ? latestRate > previousRate : false;
@@ -43,7 +50,7 @@ export const TotalEarning: React.FC = () => {
   if (error) {
     return (
       <div>
-       {t('common.error')}: {"Unable to retrieve rates. Try again later."}
+        {t('common.error')}: {'Unable to retrieve rates. Try again later.'}
       </div>
     );
   }
@@ -66,7 +73,7 @@ export const TotalEarning: React.FC = () => {
         </BaseCol>
 
         <BaseCol span={24}>
-            <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, currency)}</S.Text>
+          <S.Text>{getCurrencyPrice(`${formatNumberWithCommas(formattedLatestRate)}`, currency)}</S.Text>
         </BaseCol>
 
         <BaseCol span={24}>
