@@ -540,7 +540,7 @@ const RelaySettingsPage: React.FC = () => {
                 <S.Card>
                   <div className="flex-col w-full">
                     <BaseCheckbox.Group
-                      style={{ paddingTop: '1rem', paddingLeft: '1rem' }}
+                      style={{ paddingTop: '1rem', paddingLeft: '1rem', paddingBottom: '1rem' }}
                       className={`custom-checkbox-group grid-checkbox-group`}
                       onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
                       options={appBucketOptions}
@@ -548,7 +548,7 @@ const RelaySettingsPage: React.FC = () => {
 
                     <S.InfoCard>
                       <S.InfoCircleOutlinedIcon />
-                      <small style={{ color: themeObject[theme].textLight, marginLeft: '1rem' }}>
+                      <small style={{ color: themeObject[theme].textLight }}>
                         {
                           'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
                         }
@@ -1035,7 +1035,7 @@ const RelaySettingsPage: React.FC = () => {
                 />
                 <S.InfoCard>
                   <S.InfoCircleOutlinedIcon />
-                  <small style={{ color: themeObject[theme].textLight, marginLeft: '1rem' }}>
+                  <small style={{ color: themeObject[theme].textLight }}>
                     {
                       'Enabling buckets will organize data stored within the relay to quicken retrieval times for users. Disabling buckets will not turn off data storage.'
                     }

@@ -29,7 +29,10 @@ export const Card = styled(CommonCard)`
 `;
 export const InfoCircleOutlinedIcon = styled(InfoCircleOutlined)`
   color: var(--text-light-color);
-  font-size: 1rem;
+  font-size: .75rem;
+  align-self: start;
+  padding-top .2rem;
+  padding-right: .5rem;
   cursor: pointer;
 `;
 export const NewBucketContainer = styled.div`
@@ -40,8 +43,7 @@ export const NewBucketContainer = styled.div`
 `;
 export const InfoCard = styled(CommonCard)`
   width: 100%;
-  padding-top: 1.5rem;
-
+  padding: 0.7rem 1.2rem;
   .ant-card-head-title {
     font-size: 1rem;
   }
