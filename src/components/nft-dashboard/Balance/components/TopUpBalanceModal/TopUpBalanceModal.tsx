@@ -43,7 +43,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
   }, [isOpen]);
 
   return (
-    <BaseModal width={500} open={isOpen} onCancel={onOpenChange} footer={null} destroyOnClose>
+    <BaseModal centered={true} width={500} open={isOpen} onCancel={onOpenChange} footer={null} destroyOnClose>
       <BaseSpin spinning={isLoading}>
         <AddressList addresses={addresses} />
       </BaseSpin>

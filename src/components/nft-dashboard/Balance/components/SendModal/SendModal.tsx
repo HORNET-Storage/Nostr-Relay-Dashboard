@@ -29,7 +29,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onOpenChange }) => {
     onOpenChange();
   };
   return (
-    <S.SendModal  open={isOpen} onCancel={handleFinish} footer={null} destroyOnClose>
+    <S.SendModal centered={true}  open={isOpen} onCancel={handleFinish} footer={null} destroyOnClose>
       <BaseSpin spinning={isLoading}>
         {isFinished && successScreenState ? (
           <ResultScreen

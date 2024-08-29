@@ -4,6 +4,7 @@ import { BaseLayout } from '@app/components/common/BaseLayout/BaseLayout';
 
 interface HeaderProps {
   $isTwoColumnsLayout: boolean;
+  $isDesktop: boolean;
 }
 
 export default styled(BaseLayout.Content)<HeaderProps>`
@@ -13,9 +14,14 @@ export default styled(BaseLayout.Content)<HeaderProps>`
   flex-direction: column;
   justify-content: space-between;
 
+  ${(props) =>
+    props?.$isDesktop &&
+    css`
+      z-index: 105;
+    `}
+
   @media only screen and ${media.md} {
-    padding: ${LAYOUT.desktop.paddingVertical} 1.8rem 0
-      ${LAYOUT.desktop.paddingHorizontal};
+    padding: ${LAYOUT.desktop.paddingVertical} 1.8rem 0 ${LAYOUT.desktop.paddingHorizontal};
   }
 
   @media only screen and ${media.xl} {
