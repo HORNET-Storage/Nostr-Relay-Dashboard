@@ -1,7 +1,7 @@
 import React from 'react';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { truncateString } from '@app/utils/utils';
 import * as S from './ResultScreen.styles';
+import { useResponsive } from '@app/hooks/useResponsive';
 interface ResultScreenProps {
   isSuccess: boolean;
   amount: number;
@@ -9,6 +9,7 @@ interface ResultScreenProps {
 }
 
 const ResultScreen: React.FC<ResultScreenProps> = ({ isSuccess, amount, receiver }) => {
+  const { isTablet } = useResponsive();
   return (
     <S.ResultScreenWrapper>
       {isSuccess ? (
@@ -16,7 +17,8 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ isSuccess, amount, receiver
           <S.ResultTextPass>Success! </S.ResultTextPass>
           <S.ResultMessage>
             {' '}
-            You have successfully sent <br/> {amount} Sats <br/>   to  <br/>  {truncateString(receiver, 10)} 
+            You have successfully sent <br /> {amount} Sats <br /> to <br />
+            {truncateString(receiver, isTablet ? 25 : 10)}
           </S.ResultMessage>
         </>
       ) : (
