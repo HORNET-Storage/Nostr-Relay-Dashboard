@@ -321,8 +321,9 @@ const RelaySettingsPage: React.FC = () => {
       return;
     }
     setStoredAppBuckets((prevBuckets) => [...prevBuckets, bucket]);
-    handleSettingsChange('appBuckets', [...settings.appBuckets, bucket]);
+    handleSettingsChange('dynamicAppBuckets', [...settings.dynamicAppBuckets, bucket]);
   };
+
   const handleRemovedBucket = (bucket: string) => {
     setStoredAppBuckets((prevBuckets) => prevBuckets.filter((b) => b !== bucket));
     handleSettingsChange(
