@@ -66,12 +66,14 @@ export const Balance: React.FC = () => {
                 </BaseCol>
               </BaseRow>
             </BaseCol>
-            <BaseCol span={24}>
-              <SendButton />
-            </BaseCol>
-            <BaseCol span={24}>
-              <TopUpBalanceButton />
-            </BaseCol>
+            <S.BalanceButtonsContainers gutter={[0,20]}>
+              <BaseCol span={24}>
+                <SendButton />
+              </BaseCol>
+              <BaseCol span={24}>
+                <TopUpBalanceButton />
+              </BaseCol>
+            </S.BalanceButtonsContainers>
           </BaseRow>
         </NFTCard>
       </BaseCol>

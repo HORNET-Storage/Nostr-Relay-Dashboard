@@ -1,6 +1,6 @@
 import { BaseTypography } from '@app/components/common/BaseTypography/BaseTypography';
 import { FONT_FAMILY, FONT_SIZE, FONT_WEIGHT } from '@app/styles/themes/constants';
-import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import styled from 'styled-components';
 
 export const TitleText = styled(BaseTypography.Title)`
@@ -48,3 +48,7 @@ export const LabelSpan = styled.span`
   color: #fff; // Adjust color based on your theme
   font-size: 1rem; // Adjust size as needed
 `;
+export const BalanceButtonsContainers = styled(BaseRow)`
+  width: 100%;
+  padding: 0 1rem;
+`
