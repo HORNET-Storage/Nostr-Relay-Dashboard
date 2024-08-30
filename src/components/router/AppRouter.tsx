@@ -69,7 +69,7 @@ const Logout = React.lazy(() => import('./Logout'));
 
 export const NFT_DASHBOARD_PATH = '/';
 export const MEDICAL_DASHBOARD_PATH = '/medical-dashboard';
-export const RELAY_SETTINGS_PATH = '/storage-settings';
+export const RELAY_SETTINGS_PATH = '/relay-settings';
 export const TABLES_PAGE_PATH = '/nostr-stats';
 
 const MedicalDashboard = withLoading(MedicalDashboardPage);
