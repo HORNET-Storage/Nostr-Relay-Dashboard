@@ -15,6 +15,8 @@ interface RelaySettings {
   gitNestr: string[];
   audio: string[];
   appBuckets: string[];
+  syncFrequency: number;  
+  isSyncCyclesActive: boolean;
   dynamicAppBuckets: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
@@ -42,6 +44,8 @@ const getInitialSettings = (): RelaySettings => {
         audio: [],
         appBuckets: [],
         dynamicAppBuckets: [],
+        syncFrequency: 0,
+        isSyncCyclesActive: false,
         isKindsActive: true,
         isPhotosActive: true,
         isVideosActive: true,

@@ -69,6 +69,8 @@ const RelaySettingsPage: React.FC = () => {
     audio: [],
     appBuckets: [],
     dynamicAppBuckets: [],
+    syncFrequency: 0,
+    isSyncCyclesActive: true,
     isKindsActive: true,
     isPhotosActive: true,
     isVideosActive: true,
@@ -361,6 +363,8 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('maxFileSizeUnit', settings.maxFileSizeUnit),
       updateSettings('appBuckets', settings.appBuckets),
       updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+      updateSettings('syncFrequency', settings.syncFrequency),
+      updateSettings('isSyncCyclesActive', settings.isSyncCyclesActive),
     ]);
 
     await saveSettings();
@@ -538,8 +542,9 @@ const RelaySettingsPage: React.FC = () => {
             <S.RelaySettingsCollapse bordered={false}>
               <StyledPanel header={`Sync Cycles`} key={'syncCycles'}>
                 <S.Card>
-                  <S.FlexCol gap={'1rem'}>
-                    <BaseSwitch style={{ width: '7rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+                  <S.FlexCol style={{ paddingLeft: '1rem' }} gap={'1rem'}>
+                    <BaseSwitch style={{ width: '6rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+                    <S.LabelSpan style={{ marginTop:"1rem", marginBottom: ".5rem" }}>{`Sync Frequency`}</S.LabelSpan>
                     <div
                       style={{
                         display: 'flex',
@@ -1046,8 +1051,11 @@ const RelaySettingsPage: React.FC = () => {
         <S.RelaySettingsCollapse bordered={false}>
           <StyledPanel header={`Sync Cycles`} key={'syncCycles'}>
             <S.Card>
-              <S.FlexCol gap={'1rem'}>
-                <BaseSwitch style={{ width: '7rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+              
+              <S.FlexCol style={{ paddingLeft: '1rem' }} gap={'1rem'}>
+                
+                <BaseSwitch style={{ width: '6rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+                <S.LabelSpan style={{ marginTop:"1rem", marginBottom: ".5rem" }}>{`Sync Frequency`}</S.LabelSpan>
                 <div
                   style={{
                     display: 'flex',

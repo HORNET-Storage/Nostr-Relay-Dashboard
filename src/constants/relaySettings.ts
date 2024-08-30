@@ -13,6 +13,8 @@ export type Settings = {
   audio: string[];
   appBuckets: string[];
   dynamicAppBuckets: string[];
+  syncFrequency: number;
+  isSyncCyclesActive: boolean;
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
@@ -20,7 +22,7 @@ export type Settings = {
   isAudioActive: boolean;
 };
 
-export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets';  
+export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets' | 'syncFrequency' | 'isSyncCyclesActive' | 'isKindsActive' | 'isPhotosActive' | 'isVideosActive' | 'isGitNestrActive' | 'isAudioActive';    
 export const noteOptions = [
   { kind: 0, kindString: 'kind0', description: 'Metadata', category: 1 },
   { kind: 1, kindString: 'kind1', description: 'Text Note', category: 1 },
