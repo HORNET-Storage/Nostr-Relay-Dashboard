@@ -4,6 +4,7 @@ import { BaseCollapse } from '@app/components/common/BaseCollapse/BaseCollapse';
 import { LAYOUT, media } from '@app/styles/themes/constants';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
+import { InfoCircleOutlined } from '@ant-design/icons';
 export const Card = styled(CommonCard)`
   width: 100%;
   margin-bottom: 1.25rem;
@@ -15,6 +16,46 @@ export const Card = styled(CommonCard)`
     flex-wrap: wrap;
     gap: 1.25rem;
     align-items: center;
+  }
+  .ant-card-body:before {
+    display: none;
+  }
+  .ant-card-body:after {
+    display: none;
+  }
+  &.ant-card-bordered {
+    border: 1px solid var(--border-color);
+  }
+`;
+export const InfoCircleOutlinedIcon = styled(InfoCircleOutlined)`
+  color: var(--text-light-color);
+  font-size: .75rem;
+  align-self: start;
+  padding-top .2rem;
+  padding-right: .5rem;
+  cursor: pointer;
+`;
+export const NewBucketContainer = styled.div`
+  padding: 1rem 0rem 0rem 0rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+export const InfoCard = styled(CommonCard)`
+  width: 100%;
+  padding: 0.7rem 1.2rem;
+  .ant-card-head-title {
+    font-size: 1rem;
+  }
+  .ant-card-body {
+    flex-wrap: nowrap;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0rem;
+    align-items: center;
+
+    padding: 0;
   }
   .ant-card-body:before {
     display: none;
@@ -132,4 +173,7 @@ export const LabelSpan = styled.span`
   display: flex; // Use flex to align items if necessary
   align-items: center; // Center align to match switch height
   padding-right: 10px; // Optional padding for visual spacing
+`;
+export const HeadingContainer = styled.div`
+  margin-bottom: 1.25rem;
 `;

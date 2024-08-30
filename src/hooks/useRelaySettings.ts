@@ -14,6 +14,8 @@ interface RelaySettings {
   videos: string[];
   gitNestr: string[];
   audio: string[];
+  appBuckets: string[];
+  dynamicAppBuckets: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
@@ -22,7 +24,7 @@ interface RelaySettings {
 }
 
 const getInitialSettings = (): RelaySettings => {
-  const savedSettings = localStorage.getItem('settingsCache');
+  const savedSettings = localStorage.getItem('relaySettings');
   return savedSettings
     ? JSON.parse(savedSettings)
     : {
@@ -38,6 +40,8 @@ const getInitialSettings = (): RelaySettings => {
         videos: [],
         gitNestr: [],
         audio: [],
+        appBuckets: [],
+        dynamicAppBuckets: [],
         isKindsActive: true,
         isPhotosActive: true,
         isVideosActive: true,
@@ -64,8 +68,21 @@ const useRelaySettings = () => {
       if (!response.ok) {
         throw new Error(`Network response was not ok (status: ${response.status})`);
       }
+      
       const data = await response.json();
-      console.log('Fetched settings:', data.relay_settings);
+
+      const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
+      const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
+
+      const newAppBuckets = data.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
+      const newDynamicKinds = data.dynamicKinds.filter((kind :string) => !storedDynamicKinds.includes(kind));
+
+      if (newAppBuckets.length > 0) {
+        localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
+      }
+      if (newDynamicKinds.length > 0) {
+        localStorage.setItem('dynamicKinds', JSON.stringify([...storedDynamicKinds, ...newDynamicKinds]));
+      }
       setRelaySettings({
         ...data.relay_settings,
         protocol: Array.isArray(data.relay_settings.protocol)
@@ -75,7 +92,6 @@ const useRelaySettings = () => {
           ? data.relay_settings.chunked
           : [data.relay_settings.chunked],
       });
-      localStorage.setItem('settingsCache', JSON.stringify(data.relay_settings));
       localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
     } catch (error) {
       console.error('Error fetching settings:', error);
