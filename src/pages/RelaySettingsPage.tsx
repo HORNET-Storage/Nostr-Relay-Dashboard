@@ -25,28 +25,12 @@ const { Option } = Select;
 
 const RelaySettingsPage: React.FC = () => {
   const theme = useAppSelector((state) => state.theme.theme);
-  const [loadings, setLoadings] = useState<boolean[]>([]);
-  const enterLoading = (index: number) => {
-    setLoadings((loadings) => {
-      const newLoadings = [...loadings];
-      newLoadings[index] = true;
-      return newLoadings;
-    });
-  };
-
-  const exitLoading = (index: number) => {
-    setLoadings((loadings) => {
-      const newLoadings = [...loadings];
-      newLoadings[index] = false;
-      return newLoadings;
-    });
-  };
-
   const { relaySettings, fetchSettings, updateSettings, saveSettings } = useRelaySettings();
+  const { isDesktop } = useResponsive();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const relaymode = useAppSelector((state) => state.mode.relayMode);
-  const { isDesktop } = useResponsive();
+
 
   const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
     JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
@@ -54,6 +38,17 @@ const RelaySettingsPage: React.FC = () => {
   const [storedAppBuckets, setStoredAppBuckets] = useState<string[]>(
     JSON.parse(localStorage.getItem('appBuckets') || '[]'),
   );
+
+  const [loadings, setLoadings] = useState<boolean[]>([]);
+  const [newKind, setNewKind] = useState('');
+  const [newBucket, setNewBucket] = useState('');
+  const [blacklist, setBlacklist] = useState({
+    kinds: [],
+    photos: [],
+    videos: [],
+    gitNestr: [],
+    audio: [],
+  });
 
   const [settings, setSettings] = useState<Settings>({
     mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
@@ -80,6 +75,23 @@ const RelaySettingsPage: React.FC = () => {
     ...category,
     notes: noteOptions.filter((note) => note.category === category.id),
   }));
+
+  const enterLoading = (index: number) => {
+    setLoadings((loadings) => {
+      const newLoadings = [...loadings];
+      newLoadings[index] = true;
+      return newLoadings;
+    });
+  };
+
+  const exitLoading = (index: number) => {
+    setLoadings((loadings) => {
+      const newLoadings = [...loadings];
+      newLoadings[index] = false;
+      return newLoadings;
+    });
+  };
+
 
   const photoFormatOptions = [
     'jpeg',
@@ -213,15 +225,7 @@ const RelaySettingsPage: React.FC = () => {
   const chunkSizeOptions = ['2', '4', '6', '8', '10', '12'];
   const maxFileSizeUnitOptions = ['MB', 'GB', 'TB'];
 
-  const [newKind, setNewKind] = useState('');
-  const [newBucket, setNewBucket] = useState('');
-  const [blacklist, setBlacklist] = useState({
-    kinds: [],
-    photos: [],
-    videos: [],
-    gitNestr: [],
-    audio: [],
-  });
+
 
   const handleModeChange = (checked: boolean) => {
     const newMode = checked ? 'smart' : 'unlimited';
