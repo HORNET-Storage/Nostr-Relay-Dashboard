@@ -18,7 +18,6 @@ import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { categories, noteOptions, appBuckets, Settings, Category } from '@app/constants/relaySettings';
-import { InfoCircleOutlined } from '@ant-design/icons';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -1026,8 +1025,18 @@ const RelaySettingsPage: React.FC = () => {
           </StyledPanel>
         </S.RelaySettingsCollapse>
         <S.RelaySettingsCollapse bordered={false}>
-              <StyledPanel header={`Sync Cycles`} key={'syncCycles'}></StyledPanel>
-            </S.RelaySettingsCollapse>
+          <StyledPanel header={`Sync Cycles`} key={'syncCycles'}>
+            <BaseCol>
+              <BaseSwitch style={{ width: '8rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+              <div style={{display:"flex", gap:"20px", alignItems:"center", paddingTop:"1rem", paddingBottom:"1rem"}}>
+                <S.NumInput type="number" />
+              <span>mins</span>
+              <BaseButton>Set</BaseButton>
+              </div>
+             
+            </BaseCol>
+          </StyledPanel>
+        </S.RelaySettingsCollapse>
         <S.RelaySettingsCollapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>

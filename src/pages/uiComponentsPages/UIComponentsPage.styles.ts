@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { BaseCard as CommonCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseCollapse } from '@app/components/common/BaseCollapse/BaseCollapse';
-import { Collapse } from 'antd';
+import { Collapse, Input } from 'antd';
 import { LAYOUT, media } from '@app/styles/themes/constants';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { BaseSwitch } from '@app/components/common/BaseSwitch/BaseSwitch';
@@ -165,6 +165,10 @@ export const LargeSwitch = styled(BaseSwitch)`
 } 
 
 `;
+export const NumInput = styled(Input)`
+  width: 100px;
+
+`;
 
 // Style the label span to match the switch size
 export const LabelSpan = styled.span`
@@ -181,5 +185,5 @@ export const HeadingContainer = styled.div`
 
 export const RelaySettingsCollapse = styled(Collapse)`
   padding: 1rem 0 1rem 0;
-   margin: 0 0 1rem 0;
+  margin: 0 0 1rem 0;
 `;
