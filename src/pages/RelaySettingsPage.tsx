@@ -18,7 +18,6 @@ import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
 import { categories, noteOptions, appBuckets, Settings, Category } from '@app/constants/relaySettings';
-import { InfoCircleOutlined } from '@ant-design/icons';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -30,7 +29,6 @@ const RelaySettingsPage: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const relaymode = useAppSelector((state) => state.mode.relayMode);
-
 
   const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
     JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
@@ -76,6 +74,10 @@ const RelaySettingsPage: React.FC = () => {
     notes: noteOptions.filter((note) => note.category === category.id),
   }));
 
+  useEffect(() => {
+    console.log(settings);
+    console.log(blacklist)
+  }, [settings,blacklist]);
   const enterLoading = (index: number) => {
     setLoadings((loadings) => {
       const newLoadings = [...loadings];
@@ -91,7 +93,6 @@ const RelaySettingsPage: React.FC = () => {
       return newLoadings;
     });
   };
-
 
   const photoFormatOptions = [
     'jpeg',
@@ -225,13 +226,11 @@ const RelaySettingsPage: React.FC = () => {
   const chunkSizeOptions = ['2', '4', '6', '8', '10', '12'];
   const maxFileSizeUnitOptions = ['MB', 'GB', 'TB'];
 
-
-
   const handleModeChange = (checked: boolean) => {
     const newMode = checked ? 'smart' : 'unlimited';
     updateSettings('mode', newMode);
     dispatch(setMode(newMode));
-
+    console.log("changing mode")
     if (newMode === 'unlimited') {
       setBlacklist({
         kinds: [],
@@ -252,8 +251,11 @@ const RelaySettingsPage: React.FC = () => {
   };
 
   const handleBlacklistChange = (category: Category, checkedValues: string[]) => {
-    const isDynamicKind = category === 'dynamicKinds' || 'appBuckets';
+    console.log("changing blacklist")
+    debugger
+    const isDynamicKind = category === 'dynamicKinds' || category === 'appBuckets';
     if (isDynamicKind) {
+      console.log("changing dynamic kind")
       setSettings((prevSettings) => {
         const updatedSettings = { ...prevSettings, [category]: checkedValues };
         updateSettings(category, checkedValues);
@@ -276,6 +278,7 @@ const RelaySettingsPage: React.FC = () => {
   };
 
   const handleSettingsChange = (category: Category, checkedValues: string[]) => {
+    console.log("changing settings", category, checkedValues) 
     if (settings.mode === 'unlimited') {
       handleBlacklistChange(category, checkedValues);
     } else {
@@ -364,8 +367,8 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('chunked', settings.chunked),
       updateSettings('maxFileSize', settings.maxFileSize),
       updateSettings('maxFileSizeUnit', settings.maxFileSizeUnit),
-      updateSettings('appBuckets', settings.appBuckets),
-      updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+      // updateSettings('appBuckets', settings.appBuckets),
+      //updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
     ]);
 
     await saveSettings();
@@ -409,6 +412,8 @@ const RelaySettingsPage: React.FC = () => {
   }, [relaySettings]);
 
   useEffect(() => {
+    if(settings.mode === 'unlimited') return 
+    console.log("resetting blacklist changing")
     setBlacklist({
       kinds: [],
       photos: [],
