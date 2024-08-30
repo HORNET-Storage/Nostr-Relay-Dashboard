@@ -439,7 +439,7 @@ const RelaySettingsPage: React.FC = () => {
             <S.HeadingContainer>
               <S.LabelSpan>{'Options'}</S.LabelSpan>
             </S.HeadingContainer>
-            <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+            <S.RelaySettingsCollapse bordered={false}>
               <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
                 <S.Card>
                   <BaseCol span={24}>
@@ -535,8 +535,11 @@ const RelaySettingsPage: React.FC = () => {
                   </BaseCol>
                 </S.Card>
               </StyledPanel>
-            </Collapse>
-            <Collapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
+            </S.RelaySettingsCollapse>
+            <S.RelaySettingsCollapse bordered={false}>
+              <StyledPanel header={`Sync Cycles`} key={'syncCycles'}></StyledPanel>
+            </S.RelaySettingsCollapse>
+            <S.RelaySettingsCollapse bordered={false}>
               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
                 <S.Card>
                   <div className="flex-col w-full">
@@ -616,7 +619,7 @@ const RelaySettingsPage: React.FC = () => {
                   </div>
                 </S.Card>
               </StyledPanel>
-            </Collapse>
+            </S.RelaySettingsCollapse>
           </BaseCol>
         </BaseRow>
 
@@ -915,7 +918,7 @@ const RelaySettingsPage: React.FC = () => {
         <S.HeadingContainer>
           <S.LabelSpan>{'Options'}</S.LabelSpan>
         </S.HeadingContainer>
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+        <S.RelaySettingsCollapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
@@ -1021,8 +1024,11 @@ const RelaySettingsPage: React.FC = () => {
               </BaseCol>
             </S.Card>
           </StyledPanel>
-        </Collapse>
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+        </S.RelaySettingsCollapse>
+        <S.RelaySettingsCollapse bordered={false}>
+              <StyledPanel header={`Sync Cycles`} key={'syncCycles'}></StyledPanel>
+            </S.RelaySettingsCollapse>
+        <S.RelaySettingsCollapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
           <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
             <S.Card>
               <div className="flex-col w-full">
@@ -1098,7 +1104,7 @@ const RelaySettingsPage: React.FC = () => {
               </div>
             </S.Card>
           </StyledPanel>
-        </Collapse>
+        </S.RelaySettingsCollapse>
         <S.SwitchContainer
           style={{
             display: 'grid',
@@ -1117,7 +1123,7 @@ const RelaySettingsPage: React.FC = () => {
             onChange={(e) => handleModeChange(e)}
           />
         </S.SwitchContainer>
-        <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
+        <S.RelaySettingsCollapse bordered={false}>
           <StyledPanel
             header={settings.mode !== 'smart' ? `Blacklisted Kind Numbers` : 'Kind Numbers'}
             key="notes"
@@ -1232,7 +1238,7 @@ const RelaySettingsPage: React.FC = () => {
               )}
             </S.Card>
           </StyledPanel>
-        </Collapse>
+        </S.RelaySettingsCollapse>
 
         <Collapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
           <StyledPanel header={settings.mode !== 'smart' ? `Blacklisted Photo Extensions` : 'Photo Extensions'} key="2">
