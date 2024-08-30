@@ -919,7 +919,7 @@ const RelaySettingsPage: React.FC = () => {
           <S.LabelSpan>{'Options'}</S.LabelSpan>
         </S.HeadingContainer>
         <S.RelaySettingsCollapse style={{ padding: '1rem 0 1rem 0', margin: '0 0 1rem 0' }} bordered={false}>
-          <StyledPanel header={'Network Options'} key="protocol" className="centered-header">
+          <StyledPanel header={'Network Rules'} key="protocol" className="centered-header">
             <S.Card>
               <BaseCol span={24}>
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
