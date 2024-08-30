@@ -115,6 +115,11 @@ export const Space = styled.div`
   margin: 1rem 0;
 `;
 
+export const FlexCol = styled.div<{ gap?: string }>`
+display: flex;
+flex-direction: column;
+${(props) => props.gap && `gap: ${props.gap};`}
+`
 export const BlockWrapper = styled.div`
   display: flex;
   flex-direction: column;

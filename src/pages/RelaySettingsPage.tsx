@@ -536,7 +536,26 @@ const RelaySettingsPage: React.FC = () => {
               </StyledPanel>
             </S.RelaySettingsCollapse>
             <S.RelaySettingsCollapse bordered={false}>
-              <StyledPanel header={`Sync Cycles`} key={'syncCycles'}></StyledPanel>
+              <StyledPanel header={`Sync Cycles`} key={'syncCycles'}>
+                <S.Card>
+                  <S.FlexCol gap={'1rem'}>
+                    <BaseSwitch style={{ width: '7rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        alignItems: 'center',
+                        paddingTop: '1rem',
+                        paddingBottom: '1rem',
+                      }}
+                    >
+                      <S.NumInput type="number" />
+                      <span>mins</span>
+                    </div>
+                    <BaseButton style={{ width: '11rem' }}>Set</BaseButton>
+                  </S.FlexCol>
+                </S.Card>
+              </StyledPanel>
             </S.RelaySettingsCollapse>
             <S.RelaySettingsCollapse bordered={false}>
               <StyledPanel header={'App Buckets'} key="appBuckets" className="centered-header">
@@ -1026,15 +1045,24 @@ const RelaySettingsPage: React.FC = () => {
         </S.RelaySettingsCollapse>
         <S.RelaySettingsCollapse bordered={false}>
           <StyledPanel header={`Sync Cycles`} key={'syncCycles'}>
-            <BaseCol>
-              <BaseSwitch style={{ width: '8rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
-              <div style={{display:"flex", gap:"20px", alignItems:"center", paddingTop:"1rem", paddingBottom:"1rem"}}>
-                <S.NumInput type="number" />
-              <span>mins</span>
-              <BaseButton>Set</BaseButton>
-              </div>
-             
-            </BaseCol>
+            <S.Card>
+              <S.FlexCol gap={'1rem'}>
+                <BaseSwitch style={{ width: '7rem' }} checkedChildren="ON" unCheckedChildren="OFF"></BaseSwitch>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    alignItems: 'center',
+                    paddingTop: '1rem',
+                    paddingBottom: '1rem',
+                  }}
+                >
+                  <S.NumInput type="number" />
+                  <span>mins</span>
+                </div>
+                <BaseButton style={{ width: '11rem' }}>Set</BaseButton>
+              </S.FlexCol>
+            </S.Card>
           </StyledPanel>
         </S.RelaySettingsCollapse>
         <S.RelaySettingsCollapse style={{ padding: '1rem 0 1rem 0' }} bordered={false}>
