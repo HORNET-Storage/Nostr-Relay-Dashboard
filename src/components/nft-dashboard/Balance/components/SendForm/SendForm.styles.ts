@@ -14,6 +14,7 @@ export const TextRow = styled.div`
 `;
 
 export const SubCard = styled(BaseCard)`
+  width: 30%;
   background-color: var(--additional-background-color);
   cursor: pointer;
   box-shadow: 0px 0px 10px 0px var(--shadow-color);
@@ -44,8 +45,7 @@ export const SubCardHeader = styled.span`
 `;
 
 export const InputHeader = styled.span`
-  font-size: 1.5rem ; 
-  
+  font-size: 1.5rem;
 `;
 
 export const SubCardAmount = styled.span`
@@ -128,7 +128,6 @@ export const RateValue = styled.span`
   color: green;
 `;
 export const RBFWrapper = styled.div`
-
   display: flex;
   flex-direction: row;
   gap: 1rem;

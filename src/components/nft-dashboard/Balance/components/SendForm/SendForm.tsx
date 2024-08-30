@@ -141,7 +141,11 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           } `}
         >
           <S.SubCardContent>
-            <S.SubCardAmount>{`Low Priority`}</S.SubCardAmount>
+            <S.SubCardAmount>
+              {`Low`}
+              <br />
+              {`Priority`}
+            </S.SubCardAmount>
             <S.RateValueWrapper>
               <span> {`${testTiers[0].rate} sat/vB`}</span>
               <S.RateValue>{`${fees?.low} Sats`}</S.RateValue>
@@ -156,7 +160,11 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           } `}
         >
           <S.SubCardContent>
-            <S.SubCardAmount>{`Medium Priority`}</S.SubCardAmount>
+            <S.SubCardAmount>
+              {`Medium`}
+              <br />
+              {`Priority`}
+            </S.SubCardAmount>
             <S.RateValueWrapper>
               <span> {`${testTiers[1].rate} sat/vB`}</span>
               <S.RateValue>{`${fees?.med} Sats`}</S.RateValue>
@@ -171,7 +179,11 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           } `}
         >
           <S.SubCardContent>
-            <S.SubCardAmount>{`High Priority`}</S.SubCardAmount>
+            <S.SubCardAmount>
+              {`High`}
+              <br />
+              {`Priority`}
+            </S.SubCardAmount>
             <S.RateValueWrapper>
               <span> {`${testTiers[2].rate} sat/vB`}</span>
               <S.RateValue>{`${fees?.high} Sats`}</S.RateValue>
