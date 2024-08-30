@@ -68,14 +68,20 @@ const useRelaySettings = () => {
       if (!response.ok) {
         throw new Error(`Network response was not ok (status: ${response.status})`);
       }
-      
+
       const data = await response.json();
 
       const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
       const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
-
-      const newAppBuckets = !data.relaySettings.dynamicAppBuckets ? [] : data.relaySettings.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
-      const newDynamicKinds = !data.relaySettings.dynamicKinds ? [] : data.relaySettings.dynamicKinds.filter((kind :string) => !storedDynamicKinds.includes(kind));
+      console.log(data)
+      const newAppBuckets =
+        data.relay_settings.dynamicAppBuckets == undefined
+          ? []
+          : data.relay_settings.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
+      const newDynamicKinds =
+        data.relay_settings.dynamicKinds == undefined
+          ? []
+          : data.relay_settings.dynamicKinds.filter((kind: string) => !storedDynamicKinds.includes(kind));
 
       if (newAppBuckets.length > 0) {
         localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
