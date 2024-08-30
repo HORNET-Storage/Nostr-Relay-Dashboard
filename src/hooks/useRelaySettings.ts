@@ -74,8 +74,8 @@ const useRelaySettings = () => {
       const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
       const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
 
-      const newAppBuckets = data.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
-      const newDynamicKinds = data.dynamicKinds.filter((kind :string) => !storedDynamicKinds.includes(kind));
+      const newAppBuckets = !data.relaySettings.dynamicAppBuckets ? [] : data.relaySettings.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
+      const newDynamicKinds = !data.relaySettings.dynamicKinds ? [] : data.relaySettings.dynamicKinds.filter((kind :string) => !storedDynamicKinds.includes(kind));
 
       if (newAppBuckets.length > 0) {
         localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
