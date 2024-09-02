@@ -9,17 +9,10 @@ import { truncateString } from '@app/utils/utils';
 import useBalanceData from '@app/hooks/useBalanceData';
 import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
 import config from '@app/config/config';
+import TieredFees from './components/TieredFees/TieredFees';
 
 interface SendFormProps {
   onSend: (status: boolean, address: string, amount: number, txid?: string, message?: string) => void;
-}
-
-interface FeeRecommendation {
-  fastestFee: number;
-  halfHourFee: number;
-  hourFee: number;
-  economyFee: number;
-  minimumFee: number;
 }
 
 interface PendingTransaction {
@@ -28,17 +21,14 @@ interface PendingTransaction {
   timestamp: string; // ISO format string
 }
 
-type tiers = 'low' | 'med' | 'high';
-type Fees = {
-  [key in tiers]: number;
-};
+export type tiers = 'low' | 'med' | 'high';
 
 const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const { balanceData, isLoading } = useBalanceData();
   const { isTablet, isDesktop } = useResponsive();
   const [loading, setLoading] = useState(false);
 
-  const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
+ 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const [inValidAmount, setInvalidAmount] = useState(false);
@@ -46,15 +36,22 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   const [amountWithFee, setAmountWithFee] = useState<number | null>(null);
 
+  const [fee, setFee] = useState<number>(0);
   const [formData, setFormData] = useState({
     address: '',
     amount: '1',
   });
 
-  const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
+  useEffect(() => {
 
-  const handleTierChange = (tier: any) => {
-    setSelectedTier(tier.id);
+      console.log(fee)
+      setAmountWithFee(parseInt(formData.amount) + fee);
+  }, [fee, formData.amount]);
+
+
+
+  const handleFeeChange = (fee: number) => {
+    setFee(fee);
   };
 
   const isValidAddress = (address: string) => {
@@ -83,7 +80,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
     setLoading(true);
 
-    const selectedFee = selectedTier ? fees[selectedTier] : fees.low; // Default to low if not selected
+    const selectedFee = fee; // Default to low if not selected
 
     const transactionRequest = {
       choice: 1, // Default to choice 1 for new transactions
@@ -134,31 +131,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   };
 
   useEffect(() => {
-    const fetchFees = async () => {
-      try {
-        const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-        const data: FeeRecommendation = await response.json();
-
-        setFees({
-          low: data.economyFee,
-          med: data.halfHourFee,
-          high: data.fastestFee,
-        });
-      } catch (error) {
-        console.error('Failed to fetch fees:', error);
-      }
-    };
-
-    fetchFees();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTier) {
-      setAmountWithFee(parseInt(formData.amount) + fees[selectedTier]);
-    }
-  }, [fees]);
-
-  useEffect(() => {
     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
       setInvalidAmount(true);
     } else {
@@ -176,77 +148,13 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     </>
   );
 
-  const TieredFees = () => (
-    <>
-      <S.SubCard
-        $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'low', rate: fees.low })}
-        className={`tier-hover ${selectedTier === 'low' ? 'selected' : ''} ${
-          selectedTier === 'low' && inValidAmount ? 'invalidAmount' : ''
-        } `}
-      >
-        <S.SubCardContent>
-          <S.SubCardAmount>
-            {' '}
-            {`Low`}
-            <br />
-            {`Priority`}
-          </S.SubCardAmount>
-          <S.RateValueWrapper>
-            <span>{`${fees.low} sat/vB`}</span>
-            <S.RateValue>{`${fees.low} Sats`}</S.RateValue>
-          </S.RateValueWrapper>
-        </S.SubCardContent>
-      </S.SubCard>
-
-      <S.SubCard
-        $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'med', rate: fees.med })}
-        className={`tier-hover ${selectedTier === 'med' ? 'selected' : ''} ${
-          selectedTier === 'med' && inValidAmount ? 'invalidAmount' : ''
-        } `}
-      >
-        <S.SubCardContent>
-          {`Medium`}
-          <br />
-          {`Priority`}
-          <S.RateValueWrapper>
-            <span>{`${fees.med} sat/vB`}</span>
-            <S.RateValue>{`${fees.med} Sats`}</S.RateValue>
-          </S.RateValueWrapper>
-        </S.SubCardContent>
-      </S.SubCard>
-
-      <S.SubCard
-        $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'high', rate: fees.high })}
-        className={`tier-hover ${selectedTier === 'high' ? 'selected' : ''} ${
-          selectedTier === 'high' && inValidAmount ? 'invalidAmount' : ''
-        } `}
-      >
-        <S.SubCardContent>
-          <S.SubCardAmount>
-            {' '}
-            {`High`}
-            <br />
-            {`Priority`}
-          </S.SubCardAmount>
-          <S.RateValueWrapper>
-            <span>{`${fees.high} sat/vB`}</span>
-            <S.RateValue>{`${fees.high} Sats`}</S.RateValue>
-          </S.RateValueWrapper>
-        </S.SubCardContent>
-      </S.SubCard>
-    </>
-  );
-
   const detailsPanel = () => (
     <S.FormSpacer>
       <S.InputWrapper>
         <S.TextRow>
-          <S.InputHeader>{`Amount = ${selectedTier && amountWithFee ? amountWithFee : ''}`}</S.InputHeader>
+          <S.InputHeader>{`Amount = ${amountWithFee ? amountWithFee : ''}`}</S.InputHeader>
 
-          {inValidAmount && selectedTier && <S.ErrorText>Invalid Amount</S.ErrorText>}
+          {inValidAmount && <S.ErrorText>Invalid Amount</S.ErrorText>}
         </S.TextRow>
 
         <div>
@@ -262,11 +170,17 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         </S.RBFWrapper>
         {isDesktop || isTablet ? (
           <S.TiersRow>
-            <TieredFees />
+            <TieredFees
+              inValidAmount={inValidAmount}
+              handleFeeChange={handleFeeChange}
+            />
           </S.TiersRow>
         ) : (
           <S.TiersCol>
-            <TieredFees />
+            <TieredFees
+              inValidAmount={inValidAmount}
+              handleFeeChange={handleFeeChange}
+            />
           </S.TiersCol>
         )}
       </S.TiersContainer>
