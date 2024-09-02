@@ -22,10 +22,13 @@ export const TransactionWrapper = styled.div`
 `;
 export const ButtonWrapper = styled.div`
   disply: flex;
-  width: 20%;
 `;
 
 export const RowWrapper = styled.div`
+padding: .5rem 1.5rem .5rem .5rem;
+  border-radius: 0.5rem;
+ box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 4px 5px rgba(0, 0, 0, 0.14), 0px 2px 4px -1px rgba(0, 0, 0, 0.2);
+  background-color: var(--additional-background-color);
   display: flex;
   flex-direction: row;
   gap: 2rem;
