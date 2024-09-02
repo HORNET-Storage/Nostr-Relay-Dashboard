@@ -74,6 +74,7 @@ const MainLayout: React.FC = () => {
           style={isDesktop ? { overflowY: 'hidden' } : { overflowY: 'auto' }}
           id="main-content"
           $isTwoColumnsLayout={isTwoColumnsLayout}
+          $isDesktop={isDesktop}
         >
           <div>
             <Outlet />
