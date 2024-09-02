@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
@@ -13,8 +13,13 @@ export const TextRow = styled.div`
   gap: 1rem;
 `;
 
-export const SubCard = styled(BaseCard)`
+export const SubCard = styled(BaseCard)<{ $isMobile?: boolean }>`
   width: 30%;
+  ${(props) =>
+    props.$isMobile &&
+    css`
+      width: 100%;
+    `}
   background-color: var(--additional-background-color);
   cursor: pointer;
   box-shadow: 0px 0px 10px 0px var(--shadow-color);

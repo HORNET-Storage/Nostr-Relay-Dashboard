@@ -135,6 +135,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     return (
       <>
         <S.SubCard
+          $isMobile={!isDesktop}
           onClick={() => handleTierChange(testTiers[0])}
           className={`tier-hover ${selectedTier == testTiers[0].id ? 'selected' : ' '} ${
             selectedTier == testTiers[0].id && inValidAmount ? 'invalidAmount' : ' '
@@ -154,6 +155,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         </S.SubCard>
 
         <S.SubCard
+          $isMobile={!isDesktop}
           onClick={() => handleTierChange(testTiers[1])}
           className={`tier-hover ${selectedTier == testTiers[1].id ? 'selected' : ' '} ${
             selectedTier == testTiers[1].id && inValidAmount ? 'invalidAmount' : ' '
@@ -173,6 +175,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         </S.SubCard>
 
         <S.SubCard
+          $isMobile={!isDesktop}
           onClick={() => handleTierChange(testTiers[2])}
           className={`tier-hover ${selectedTier == testTiers[2].id ? 'selected' : ' '} ${
             selectedTier == testTiers[2].id && inValidAmount ? 'invalidAmount' : ' '
