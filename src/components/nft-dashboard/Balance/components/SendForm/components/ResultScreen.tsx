@@ -6,25 +6,30 @@ interface ResultScreenProps {
   isSuccess: boolean;
   amount: number;
   receiver: string;
+  txid: string;  // New field to display the transaction ID
+  message?: string;  // Optional message from the transaction response
 }
 
-const ResultScreen: React.FC<ResultScreenProps> = ({ isSuccess, amount, receiver }) => {
+const ResultScreen: React.FC<ResultScreenProps> = ({ isSuccess, amount, receiver, txid, message }) => {
   const { isTablet } = useResponsive();
   return (
     <S.ResultScreenWrapper>
       {isSuccess ? (
         <>
-          <S.ResultTextPass>Success! </S.ResultTextPass>
+          <S.ResultTextPass>Success!</S.ResultTextPass>
           <S.ResultMessage>
-            {' '}
-            You have successfully sent <br /> {amount} Sats <br /> to <br />
-            {truncateString(receiver, isTablet ? 25 : 10)}
+            You have successfully sent <br /> {amount} Sats <br /> to <br />   {truncateString(receiver, isTablet ? 25 : 10)}
+            <br />
+            Transaction ID: <br /> {truncateString(txid, 15)}
           </S.ResultMessage>
         </>
       ) : (
         <>
-          <S.ResultTextFail>Failed </S.ResultTextFail>
-          <S.ResultMessage> This transaction was unable to send. </S.ResultMessage>
+          <S.ResultTextFail>Failed</S.ResultTextFail>
+          <S.ResultMessage>
+            This transaction was unable to send. <br />
+            {message && <span>Error: {message}</span>}
+          </S.ResultMessage>
         </>
       )}
     </S.ResultScreenWrapper>
@@ -32,3 +37,4 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ isSuccess, amount, receiver
 };
 
 export default ResultScreen;
+
