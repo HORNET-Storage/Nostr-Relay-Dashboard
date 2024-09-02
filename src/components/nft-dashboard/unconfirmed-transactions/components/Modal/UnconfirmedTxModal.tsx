@@ -8,7 +8,7 @@ interface UnconfirmedTxModalProps {
 
 const UnconfirmedTxModal: React.FC<UnconfirmedTxModalProps> = ({ isOpen, onOpenChange }) => {
   return (
-    <S.Modal open={isOpen} centered={true} footer={null} destroyOnClose>
+    <S.Modal open={isOpen} centered={true} onCancel = {onOpenChange} footer={null} destroyOnClose>
       <UnconfirmedTransactions></UnconfirmedTransactions>
     </S.Modal>
   );
