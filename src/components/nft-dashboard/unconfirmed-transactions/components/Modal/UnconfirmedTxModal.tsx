@@ -5,11 +5,13 @@ interface UnconfirmedTxModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
 }
+const transactions:any = [
 
+]
 const UnconfirmedTxModal: React.FC<UnconfirmedTxModalProps> = ({ isOpen, onOpenChange }) => {
   return (
     <S.Modal open={isOpen} centered={true} onCancel = {onOpenChange} footer={null} destroyOnClose>
-      <UnconfirmedTransactions></UnconfirmedTransactions>
+      <UnconfirmedTransactions transactions={transactions}></UnconfirmedTransactions>
     </S.Modal>
   );
 };
