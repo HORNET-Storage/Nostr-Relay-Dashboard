@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import UnconfirmedTxModal from '../Modal/UnconfirmedTxModal';
 import { useAppSelector } from '@app/hooks/reduxHooks';
 import * as S from '../../../Balance/components/TopUpBalanceButton/TopUpBalanceButton.styles';
-
-const ButtonTrigger: React.FC = () => {
+interface ButtonTriggerProps {
+amount: number;
+}
+const ButtonTrigger: React.FC <ButtonTriggerProps> = ({amount}) => {
   const { theme } = useAppSelector((state) => state.theme);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

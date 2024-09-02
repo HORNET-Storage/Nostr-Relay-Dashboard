@@ -28,5 +28,6 @@ export const ButtonWrapper = styled.div`
 export const RowWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 2rem;
+  align-items: center;
 `;

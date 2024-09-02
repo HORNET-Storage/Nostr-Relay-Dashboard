@@ -22,6 +22,7 @@ import {
   Filler,
 } from 'chart.js';
 import { TransactionCard } from './ActivityStoryItem/ActivityStoryItem.styles';
+import ButtonTrigger from '../unconfirmed-transactions/components/ButtonTrigger/ButtonTrigger';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -192,14 +193,14 @@ export const ActivityStory: React.FC = () => {
           {t('nft.viewTransactions')}
         </ViewTransactions>
       </TitleContainer>
-
+      <ButtonTrigger amount={0}/>
       <Modal title="Your Transactions" open={isModalVisible} onCancel={handleCancel} footer={null} width={800}>
         <div style={{ height: '400px', marginBottom: '20px' }}>
           <Line data={prepareChartData()} options={chartOptions} />
         </div>
-         {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+        {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
       </Modal>
-      {isLoading ? <TransactionSkeletons/> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
+      {isLoading ? <TransactionSkeletons /> : <S.ActivityRow gutter={[26, 26]}>{activityContent}</S.ActivityRow>}
     </S.Wrapper>
   );
 };
