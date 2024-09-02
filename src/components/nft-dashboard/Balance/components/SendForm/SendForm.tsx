@@ -93,10 +93,10 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     };
 
     try {
-      const response = await fetch("http://localhost:9003/transaction", {
-        method: "POST",
+      const response = await fetch('http://localhost:9003/transaction', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(transactionRequest),
       });
@@ -104,7 +104,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       const result = await response.json();
       setLoading(false);
 
-      if (result.status === "success") {
+      if (result.status === 'success') {
         // Prepare the transaction details to send to the pending-transactions endpoint
         const pendingTransaction: PendingTransaction = {
           txid: result.txid,
@@ -114,9 +114,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
         // Send the transaction details to the pending-transactions endpoint
         await fetch(`${config.baseURL}/pending-transactions`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(pendingTransaction),
         });
@@ -124,19 +124,19 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         // Call the onSend callback with the result
         onSend(true, formData.address, transactionRequest.spend_amount, result.txid, result.message);
       } else {
-        onSend(false, formData.address, 0, "", result.message);
+        onSend(false, formData.address, 0, '', result.message);
       }
     } catch (error) {
-      console.error("Transaction failed:", error);
+      console.error('Transaction failed:', error);
       setLoading(false);
-      onSend(false, formData.address, 0, "", "Transaction failed due to a network error.");
+      onSend(false, formData.address, 0, '', 'Transaction failed due to a network error.');
     }
   };
 
   useEffect(() => {
     const fetchFees = async () => {
       try {
-        const response = await fetch("https://mempool.space/api/v1/fees/recommended");
+        const response = await fetch('https://mempool.space/api/v1/fees/recommended');
         const data: FeeRecommendation = await response.json();
 
         setFees({
@@ -145,7 +145,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           high: data.fastestFee,
         });
       } catch (error) {
-        console.error("Failed to fetch fees:", error);
+        console.error('Failed to fetch fees:', error);
       }
     };
 
@@ -186,7 +186,12 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         } `}
       >
         <S.SubCardContent>
-          <S.SubCardAmount>Low Priority</S.SubCardAmount>
+          <S.SubCardAmount>
+            {' '}
+            {`Low`}
+            <br />
+            {`Priority`}
+          </S.SubCardAmount>
           <S.RateValueWrapper>
             <span>{`${fees.low} sat/vB`}</span>
             <S.RateValue>{`${fees.low} Sats`}</S.RateValue>
@@ -202,7 +207,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         } `}
       >
         <S.SubCardContent>
-          <S.SubCardAmount>Medium Priority</S.SubCardAmount>
+          {`Medium`}
+          <br />
+          {`Priority`}
           <S.RateValueWrapper>
             <span>{`${fees.med} sat/vB`}</span>
             <S.RateValue>{`${fees.med} Sats`}</S.RateValue>
@@ -218,7 +225,12 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         } `}
       >
         <S.SubCardContent>
-          <S.SubCardAmount>High Priority</S.SubCardAmount>
+          <S.SubCardAmount>
+            {' '}
+            {`High`}
+            <br />
+            {`Priority`}
+          </S.SubCardAmount>
           <S.RateValueWrapper>
             <span>{`${fees.high} sat/vB`}</span>
             <S.RateValue>{`${fees.high} Sats`}</S.RateValue>

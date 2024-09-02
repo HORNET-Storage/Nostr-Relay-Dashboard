@@ -57,6 +57,8 @@ export const SubCardAmount = styled.span`
   font-size: 1.5rem;
 `;
 export const SubCardContent = styled.div`
+  font-size: 1.3rem;
+  height: 100%;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
