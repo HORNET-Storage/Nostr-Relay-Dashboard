@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 
-interface PendingTransaction {
-  txid: string;
-  feeRate: number;
-  timestamp: string;
-}
+export interface PendingTransaction {
+    TxID: string;
+    FeeRate: number;
+    Timestamp: string;
+    Amount: number;
+  }
 
 const usePendingTransactions = () => {
   const [pendingTransactions, setPendingTransactions] = useState<PendingTransaction[]>([]);
@@ -24,10 +25,12 @@ const usePendingTransactions = () => {
         if (!response.ok) {
           throw new Error(`Network response was not ok (status: ${response.status})`);
         }
-        const data: PendingTransaction[] = await response.json();
-        setPendingTransactions(data);
+        const data: PendingTransaction[] | null = await response.json();
+        console.log('Fetched Pending Transactions:', data); 
+        setPendingTransactions(data || []); // Ensuring it is always an array
       } catch (error) {
         console.error('Error fetching pending transactions:', error);
+        setPendingTransactions([]); // Setting an empty array on error
       } finally {
         setIsLoading(false);
       }
@@ -40,3 +43,5 @@ const usePendingTransactions = () => {
 };
 
 export default usePendingTransactions;
+
+
