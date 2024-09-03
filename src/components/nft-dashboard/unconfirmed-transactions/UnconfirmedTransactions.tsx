@@ -72,11 +72,11 @@ const UnconfirmedTransactions: React.FC = () => {
         <>
           <S.PanelHeaderText>Unconfirmed Transactions</S.PanelHeaderText>
           <S.PanelContent>
-            {pendingTransactions.length === 0 ? (
+            {dummyTransactions.length === 0 ? (
               <S.NoTransactionsText>No unconfirmed transactions available.</S.NoTransactionsText>
             ) : (
               <S.ScrollPanel>
-                {pendingTransactions.map((transaction) => (
+                {dummyTransactions.map((transaction) => (
                   <S.RowWrapper key={transaction.TxID}>
                     <S.TransactionWrapper>
                       <UnconfirmedTransaction

@@ -14,9 +14,9 @@ export const PanelHeaderText = styled.span`
 export const PanelContent = styled.div`
  
   max-height: 50vh;
-  
+  justify-content: center;
   display: flex;
-  min-height: 20vh;
+  min-height: 30vh;
   height: 100%;
   flex-direction: column;
   gap: 1rem;
