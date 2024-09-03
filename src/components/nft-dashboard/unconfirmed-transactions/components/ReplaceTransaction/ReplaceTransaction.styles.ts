@@ -22,7 +22,7 @@ export const ValueWrapper = styled.div<ResponsiveProps>`
     css`
       width: 100%;
     `}
-  width: 50%;
+  width: 70%;
   padding: 1rem;
   background-color: var(--additional-background-color);
   border-radius: 0.5rem;
@@ -47,4 +47,17 @@ export const ButtonRow = styled.div`
 
 export const Button = styled(BaseButton)`
 
+`;
+export const TiersRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-around;
+`;
+
+export const TiersCol = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-around;
 `;

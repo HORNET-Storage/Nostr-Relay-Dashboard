@@ -1,6 +1,5 @@
-import styled, {css} from 'styled-components';
+import styled, { css } from 'styled-components';
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
-
 
 export const TierCard = styled(BaseCard)<{ $isMobile?: boolean }>`
   width: 30%;
@@ -12,6 +11,7 @@ export const TierCard = styled(BaseCard)<{ $isMobile?: boolean }>`
   background-color: var(--additional-background-color);
   cursor: pointer;
   box-shadow: 0px 0px 10px 0px var(--shadow-color);
+
   .ant-card-body {
     padding: 1rem 2rem;
   }
@@ -36,8 +36,6 @@ export const TierCardContent = styled.div`
   padding-bottom: 1rem;
 `;
 
-
-
 export const RateValueWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -45,4 +43,33 @@ export const RateValueWrapper = styled.div`
 `;
 export const RateValue = styled.span`
   color: green;
+`;
+interface ResponsiveProps {
+  isMobile: boolean;
+}
+export const TiersWrapper = styled.div<ResponsiveProps>`
+  ${(props) =>
+    props.isMobile &&
+    css`
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    `}
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+  justify-content: space-around;
+
+  transition: all 0.5s ease;
+  padding: 1rem;
+  .tier-hover:hover {
+    background-color: var(--primary-color);
+  }
+  .selected {
+    border: 1px solid var(--primary-color);
+  }
+  .invalidAmount {
+    border: 1px solid var(--error-color);
+  }
 `;

@@ -53,17 +53,6 @@ export const TiersContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: all 0.5s ease;
-  padding: 1rem;
-  .tier-hover:hover {
-    background-color: var(--primary-color);
-  }
-  .selected {
-    border: 1px solid var(--primary-color);
-  }
-  .invalidAmount {
-    border: 1px solid var(--error-color);
-  }
 `;
 export const SendFormButton = styled(BaseButton)`
   width: 100%;

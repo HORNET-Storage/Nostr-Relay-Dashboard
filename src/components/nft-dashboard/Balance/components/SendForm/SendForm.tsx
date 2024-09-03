@@ -28,7 +28,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const { isTablet, isDesktop } = useResponsive();
   const [loading, setLoading] = useState(false);
 
- 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const [inValidAmount, setInvalidAmount] = useState(false);
@@ -43,12 +42,8 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   });
 
   useEffect(() => {
-
-      console.log(fee)
-      setAmountWithFee(parseInt(formData.amount) + fee);
+    setAmountWithFee(parseInt(formData.amount) + fee);
   }, [fee, formData.amount]);
-
-
 
   const handleFeeChange = (fee: number) => {
     setFee(fee);
@@ -168,21 +163,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           <BaseCheckbox />
           RBF Opt In
         </S.RBFWrapper>
-        {isDesktop || isTablet ? (
-          <S.TiersRow>
-            <TieredFees
-              inValidAmount={inValidAmount}
-              handleFeeChange={handleFeeChange}
-            />
-          </S.TiersRow>
-        ) : (
-          <S.TiersCol>
-            <TieredFees
-              inValidAmount={inValidAmount}
-              handleFeeChange={handleFeeChange}
-            />
-          </S.TiersCol>
-        )}
+        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} />
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton

@@ -20,7 +20,7 @@ interface TieredFeesProps {
 }
 
 const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange }) => {
-  const { isDesktop } = useResponsive();
+  const { isDesktop, isMobile } = useResponsive();
   const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
   const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
 
@@ -29,7 +29,6 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange 
       try {
         const response = await fetch('https://mempool.space/api/v1/fees/recommended');
         const data: FeeRecommendation = await response.json();
-        console.log(data);
         setFees({
           low: data.economyFee,
           med: data.halfHourFee,
@@ -43,6 +42,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange 
     fetchFees();
   }, []);
   const handleTierChange = (tier: any) => {
+    console.log(tier);
     setSelectedTier(tier.id);
   };
 
@@ -50,7 +50,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange 
     handleFeeChange(fees[selectedTier as tiers]);
   }, [selectedTier]);
   return (
-    <>
+    <S.TiersWrapper isMobile={!isDesktop || !isMobile}>
       <S.TierCard
         $isMobile={!isDesktop}
         onClick={() => handleTierChange({ id: 'low', rate: fees.med })}
@@ -107,7 +107,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange 
           </S.RateValueWrapper>
         </S.TierCardContent>
       </S.TierCard>
-    </>
+    </S.TiersWrapper>
   );
 };
 
