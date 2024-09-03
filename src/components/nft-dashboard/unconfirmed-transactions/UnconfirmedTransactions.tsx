@@ -4,6 +4,39 @@ import UnconfirmedTransaction from './components/UnconfirmedTransaction/Unconfir
 import ReplaceTransaction from './components/ReplaceTransaction/ReplaceTransaction';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import usePendingTransactions, { PendingTransaction } from '@app/hooks/usePendingTransactions';
+const dummyTransactions: PendingTransaction[] = [
+  //for testing purposes
+  {
+    TxID: '1',
+    Timestamp: '2022-01-01T00:00:00Z',
+    Amount: 10,
+    FeeRate: 4,
+  },
+  {
+    TxID: '2',
+    Timestamp: '2022-01-02T00:00:00Z',
+    Amount: 20,
+    FeeRate: 3,
+  },
+  {
+    TxID: '3',
+    Timestamp: '2022-01-03T00:00:00Z',
+    Amount: 30,
+    FeeRate: 2,
+  },
+  {
+    TxID: '4',
+    Timestamp: '2022-01-03T00:00:00Z',
+    Amount: 30,
+    FeeRate: 2,
+  },
+  {
+    TxID: '5',
+    Timestamp: '2022-01-03T00:00:00Z',
+    Amount: 30,
+    FeeRate: 2,
+  },
+];
 
 const UnconfirmedTransactions: React.FC = () => {
   const [isReplacingTransaction, setIsReplacingTransaction] = useState(false);
@@ -42,20 +75,26 @@ const UnconfirmedTransactions: React.FC = () => {
             {pendingTransactions.length === 0 ? (
               <S.NoTransactionsText>No unconfirmed transactions available.</S.NoTransactionsText>
             ) : (
-              pendingTransactions.map((transaction) => (
-                <S.RowWrapper key={transaction.TxID}>
-                  <S.TransactionWrapper>
-                    <UnconfirmedTransaction
-                      tx_id={transaction.TxID}
-                      date_created={new Date(transaction.Timestamp).toLocaleDateString()}
-                      amount={transaction.Amount !== undefined && transaction.Amount !== null ? transaction.Amount.toString() : 'N/A'}
-                    />
-                  </S.TransactionWrapper>
-                  <S.ButtonWrapper>
-                    <BaseButton onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</BaseButton>
-                  </S.ButtonWrapper>
-                </S.RowWrapper>
-              ))
+              <S.ScrollPanel>
+                {pendingTransactions.map((transaction) => (
+                  <S.RowWrapper key={transaction.TxID}>
+                    <S.TransactionWrapper>
+                      <UnconfirmedTransaction
+                        tx_id={transaction.TxID}
+                        date_created={new Date(transaction.Timestamp).toLocaleDateString()}
+                        amount={
+                          transaction.Amount !== undefined && transaction.Amount !== null
+                            ? transaction.Amount.toString()
+                            : 'N/A'
+                        }
+                      />
+                    </S.TransactionWrapper>
+                    <S.ButtonWrapper>
+                      <BaseButton onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</BaseButton>
+                    </S.ButtonWrapper>
+                  </S.RowWrapper>
+                ))}
+              </S.ScrollPanel>
             )}
           </S.PanelContent>
         </>
@@ -65,7 +104,3 @@ const UnconfirmedTransactions: React.FC = () => {
 };
 
 export default UnconfirmedTransactions;
-
-
-
-
