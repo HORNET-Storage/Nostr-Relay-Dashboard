@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import * as S from './UnconfirmedTransactions.styles';
 import UnconfirmedTransaction from './components/UnconfirmedTransaction/UnconfirmedTransaction';
 import ReplaceTransaction from './components/ReplaceTransaction/ReplaceTransaction';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import usePendingTransactions, { PendingTransaction } from '@app/hooks/usePendingTransactions';
+import { useResponsive } from '@app/hooks/useResponsive';
 const dummyTransactions: PendingTransaction[] = [
   //for testing purposes
   {
-    TxID: '1',
+    TxID: '1123u1293u123u139u12321312312',
     Timestamp: '2022-01-01T00:00:00Z',
     Amount: 10,
     FeeRate: 4,
@@ -42,6 +42,7 @@ const UnconfirmedTransactions: React.FC = () => {
   const [isReplacingTransaction, setIsReplacingTransaction] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<PendingTransaction | null>(null);
   const { pendingTransactions } = usePendingTransactions();
+  const {isTablet, isDesktop} = useResponsive();
 
   const handleOpenReplaceTransaction = (transaction: PendingTransaction) => {
     setSelectedTransaction(transaction);
@@ -77,7 +78,7 @@ const UnconfirmedTransactions: React.FC = () => {
             ) : (
               <S.ScrollPanel>
                 {dummyTransactions.map((transaction) => (
-                  <S.RowWrapper key={transaction.TxID}>
+                  <S.RowWrapper $isMobile={!isDesktop || !isTablet} key={transaction.TxID}>
                     <S.TransactionWrapper>
                       <UnconfirmedTransaction
                         tx_id={transaction.TxID}
@@ -90,7 +91,7 @@ const UnconfirmedTransactions: React.FC = () => {
                       />
                     </S.TransactionWrapper>
                     <S.ButtonWrapper>
-                      <BaseButton onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</BaseButton>
+                      <S.ReplaceButton  onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</S.ReplaceButton>
                     </S.ButtonWrapper>
                   </S.RowWrapper>
                 ))}

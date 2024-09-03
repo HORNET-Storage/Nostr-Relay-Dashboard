@@ -1,6 +1,8 @@
 import React from 'react';
 import * as S from './UnconfirmedTransaction.styles'
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
+import { useResponsive } from '@app/hooks/useResponsive';
+import { truncateString } from '@app/utils/utils';
 
 interface UnconfirmedTransactionProps {
   tx_id: string;
@@ -10,13 +12,13 @@ interface UnconfirmedTransactionProps {
 }
 
 const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, date_created, amount, feeAmount }) => {
-  // Implement your component logic here
 
+  const {isTablet} = useResponsive();
   return (
     
     <S.TransactionWrapper>
       <S.DataWrapper>
-      <S.Value>{tx_id}</S.Value>
+      <S.Value>{!isTablet ? truncateString(tx_id, 10) :  truncateString(tx_id, 30)}</S.Value>
         <S.Label>Transaction ID</S.Label>
        
       </S.DataWrapper>
