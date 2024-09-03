@@ -3,40 +3,60 @@ import * as S from './UnconfirmedTransactions.styles';
 import UnconfirmedTransaction from './components/UnconfirmedTransaction/UnconfirmedTransaction';
 import ReplaceTransaction from './components/ReplaceTransaction/ReplaceTransaction';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-interface UnconfirmedTransactionsProps {
-  transactions: any[]; //TODO: update the type
-}
+import usePendingTransactions, { PendingTransaction } from '@app/hooks/usePendingTransactions';
 
-const UnconfirmedTransactions: React.FC<UnconfirmedTransactionsProps> = ({}) => {
+const UnconfirmedTransactions: React.FC = () => {
   const [isReplacingTransaction, setIsReplacingTransaction] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<PendingTransaction | null>(null);
+  const { pendingTransactions } = usePendingTransactions();
 
-  const handleOpenReplaceTransaction = () => {
+  const handleOpenReplaceTransaction = (transaction: PendingTransaction) => {
+    setSelectedTransaction(transaction);
     setIsReplacingTransaction(true);
   };
+
   const handleCancelReplaceTransaction = () => {
+    setSelectedTransaction(null);
     setIsReplacingTransaction(false);
   };
 
-  const onReplaceTransaction = () => {}; //define any behavior after replacing transaction
+  const onReplaceTransaction = () => {
+    // Define any behavior after replacing a transaction
+  };
+
   return (
     <S.ContentWrapper>
-      {isReplacingTransaction ? (
+      {isReplacingTransaction && selectedTransaction ? (
         <>
           <S.PanelHeaderText>Replace Transaction</S.PanelHeaderText>
-          <ReplaceTransaction onReplace={onReplaceTransaction} onCancel={handleCancelReplaceTransaction} />
+          <ReplaceTransaction
+            transaction={selectedTransaction}
+            onReplace={onReplaceTransaction}
+            onCancel={handleCancelReplaceTransaction}
+          />
         </>
       ) : (
         <>
           <S.PanelHeaderText>Unconfirmed Transactions</S.PanelHeaderText>
           <S.PanelContent>
-            <S.RowWrapper>
-              <S.TransactionWrapper>
-                <UnconfirmedTransaction tx_id="123456" date_created="2021-09-01" amount="0.0001" />
-              </S.TransactionWrapper>
-              <S.ButtonWrapper>
-                <BaseButton onClick={handleOpenReplaceTransaction}>Replace</BaseButton>
-              </S.ButtonWrapper>
-            </S.RowWrapper>
+            {pendingTransactions.length === 0 ? (
+              <S.NoTransactionsText>No unconfirmed transactions available.</S.NoTransactionsText>
+            ) : (
+              pendingTransactions.map((transaction) => (
+                <S.RowWrapper key={transaction.TxID}>
+                  <S.TransactionWrapper>
+                    <UnconfirmedTransaction
+                      tx_id={transaction.TxID}
+                      date_created={new Date(transaction.Timestamp).toLocaleDateString()}
+                      amount={transaction.Amount !== undefined && transaction.Amount !== null ? transaction.Amount.toString() : 'N/A'}
+                    />
+                  </S.TransactionWrapper>
+                  <S.ButtonWrapper>
+                    <BaseButton onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</BaseButton>
+                  </S.ButtonWrapper>
+                </S.RowWrapper>
+              ))
+            )}
           </S.PanelContent>
         </>
       )}
@@ -45,3 +65,7 @@ const UnconfirmedTransactions: React.FC<UnconfirmedTransactionsProps> = ({}) => 
 };
 
 export default UnconfirmedTransactions;
+
+
+
+

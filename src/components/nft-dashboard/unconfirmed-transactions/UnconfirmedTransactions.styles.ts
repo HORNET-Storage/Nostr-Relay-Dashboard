@@ -22,6 +22,13 @@ export const TransactionWrapper = styled.div`
 `;
 export const ButtonWrapper = styled.div`
   disply: flex;
+  margin: .5rem;
+`;
+
+export const NoTransactionsText = styled.p`
+  text-align: center;
+  color: #888;
+  font-size: 16px;
 `;
 
 export const RowWrapper = styled.div`

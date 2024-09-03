@@ -19,6 +19,7 @@ interface PendingTransaction {
   txid: string;
   feeRate: number;
   timestamp: string; // ISO format string
+  amount: string;
 }
 
 export type tiers = 'low' | 'med' | 'high';
@@ -102,6 +103,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           txid: result.txid,
           feeRate: selectedFee,
           timestamp: new Date().toISOString(), // Capture the current time in ISO format
+          amount: formData.amount
         };
 
         // Send the transaction details to the pending-transactions endpoint
