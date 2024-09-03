@@ -20,7 +20,7 @@ interface TieredFeesProps {
 }
 
 const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange }) => {
-  const { isDesktop, isMobile } = useResponsive();
+  const { isDesktop, isTablet } = useResponsive();
   const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
   const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
 
@@ -50,7 +50,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange 
     handleFeeChange(fees[selectedTier as tiers]);
   }, [selectedTier]);
   return (
-    <S.TiersWrapper isMobile={!isDesktop || !isMobile}>
+    <S.TiersWrapper $isMobile={!isDesktop || !isTablet }>
       <S.TierCard
         $isMobile={!isDesktop}
         onClick={() => handleTierChange({ id: 'low', rate: fees.med })}

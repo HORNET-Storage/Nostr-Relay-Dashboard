@@ -45,16 +45,11 @@ export const RateValue = styled.span`
   color: green;
 `;
 interface ResponsiveProps {
-  isMobile: boolean;
+  $isMobile: boolean;
 }
 export const TiersWrapper = styled.div<ResponsiveProps>`
-  ${(props) =>
-    props.isMobile &&
-    css`
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    `}
+  
+
   display: flex;
   flex-direction: row;
   gap: 1rem;
@@ -72,4 +67,11 @@ export const TiersWrapper = styled.div<ResponsiveProps>`
   .invalidAmount {
     border: 1px solid var(--error-color);
   }
+  ${(props) =>
+    props.$isMobile &&
+    css`
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    `}
 `;

@@ -27,15 +27,19 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           <S.FieldValue>123456</S.FieldValue>
         </S.ValueWrapper>
       </S.FieldDisplay>
-      {isDesktop || isTablet ? (
-        <S.TiersRow>
-          <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} />
-        </S.TiersRow>
-      ) : (
-        <S.TiersCol>
-          <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} />
-        </S.TiersCol>
-      )}
+      <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} />
+      <S.FieldDisplay>
+        <S.FieldLabel>New Fee</S.FieldLabel>
+        <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.FieldValue>123456</S.FieldValue>
+        </S.ValueWrapper>
+      </S.FieldDisplay>
+      <S.FieldDisplay>
+        <S.FieldLabel>Total</S.FieldLabel>
+        <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.FieldValue>123456</S.FieldValue>
+        </S.ValueWrapper>
+      </S.FieldDisplay>
       <S.ButtonRow>
         <S.Button onClick={onCancel}>Cancel</S.Button>
         <S.Button onClick={onReplace}>Replace</S.Button>

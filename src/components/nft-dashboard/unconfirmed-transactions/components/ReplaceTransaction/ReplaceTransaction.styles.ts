@@ -22,8 +22,9 @@ export const ValueWrapper = styled.div<ResponsiveProps>`
     css`
       width: 100%;
     `}
-  width: 70%;
+  width: 90%;
   padding: 1rem;
+  margin-left:1rem;
   background-color: var(--additional-background-color);
   border-radius: 0.5rem;
 `;
@@ -38,6 +39,7 @@ export const FieldValue = styled.span`
 `;
 
 export const ButtonRow = styled.div`
+    padding-top: 1rem;
     display: flex;
     flex-direction: row;
     gap: 1rem;

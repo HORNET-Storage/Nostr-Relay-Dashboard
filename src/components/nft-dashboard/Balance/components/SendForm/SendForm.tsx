@@ -25,7 +25,7 @@ export type tiers = 'low' | 'med' | 'high';
 
 const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const { balanceData, isLoading } = useBalanceData();
-  const { isTablet, isDesktop } = useResponsive();
+
   const [loading, setLoading] = useState(false);
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
