@@ -17,7 +17,7 @@ const UnconfirmedTransactions: React.FC<UnconfirmedTransactionsProps> = ({}) => 
     setIsReplacingTransaction(false);
   };
 
-  const onReplaceTransaction = () => {};
+  const onReplaceTransaction = () => {}; //define any behavior after replacing transaction
   return (
     <S.ContentWrapper>
       {isReplacingTransaction ? (
