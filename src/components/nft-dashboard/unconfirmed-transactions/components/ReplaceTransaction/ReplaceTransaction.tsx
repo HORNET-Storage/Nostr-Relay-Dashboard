@@ -32,7 +32,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   useEffect(() => {
     const fetchTransactionSize = async () => {
       try {
-        const response = await fetch('http://localhost:9003/calculate-tx-size', {
+        const response = await fetch('https://localhost:443/calculate-tx-size', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
