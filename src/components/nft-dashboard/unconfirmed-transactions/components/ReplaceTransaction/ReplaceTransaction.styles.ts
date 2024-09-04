@@ -63,3 +63,10 @@ export const TiersCol = styled.div`
   gap: 1rem;
   justify-content: space-around;
 `;
+
+export const ErrorMessage = styled.div`
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+`;

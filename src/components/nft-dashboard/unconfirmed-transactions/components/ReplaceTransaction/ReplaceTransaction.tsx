@@ -5,6 +5,7 @@ import TieredFees from '@app/components/nft-dashboard/Balance/components/SendFor
 import { PendingTransaction } from '@app/hooks/usePendingTransactions';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import ResultScreen from '@app/components/nft-dashboard/Balance/components/SendForm/components/ResultScreen/ResultScreen';
+import useBalanceData from '@app/hooks/useBalanceData';
 
 interface ReplaceTransactionProps {
   onCancel: () => void;
@@ -14,6 +15,8 @@ interface ReplaceTransactionProps {
 
 const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onReplace, transaction }) => {
   const { isDesktop, isTablet } = useResponsive();
+  const { balanceData, isLoading: isBalanceLoading } = useBalanceData(); // Fetch balance data using the hook
+
   const [inValidAmount, setInvalidAmount] = useState(false);
   const [newFee, setNewFee] = useState(transaction.FeeRate); // Fee rate in sat/vB
   const [txSize, setTxSize] = useState<number | null>(null);  // State to store transaction size
@@ -33,7 +36,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            recipient_address: transaction.RecipientAddress, // Since this is a replace, we can use the original transaction ID as the address placeholder
+            recipient_address: transaction.RecipientAddress, // Use the original recipient address
             spend_amount: parseInt(transaction.Amount.toString()), // The original amount
             priority_rate: newFee, // The current fee rate
           }),
@@ -50,7 +53,12 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
     fetchTransactionSize();
   }, [transaction.TxID, transaction.Amount, newFee]);
 
-  // Update fee when selected from the TieredFees component
+  // Calculate the total transaction cost (Amount + Calculated Fee)
+  const totalCost = txSize && newFee ? Number(transaction.Amount) + newFee * txSize : Number(transaction.Amount);
+
+  // Check if the total cost exceeds the user's balance
+  const isBalanceInsufficient = balanceData?.latest_balance !== undefined && totalCost > balanceData.latest_balance;
+
   const handleFeeChange = (fee: number) => {
     setNewFee(fee);  // Update the new fee when it changes
   };
@@ -58,7 +66,6 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const handleReplace = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setLoading(true);  // Start loading
-    console.log('Replace button clicked');
 
     try {
       const replaceRequest = {
@@ -104,11 +111,8 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
     );
   }
 
-  // Calculate the total transaction cost (Amount + Calculated Fee)
-  const totalCost = txSize && newFee ? Number(transaction.Amount) + newFee * txSize : Number(transaction.Amount);
-
   return (
-    <BaseSpin spinning={loading}>
+    <BaseSpin spinning={loading || isBalanceLoading}>
       <S.ContentWrapper>
         <S.FieldDisplay>
           <S.FieldLabel>Transaction ID</S.FieldLabel>
@@ -137,9 +141,18 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
             <S.FieldValue>{totalCost}</S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
+
+        {/* Show error message if balance is insufficient */}
+        {isBalanceInsufficient && (
+          <S.ErrorMessage>Insufficient balance to complete the transaction.</S.ErrorMessage>
+        )}
+
         <S.ButtonRow>
           <S.Button onClick={onCancel}>Cancel</S.Button>
-          <S.Button onClick={handleReplace}>Replace</S.Button>
+          {/* Disable replace button if total cost exceeds balance */}
+          <S.Button onClick={handleReplace} disabled={isBalanceInsufficient}>
+            Replace
+          </S.Button>
         </S.ButtonRow>
       </S.ContentWrapper>
     </BaseSpin>
@@ -149,6 +162,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 export default ReplaceTransaction;
 
 
+
 // import React, { useEffect, useState } from 'react';
 // import * as S from './ReplaceTransaction.styles';
 // import { useResponsive } from '@app/hooks/useResponsive';
@@ -156,7 +170,6 @@ export default ReplaceTransaction;
 // import { PendingTransaction } from '@app/hooks/usePendingTransactions';
 // import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 // import ResultScreen from '@app/components/nft-dashboard/Balance/components/SendForm/components/ResultScreen/ResultScreen';
-// import config from '@app/config/config';
 
 // interface ReplaceTransactionProps {
 //   onCancel: () => void;
@@ -167,7 +180,7 @@ export default ReplaceTransaction;
 // const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onReplace, transaction }) => {
 //   const { isDesktop, isTablet } = useResponsive();
 //   const [inValidAmount, setInvalidAmount] = useState(false);
-//   const [newFee, setNewFee] = useState(transaction.FeeRate);
+//   const [newFee, setNewFee] = useState(transaction.FeeRate); // Fee rate in sat/vB
 //   const [txSize, setTxSize] = useState<number | null>(null);  // State to store transaction size
 //   const [loading, setLoading] = useState(false);  // Add loading state
 //   const [isFinished, setIsFinished] = useState(false);  // Add finished state
@@ -256,6 +269,9 @@ export default ReplaceTransaction;
 //     );
 //   }
 
+//   // Calculate the total transaction cost (Amount + Calculated Fee)
+//   const totalCost = txSize && newFee ? Number(transaction.Amount) + newFee * txSize : Number(transaction.Amount);
+
 //   return (
 //     <BaseSpin spinning={loading}>
 //       <S.ContentWrapper>
@@ -282,8 +298,8 @@ export default ReplaceTransaction;
 //         <S.FieldDisplay>
 //           <S.FieldLabel>Total</S.FieldLabel>
 //           <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
-//             {/* Calculate total amount (Amount + Fee) */}
-//             <S.FieldValue>{Number(transaction.Amount) + newFee}</S.FieldValue>
+//             {/* Calculate total amount (Amount + Fee based on transaction size) */}
+//             <S.FieldValue>{totalCost}</S.FieldValue>
 //           </S.ValueWrapper>
 //         </S.FieldDisplay>
 //         <S.ButtonRow>
