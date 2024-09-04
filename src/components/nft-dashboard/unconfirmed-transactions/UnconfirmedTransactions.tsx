@@ -4,39 +4,39 @@ import UnconfirmedTransaction from './components/UnconfirmedTransaction/Unconfir
 import ReplaceTransaction from './components/ReplaceTransaction/ReplaceTransaction';
 import usePendingTransactions, { PendingTransaction } from '@app/hooks/usePendingTransactions';
 import { useResponsive } from '@app/hooks/useResponsive';
-const dummyTransactions: PendingTransaction[] = [
-  //for testing purposes
-  {
-    TxID: '1123u1293u123u139u12321312312',
-    Timestamp: '2022-01-01T00:00:00Z',
-    Amount: 10,
-    FeeRate: 4,
-  },
-  {
-    TxID: '2',
-    Timestamp: '2022-01-02T00:00:00Z',
-    Amount: 20,
-    FeeRate: 3,
-  },
-  {
-    TxID: '3',
-    Timestamp: '2022-01-03T00:00:00Z',
-    Amount: 30,
-    FeeRate: 2,
-  },
-  {
-    TxID: '4',
-    Timestamp: '2022-01-03T00:00:00Z',
-    Amount: 30,
-    FeeRate: 2,
-  },
-  {
-    TxID: '5',
-    Timestamp: '2022-01-03T00:00:00Z',
-    Amount: 30,
-    FeeRate: 2,
-  },
-];
+// const dummyTransactions: PendingTransaction[] = [
+//   //for testing purposes
+//   {
+//     TxID: '1123u1293u123u139u12321312312',
+//     Timestamp: '2022-01-01T00:00:00Z',
+//     Amount: 10,
+//     FeeRate: 4,
+//   },
+//   {
+//     TxID: '2',
+//     Timestamp: '2022-01-02T00:00:00Z',
+//     Amount: 20,
+//     FeeRate: 3,
+//   },
+//   {
+//     TxID: '3',
+//     Timestamp: '2022-01-03T00:00:00Z',
+//     Amount: 30,
+//     FeeRate: 2,
+//   },
+//   {
+//     TxID: '4',
+//     Timestamp: '2022-01-03T00:00:00Z',
+//     Amount: 30,
+//     FeeRate: 2,
+//   },
+//   {
+//     TxID: '5',
+//     Timestamp: '2022-01-03T00:00:00Z',
+//     Amount: 30,
+//     FeeRate: 2,
+//   },
+// ];
 
 const UnconfirmedTransactions: React.FC = () => {
   const [isReplacingTransaction, setIsReplacingTransaction] = useState(false);
@@ -73,11 +73,11 @@ const UnconfirmedTransactions: React.FC = () => {
         <>
           <S.PanelHeaderText>Unconfirmed Transactions</S.PanelHeaderText>
           <S.PanelContent>
-            {dummyTransactions.length === 0 ? (
+            {pendingTransactions.length === 0 ? (
               <S.NoTransactionsText>No unconfirmed transactions available.</S.NoTransactionsText>
             ) : (
               <S.ScrollPanel>
-                {dummyTransactions.map((transaction) => (
+                {pendingTransactions.map((transaction) => (
                   <S.RowWrapper $isMobile={!isDesktop || !isTablet} key={transaction.TxID}>
                     <S.TransactionWrapper>
                       <UnconfirmedTransaction

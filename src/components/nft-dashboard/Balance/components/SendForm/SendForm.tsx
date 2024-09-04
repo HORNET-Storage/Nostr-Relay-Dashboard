@@ -20,6 +20,7 @@ interface PendingTransaction {
   feeRate: number;
   timestamp: string; // ISO format string
   amount: string;
+  recipient_address: string;
 }
 
 export type tiers = 'low' | 'med' | 'high';
@@ -42,9 +43,51 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     amount: '1',
   });
 
+  const [txSize, setTxSize] = useState<number | null>(null);
+
+  // Debounced effect to calculate transaction size when the amount changes
   useEffect(() => {
-    setAmountWithFee(parseInt(formData.amount) + fee);
-  }, [fee, formData.amount]);
+    const debounceTimeout = setTimeout(() => {
+      if (formData.amount.length > 0) {
+        // Call backend to calculate transaction size
+        const fetchTransactionSize = async () => {
+          try {
+            const response = await fetch('http://localhost:9003/calculate-tx-size', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                recipient_address: formData.address,
+                spend_amount: parseInt(formData.amount),
+                priority_rate: fee,  // Pass the fee rate
+              }),
+            });
+
+            const result = await response.json();
+            setTxSize(result.txSize);  // Set the transaction size
+          } catch (error) {
+            console.error('Error fetching transaction size:', error);
+            setTxSize(null);
+          }
+        };
+
+        fetchTransactionSize();
+      }
+    }, 500); // Debounce for 500ms
+
+    return () => clearTimeout(debounceTimeout); // Clear the timeout if the amount changes before 500ms
+  }, [formData.amount, fee]);
+
+  // Calculate the fee based on the transaction size
+  useEffect(() => {
+    if (txSize && fee) {
+      const estimatedFee = txSize * fee;
+      setAmountWithFee(parseInt(formData.amount) + estimatedFee);
+    }
+  }, [txSize, fee]);
+
+  // useEffect(() => {
+  //   setAmountWithFee(parseInt(formData.amount) + fee);
+  // }, [fee, formData.amount]);
 
   const handleFeeChange = (fee: number) => {
     setFee(fee);
@@ -103,9 +146,10 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           txid: result.txid,
           feeRate: selectedFee,
           timestamp: new Date().toISOString(), // Capture the current time in ISO format
-          amount: formData.amount
+          amount: formData.amount,
+          recipient_address: formData.address, // Send the recipient address
         };
-
+      
         // Send the transaction details to the pending-transactions endpoint
         await fetch(`${config.baseURL}/pending-transactions`, {
           method: 'POST',
@@ -114,10 +158,11 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           },
           body: JSON.stringify(pendingTransaction),
         });
-
+      
         // Call the onSend callback with the result
         onSend(true, formData.address, transactionRequest.spend_amount, result.txid, result.message);
-      } else {
+      }
+       else {
         onSend(false, formData.address, 0, '', result.message);
       }
     } catch (error) {
@@ -165,7 +210,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           <BaseCheckbox />
           RBF Opt In
         </S.RBFWrapper>
-        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} />
+        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} txSize={txSize} />
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton
