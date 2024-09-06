@@ -4,9 +4,10 @@ import config from '@app/config/config';
 export interface PendingTransaction {
     TxID: string;
     FeeRate: number;
-    Timestamp: string;
-    Amount: number;
-  }
+    Timestamp: string; // ISO format string
+    Amount: string;
+    RecipientAddress: string; // Add recipient address
+  }  
 
 const usePendingTransactions = () => {
   const [pendingTransactions, setPendingTransactions] = useState<PendingTransaction[]>([]);
