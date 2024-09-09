@@ -90,8 +90,13 @@ const UnconfirmedTransactions: React.FC = () => {
                         }
                       />
                     </S.TransactionWrapper>
-                    <S.ButtonWrapper>
-                      <S.ReplaceButton  onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</S.ReplaceButton>
+                    <S.ButtonWrapper $isMobile={!isDesktop || !isTablet}>
+                      <S.ReplaceButton
+                        $isMobile={!isDesktop || !isTablet}
+                        onClick={() => handleOpenReplaceTransaction(transaction)}
+                      >
+                        Replace
+                      </S.ReplaceButton>
                     </S.ButtonWrapper>
                   </S.RowWrapper>
                 ))}

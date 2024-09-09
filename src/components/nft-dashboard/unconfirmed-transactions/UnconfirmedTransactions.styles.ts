@@ -25,12 +25,22 @@ export const TransactionWrapper = styled.div`
   display: flex;
   width: 100%;
 `;
-export const ButtonWrapper = styled.div`
+export const ButtonWrapper = styled.div<{ $isMobile: boolean }>`
   disply: flex;
   margin: 0.5rem;
+  ${({ $isMobile }) =>
+    $isMobile &&
+    css`
+      width: 100%;
+    `}
 `;
-export const ReplaceButton = styled(BaseButton)`
+export const ReplaceButton = styled(BaseButton)<{ $isMobile: boolean }>`
   font-size: 0.8rem;
+  ${({ $isMobile }) =>
+    $isMobile &&
+    css`
+      width: 100%;
+    `}
 `;
 
 export const NoTransactionsText = styled.p`
@@ -40,7 +50,7 @@ export const NoTransactionsText = styled.p`
 `;
 
 export const RowWrapper = styled.div<{ $isMobile: boolean }>`
-  padding: .5rem;
+  padding: 0.5rem;
   border-radius: 0.5rem;
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 4px 5px rgba(0, 0, 0, 0.14), 0px 2px 4px -1px rgba(0, 0, 0, 0.2);
   background-color: var(--additional-background-color);
