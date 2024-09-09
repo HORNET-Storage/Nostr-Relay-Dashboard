@@ -17,11 +17,11 @@ const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, 
   return (
     
     <S.TransactionWrapper>
-      <S.DataWrapper>
+      <S.IDWrapper>
       <S.Value>{!isTablet ? truncateString(tx_id, 10) :  truncateString(tx_id, 30)}</S.Value>
         <S.Label>Transaction ID</S.Label>
        
-      </S.DataWrapper>
+      </S.IDWrapper>
       <S.DataWrapper>
       <S.Value>{date_created}</S.Value>
         <S.Label>Date Created</S.Label>
