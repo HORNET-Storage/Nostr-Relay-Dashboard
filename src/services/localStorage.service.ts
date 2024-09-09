@@ -43,3 +43,16 @@ export const readRelayMode = (): 'unlimited' | 'smart' => {
 
 export const deleteToken = (): void => localStorage.removeItem('accessToken');
 export const deleteUser = (): void => localStorage.removeItem('user');
+
+// This is the new token management for wallet auth
+export const persistWalletToken = (token: string): void => {
+  localStorage.setItem('walletToken', token); // Use a different key for the wallet token
+};
+
+export const readWalletToken = (): string => {
+  return localStorage.getItem('walletToken') || ''; // Read the wallet token, default is empty if not present
+};
+
+export const deleteWalletToken = (): void => {
+  localStorage.removeItem('walletToken'); // Remove the wallet token when logging out
+};
