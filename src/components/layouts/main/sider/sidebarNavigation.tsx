@@ -5,6 +5,7 @@ import { ReactComponent as BtcIcon } from '@app/assets/icons/btc.svg';
 import { ReactComponent as StatsIcon } from '@app/assets/icons/stats.svg';
 import { ReactComponent as StorageSettingsIcon } from '@app/assets/icons/storage-settings.svg';
 import { useResponsive } from '@app/hooks/useResponsive';
+import { ReactComponent as MediaIcon } from '@app/assets/icons/media.svg';
 
 export interface SidebarNavigationItem {
   title: string;
@@ -30,6 +31,14 @@ export const useSidebarNavigation = (): SidebarNavigationItem[] => {
         key: 'relay-settings',
         url: '/relay-settings',
         icon: <StorageSettingsIcon />,
+      },
+      {
+        title: 'common.media-manager',
+        key: 'media-manager',
+        url: '/media-manager',
+        icon: <MediaIcon />,
+
+
       },
       {
         title: 'Nostr Statistics',
