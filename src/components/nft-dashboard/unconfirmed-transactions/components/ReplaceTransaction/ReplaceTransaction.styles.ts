@@ -70,3 +70,23 @@ export const ErrorMessage = styled.div`
   margin-top: 10px;
   text-align: center;
 `;
+
+export const CustomFeeInput = styled.input`
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
+export const ToggleCustomFee = styled.button`
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #e0e0e0;
+  }
+`;

@@ -42,7 +42,7 @@ const UnconfirmedTransactions: React.FC = () => {
   const [isReplacingTransaction, setIsReplacingTransaction] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<PendingTransaction | null>(null);
   const { pendingTransactions } = usePendingTransactions();
-  const {isTablet, isDesktop} = useResponsive();
+  const { isTablet, isDesktop } = useResponsive();
 
   const handleOpenReplaceTransaction = (transaction: PendingTransaction) => {
     setSelectedTransaction(transaction);
@@ -78,20 +78,26 @@ const UnconfirmedTransactions: React.FC = () => {
             ) : (
               <S.ScrollPanel>
                 {pendingTransactions.map((transaction) => (
-                  <S.RowWrapper $isMobile={!isDesktop || !isTablet} key={transaction.TxID}>
+                  <S.RowWrapper $isMobile={!isDesktop || !isTablet} key={transaction.txid}>
                     <S.TransactionWrapper>
                       <UnconfirmedTransaction
-                        tx_id={transaction.TxID}
-                        date_created={new Date(transaction.Timestamp).toLocaleDateString()}
+                        tx_id={transaction.txid}
+                        date_created={new Date(transaction.timestamp).toLocaleDateString()}
                         amount={
-                          transaction.Amount !== undefined && transaction.Amount !== null
-                            ? transaction.Amount.toString()
+                          transaction.amount !== undefined && transaction.amount !== null
+                            ? transaction.amount.toString()
                             : 'N/A'
                         }
                       />
                     </S.TransactionWrapper>
                     <S.ButtonWrapper>
-                      <S.ReplaceButton  onClick={() => handleOpenReplaceTransaction(transaction)}>Replace</S.ReplaceButton>
+                      {/* Disable the Replace button if enable_rbf is false */}
+                      <S.ReplaceButton
+                        disabled={!transaction.enable_rbf}  // Disable if enable_rbf is false
+                        onClick={() => handleOpenReplaceTransaction(transaction)}
+                      >
+                        Replace
+                      </S.ReplaceButton>
                     </S.ButtonWrapper>
                   </S.RowWrapper>
                 ))}

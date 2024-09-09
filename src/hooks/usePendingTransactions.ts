@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 
 export interface PendingTransaction {
-    TxID: string;
-    FeeRate: number;
-    Timestamp: string; // ISO format string
-    Amount: string;
-    RecipientAddress: string; // Add recipient address
+    txid: string;
+    feeRate: number;
+    timestamp: string; // ISO format string
+    amount: string;
+    recipient_address: string; // Add recipient address
+    enable_rbf: boolean
   }  
 
 const usePendingTransactions = () => {

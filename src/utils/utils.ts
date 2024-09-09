@@ -158,13 +158,18 @@ export const formatNumberWithCommas = (value: number): string => {
 export const msToH = (ms: number): number => Math.floor(ms / 3600000);
 
 export const hToMS = (h: number): number => h * 3600000;
-export const truncateString = (str: string, num: number): string => {
-if (str.length <= num) {
-return str;
-}else{
-return str.slice(0, num) + '...'; 
-}
-}
+export const truncateString = (str: string | null | undefined, num: number): string => {
+  if (!str) {  // Check if str is undefined or null
+    return '';  // Return an empty string if str is not defined
+  }
+  
+  if (str.length <= num) {
+    return str;
+  } else {
+    return str.slice(0, num) + '...';
+  }
+};
+
 export const getPaymentCardTypeIcon = (type: string): string | null => {
   switch (type) {
     case 'visa':

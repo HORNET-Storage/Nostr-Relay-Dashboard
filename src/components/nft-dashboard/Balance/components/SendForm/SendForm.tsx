@@ -19,8 +19,9 @@ interface PendingTransaction {
   txid: string;
   feeRate: number;
   timestamp: string; // ISO format string
-  amount: string;
+  amount: number;
   recipient_address: string;
+  enable_rbf: boolean
 }
 
 export type tiers = 'low' | 'med' | 'high';
@@ -36,7 +37,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const [addressError, setAddressError] = useState(false);
 
   const [amountWithFee, setAmountWithFee] = useState<number | null>(null);
-  const [totalCost, setTotalCost] = useState<number | null>(null); // To store the total cost (amount + fee)
 
   const [fee, setFee] = useState<number>(0);
   const [formData, setFormData] = useState({
@@ -45,7 +45,8 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   });
 
   const [txSize, setTxSize] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // For error messaging
+
+  const [enableRBF, setEnableRBF] = useState(false); // Default to false
 
   // Debounced effect to calculate transaction size when the amount changes
   useEffect(() => {
@@ -83,20 +84,13 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   useEffect(() => {
     if (txSize && fee) {
       const estimatedFee = txSize * fee;
-      const total = parseInt(formData.amount) + estimatedFee;
-      setAmountWithFee(total);
-      setTotalCost(total);
+      setAmountWithFee(parseInt(formData.amount) + estimatedFee);
     }
-  }, [txSize, fee, formData.amount]);
+  }, [txSize, fee]);
 
-  // Check if the total cost exceeds the user's balance
-  useEffect(() => {
-    if (totalCost !== null && balanceData?.latest_balance !== undefined && totalCost > balanceData.latest_balance) {
-      setErrorMessage('Insufficient balance to complete the transaction.');
-    } else {
-      setErrorMessage(null); // Reset error if the total cost is within balance
-    }    
-  }, [totalCost, balanceData]);
+  // useEffect(() => {
+  //   setAmountWithFee(parseInt(formData.amount) + fee);
+  // }, [fee, formData.amount]);
 
   const handleFeeChange = (fee: number) => {
     setFee(fee);
@@ -125,60 +119,72 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   const handleSend = async () => {
     if (loading || inValidAmount) return;
-
+  
     setLoading(true);
-
-    const selectedFee = fee; // Default to low if not selected
-
+  
+    const selectedFee = fee; // The user-selected fee rate
+  
     const transactionRequest = {
-      choice: 1, // Default to choice 1 for new transactions
+      choice: 1, // New transaction option
       recipient_address: formData.address,
       spend_amount: parseInt(formData.amount),
       priority_rate: selectedFee,
+      enable_rbf: enableRBF, 
     };
-
+  
     try {
+      // Step 1: Initiate the new transaction
       const response = await fetch('http://localhost:9003/transaction', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transactionRequest),
       });
-
+  
       const result = await response.json();
-      setLoading(false);
-
-      if (result.status === 'success') {
-        // Prepare the transaction details to send to the pending-transactions endpoint
+  
+      // Check the status from the wallet's response
+      if (result.status === 'success' || result.status === 'pending') {
+        // Step 2: If the transaction succeeds or is pending, update the pending transactions
         const pendingTransaction: PendingTransaction = {
           txid: result.txid,
-          feeRate: selectedFee,
-          timestamp: new Date().toISOString(), // Capture the current time in ISO format
-          amount: formData.amount,
-          recipient_address: formData.address, // Send the recipient address
+          feeRate: Math.round(selectedFee), // Ensure feeRate is an integer
+          timestamp: new Date().toISOString(), // Already in correct ISO format expected by Go's time.Time
+          amount: parseInt(formData.amount, 10), // Parse amount as an integer
+          recipient_address: formData.address,
+          enable_rbf: enableRBF, // Already boolean and correct
         };
-
-        // Send the transaction details to the pending-transactions endpoint
-        await fetch(`${config.baseURL}/pending-transactions`, {
+  
+        const pendingResponse = await fetch(`${config.baseURL}/pending-transactions`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pendingTransaction),
         });
-
-        // Call the onSend callback with the result
-        onSend(true, formData.address, transactionRequest.spend_amount, result.txid, result.message);
+  
+        const pendingResult = await pendingResponse.json();
+  
+        // Step 3: Handle the final result from updating pending transactions
+        if (pendingResponse.ok) {
+          setLoading(false);
+          onSend(true, formData.address, transactionRequest.spend_amount, result.txid, pendingResult.message); // Notify parent
+        } else {
+          setLoading(false);
+          onSend(false, formData.address, 0, '', pendingResult.error || 'Failed to save pending transaction.');
+        }
       } else {
-        onSend(false, formData.address, 0, '', result.message);
+        // Handle error in the wallet's transaction response
+        setLoading(false);
+        onSend(false, formData.address, 0, '', result.message || 'Transaction failed.');
       }
     } catch (error) {
       console.error('Transaction failed:', error);
       setLoading(false);
       onSend(false, formData.address, 0, '', 'Transaction failed due to a network error.');
+    } finally {
+      setLoading(false); // Ensure loading stops in all cases
     }
   };
+  
+
 
   useEffect(() => {
     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
@@ -186,7 +192,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     } else {
       setInvalidAmount(false);
     }
-  }, [formData.amount, balanceData]);
+  }, [formData.amount]);
 
   const receiverPanel = () => (
     <>
@@ -215,16 +221,17 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       <S.TiersContainer>
         <S.InputHeader>Tiered Fees</S.InputHeader>
         <S.RBFWrapper>
-          <BaseCheckbox />
+          <BaseCheckbox
+            checked={enableRBF}
+            onChange={(e) => setEnableRBF(e.target.checked)} // Update the state when the checkbox is toggled
+          />
           RBF Opt In
         </S.RBFWrapper>
         <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} txSize={txSize} />
       </S.TiersContainer>
-      {/* Display an error if the total exceeds the balance */}
-      {errorMessage && <S.ErrorText>{errorMessage}</S.ErrorText>}
       <BaseRow justify={'center'}>
         <S.SendFormButton
-          disabled={loading || isLoading || inValidAmount || errorMessage !== null}
+          disabled={loading || isLoading || inValidAmount}
           onClick={handleSend}
           size="large"
           type="primary"
@@ -292,21 +299,42 @@ export default SendForm;
 //   const { balanceData, isLoading } = useBalanceData();
 
 //   const [loading, setLoading] = useState(false);
-
+//   const [txID, setTxID] = useState<string | null>(null);  // Store the transaction ID
+//   const [verificationInProgress, setVerificationInProgress] = useState(false);
 //   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
 //   const [inValidAmount, setInvalidAmount] = useState(false);
 //   const [addressError, setAddressError] = useState(false);
-
 //   const [amountWithFee, setAmountWithFee] = useState<number | null>(null);
-
+//   const [totalCost, setTotalCost] = useState<number | null>(null);
 //   const [fee, setFee] = useState<number>(0);
 //   const [formData, setFormData] = useState({
 //     address: '',
 //     amount: '1',
 //   });
-
 //   const [txSize, setTxSize] = useState<number | null>(null);
+//   const [errorMessage, setErrorMessage] = useState<string | null>(null); // For error messaging
+
+//   // Function to fetch with a timeout
+//   const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 10000) => {
+//     const controller = new AbortController();
+//     const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+//     try {
+//       const response = await fetch(url, {
+//         ...options,
+//         signal: controller.signal,
+//       });
+//       clearTimeout(timeoutId); // Clear the timeout once the request is completed
+
+//       return response;
+//     } catch (error) {
+//       if (error instanceof Error) {
+//         console.error('Network request failed:', error.message);
+//         throw new Error(error.message);
+//       }
+//       throw error; // Handle other types of network errors
+//     }
+//   };
 
 //   // Debounced effect to calculate transaction size when the amount changes
 //   useEffect(() => {
@@ -315,7 +343,7 @@ export default SendForm;
 //         // Call backend to calculate transaction size
 //         const fetchTransactionSize = async () => {
 //           try {
-//             const response = await fetch('http://localhost:9003/calculate-tx-size', {
+//             const response = await fetch('https://localhost:443/calculate-tx-size', {
 //               method: 'POST',
 //               headers: { 'Content-Type': 'application/json' },
 //               body: JSON.stringify({
@@ -344,13 +372,20 @@ export default SendForm;
 //   useEffect(() => {
 //     if (txSize && fee) {
 //       const estimatedFee = txSize * fee;
-//       setAmountWithFee(parseInt(formData.amount) + estimatedFee);
+//       const total = parseInt(formData.amount) + estimatedFee;
+//       setAmountWithFee(total);
+//       setTotalCost(total);
 //     }
-//   }, [txSize, fee]);
+//   }, [txSize, fee, formData.amount]);
 
-//   // useEffect(() => {
-//   //   setAmountWithFee(parseInt(formData.amount) + fee);
-//   // }, [fee, formData.amount]);
+//   // Check if the total cost exceeds the user's balance
+//   useEffect(() => {
+//     if (totalCost !== null && balanceData?.latest_balance !== undefined && totalCost > balanceData.latest_balance) {
+//       setErrorMessage('Insufficient balance to complete the transaction.');
+//     } else {
+//       setErrorMessage(null); // Reset error if the total cost is within balance
+//     }
+//   }, [totalCost, balanceData]);
 
 //   const handleFeeChange = (fee: number) => {
 //     setFee(fee);
@@ -377,71 +412,85 @@ export default SendForm;
 //     setFormData({ ...formData, [name]: value });
 //   };
 
+//   // Transaction send and verification process
 //   const handleSend = async () => {
 //     if (loading || inValidAmount) return;
 
 //     setLoading(true);
 
-//     const selectedFee = fee; // Default to low if not selected
+//     const selectedFee = fee; // Default to the selected fee rate
 
 //     const transactionRequest = {
-//       choice: 1, // Default to choice 1 for new transactions
+//       choice: 1, // Choice 1 for initiating a new transaction
 //       recipient_address: formData.address,
 //       spend_amount: parseInt(formData.amount),
 //       priority_rate: selectedFee,
 //     };
 
 //     try {
-//       const response = await fetch('http://localhost:9003/transaction', {
+//       // Step 1: Initiate the transaction request
+//       const response = await fetchWithTimeout('https://localhost:443/transaction', {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
 //         },
 //         body: JSON.stringify(transactionRequest),
-//       });
+//       }, 100000); // Setting a 30-second timeout for the transaction request
 
 //       const result = await response.json();
-//       setLoading(false);
 
-//       if (result.status === 'success') {
-//         // Prepare the transaction details to send to the pending-transactions endpoint
-//         const pendingTransaction: PendingTransaction = {
-//           txid: result.txid,
-//           feeRate: selectedFee,
-//           timestamp: new Date().toISOString(), // Capture the current time in ISO format
-//           amount: formData.amount,
-//           recipient_address: formData.address, // Send the recipient address
+//       if (result.status === 'pending') {
+//         // Transaction broadcasted but pending verification
+//         console.log('Transaction broadcasted. Verifying in mempool...');
+//         setTxID(result.txid);
+//         setVerificationInProgress(true);
+
+//         // Step 2: Start mempool verification
+//         const verifyTransaction = async () => {
+//           const verifyRequest = { txID: result.txid };
+//           const verifyResponse = await fetchWithTimeout('https://localhost:443/verify-transaction', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(verifyRequest),
+//           }, 30000);
+
+//           const verifyResult = await verifyResponse.json();
+
+//           if (verifyResult.status === 'success') {
+//             console.log('Transaction verified in the mempool');
+//             onSend(true, formData.address, parseInt(formData.amount), verifyResult.txid, verifyResult.message);
+//           } else if (verifyResult.status === 'pending') {
+//             console.log('Transaction not found in mempool yet. Will retry.');
+//             setTimeout(verifyTransaction, 10000);  // Retry after 10 seconds
+//           } else {
+//             console.error('Verification failed:', verifyResult.message);
+//             onSend(false, formData.address, 0, '', verifyResult.message);
+//           }
 //         };
-      
-//         // Send the transaction details to the pending-transactions endpoint
-//         await fetch(`${config.baseURL}/pending-transactions`, {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(pendingTransaction),
-//         });
-      
-//         // Call the onSend callback with the result
-//         onSend(true, formData.address, transactionRequest.spend_amount, result.txid, result.message);
-//       }
-//        else {
+
+//         verifyTransaction();  // Start verification process
+
+//       } else {
+//         console.error('Transaction failed:', result.message);
 //         onSend(false, formData.address, 0, '', result.message);
+//         setLoading(false);
 //       }
 //     } catch (error) {
 //       console.error('Transaction failed:', error);
-//       setLoading(false);
 //       onSend(false, formData.address, 0, '', 'Transaction failed due to a network error.');
+//     } finally {
+//       setLoading(false);
 //     }
 //   };
 
+//   // Handle invalid amounts
 //   useEffect(() => {
 //     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
 //       setInvalidAmount(true);
 //     } else {
 //       setInvalidAmount(false);
 //     }
-//   }, [formData.amount]);
+//   }, [formData.amount, balanceData]);
 
 //   const receiverPanel = () => (
 //     <>
@@ -475,9 +524,11 @@ export default SendForm;
 //         </S.RBFWrapper>
 //         <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} txSize={txSize} />
 //       </S.TiersContainer>
+//       {/* Display an error if the total exceeds the balance */}
+//       {errorMessage && <S.ErrorText>{errorMessage}</S.ErrorText>}
 //       <BaseRow justify={'center'}>
 //         <S.SendFormButton
-//           disabled={loading || isLoading || inValidAmount}
+//           disabled={loading || isLoading || inValidAmount || errorMessage !== null}
 //           onClick={handleSend}
 //           size="large"
 //           type="primary"
