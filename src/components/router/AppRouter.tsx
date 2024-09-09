@@ -20,6 +20,7 @@ import { withLoading } from '@app/hocs/withLoading.hoc';
 import NftDashboardPage from '@app/pages/DashboardPages/NftDashboardPage';
 import MedicalDashboardPage from '@app/pages/DashboardPages/MedicalDashboardPage';
 import BalancePage from '@app/pages/BalancePage';
+import MediaPage from '@app/pages/MediaPage';
 // import api from '@app/services/api';
 
 const NewsFeedPage = React.lazy(() => import('@app/pages/NewsFeedPage'));
@@ -145,6 +146,7 @@ export const AppRouter: React.FC = () => {
           <Route path={NFT_DASHBOARD_PATH} element={<NftDashboard />} />
           <Route path={MEDICAL_DASHBOARD_PATH} element={<MedicalDashboard />} />
           <Route path="/wallet" element={<BalancePage />} />
+          <Route path="media-manager" element={<MediaPage />} />
           <Route path="relay-stats" element={<RelayStats />} />
           <Route path={RELAY_SETTINGS_PATH} element={<RelaySettings />} />
           <Route path="apps">
