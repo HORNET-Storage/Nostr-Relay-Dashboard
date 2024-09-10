@@ -10,19 +10,28 @@ import { BaseDropdown } from '@app/components/common/BaseDropdown/Dropdown';
 interface MediaItemProps {
   file: MediaFile;
 }
-
-const menuItems: MenuProps['items']  = [
-  {
-    key: '1',
-    label: 'Details',
-  },
-  {
-    key: '2',
-    label: 'Delete',
-  },
-];
-
 const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
+
+  const handleDelete = () => {
+    // todo: delete file
+  
+  }
+  const handleDownload = () => {  
+  //todo: download file
+  }
+  
+  const menuItems: MenuProps['items']  = [
+    {
+      key: '1',
+      label: 'Donwload',
+      onClick: handleDownload,
+    },
+    {
+      key: '2',
+      label: 'Delete',
+      onClick: handleDelete,  
+    },
+  ];
   return (
     <S.MediaItemContainer>
       <S.MediaThumbnail src={file.thumbnail} alt={file.name} />
