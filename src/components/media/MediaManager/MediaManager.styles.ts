@@ -36,22 +36,25 @@ export const ToolBarContainer = styled.div`
   gap: 1rem;
 `;
 
-export const ButtonsContainer = styled.div`
+export const ButtonsContainer = styled.div<{ isTablet?: boolean }>`
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
   width: 100%;
-  padding-right: 1rem;
+  ${(props) =>
+    props.isTablet &&
+    css`
+      padding-right: 1rem;
+    `}
 `;
 
 export const MediaItemsContainer = styled.div`
-    height: 100%;
-    overflow-y: auto;
+  height: 100%;
+  overflow-y: auto;
   padding-top: 2rem;
-
 `;
 
-export const ToolBarButton = styled(BaseButton)<{ $isActive? : boolean }>`
+export const ToolBarButton = styled(BaseButton)<{ $isActive?: boolean }>`
   font-size: 0.8rem;
   ${(props) =>
     props.$isActive
@@ -59,8 +62,8 @@ export const ToolBarButton = styled(BaseButton)<{ $isActive? : boolean }>`
           color: var(--ant-primary-color-hover);
           border-color: var(--ant-primary-color-hover);
         `
-      : css `
+      : css`
           color: var(--text-main-color) !important;
-          border-color: var(--border-base-color) ;`}
+          border-color: var(--border-base-color);
+        `}
 `;
-
