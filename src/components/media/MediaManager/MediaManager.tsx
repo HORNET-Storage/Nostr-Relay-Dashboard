@@ -6,6 +6,7 @@ import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useResponsive } from '@app/hooks/useResponsive';
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
+import MediaViewer from './MediaViewer/MediaViewer';
 export type MediaFile = {
   id: string;
   path: string;
@@ -19,6 +20,8 @@ const MediaManager: React.FC = () => {
   const { isTablet } = useResponsive();
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [files, setFiles] = useState<MediaFile[]>(dummyItems);
+ const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null); // Store file for viewing
+  const [viewerVisible, setViewerVisible] = useState(false); // Control modal visibility
 
   const [path, setPath] = useState<string>('/media/images');
   const [breadcrumbItems, setBreadcrumbItems] = useState<string[]>(path.length <= 0 ? ['/'] : path.split('/'));
@@ -26,8 +29,13 @@ const MediaManager: React.FC = () => {
   const [selectionModeActive, setSelectionModeActive] = useState<boolean>(false);
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
+ 
   const handleSelect = (file: MediaFile) => {
-    if (!selectionModeActive) return;
+    if (!selectionModeActive) {
+      setSelectedFileForViewer(file);
+      setViewerVisible(true); 
+      return;
+    }
 
     if (selectedFiles.some((selectedFile) => selectedFile.id === file.id)) {
       setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.id !== file.id));
@@ -35,6 +43,7 @@ const MediaManager: React.FC = () => {
     }
     setSelectedFiles([...selectedFiles, file]);
   };
+
   const handleSelectAll = () => {
     if (selectedFiles.length === files.length) {
       setSelectedFiles([]);
@@ -63,6 +72,10 @@ const MediaManager: React.FC = () => {
     setBreadcrumbItems(path.length <= 0 ? ['/'] : path.split('/'));
   }, [path]);
 
+  const handleCloseViewer = () => {
+    setViewerVisible(false);
+    setSelectedFileForViewer(null);
+  };
 
   return (
     <S.MediaManagerContainer>
@@ -100,6 +113,7 @@ const MediaManager: React.FC = () => {
           ))}
         </BaseRow>
       </S.MediaItemsContainer>
+      <MediaViewer visible={viewerVisible} onClose={handleCloseViewer} file={selectedFileForViewer} />
     </S.MediaManagerContainer>
   );
 };
