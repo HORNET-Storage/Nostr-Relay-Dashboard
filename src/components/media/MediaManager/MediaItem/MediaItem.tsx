@@ -9,9 +9,10 @@ import { MenuProps } from 'antd';
 import { BaseDropdown } from '@app/components/common/BaseDropdown/Dropdown';
 interface MediaItemProps {
   file: MediaFile;
+  selected: boolean;
 }
 
-const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
+const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
   const handleDelete = () => {
     // todo: delete file
   };

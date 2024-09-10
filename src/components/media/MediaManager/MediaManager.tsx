@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import * as S from './MediaManager.styles';
 import MediaItem from './MediaItem/MediaItem';
 const dummyThumbnail = 'https://via.placeholder.com/150';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
-import { BaseBreadcrumb } from '@app/components/common/BaseBreadcrumb/BaseBreadcrumb';
 import { useResponsive } from '@app/hooks/useResponsive';
 export type MediaFile = {
   id: string;
@@ -18,18 +16,35 @@ export type MediaFile = {
 };
 const MediaManager: React.FC = () => {
   const { isTablet } = useResponsive();
+  const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
+  const [files, setFiles] = useState<MediaFile[]>(dummyItems);
+
+  const handleSelectAll = () => {
+    if (selectedFiles.length === files.length) {
+      setSelectedFiles([]);
+      return;
+    }
+    setSelectedFiles(files);
+  };
+
+  const isSelected = (file: MediaFile) => {
+    return selectedFiles.some((selectedFile) => selectedFile.id === file.id);
+  };
+
   return (
     <S.MediaManagerContainer>
       <BaseRow>
-        <BaseCol span={10}>
-            <BaseBreadcrumb>/ Test</BaseBreadcrumb>
+        <BaseCol span={isTablet ? 10 : 24}>
+          <S.BreadcrumbWrapper isTablet={isTablet}>
+            <S.Breadcrumb>/ Test</S.Breadcrumb>
+          </S.BreadcrumbWrapper>
         </BaseCol>
         <BaseCol span={14}>
           <BaseRow>
-            <S.ButtonsContainer >
-              <S.ToolBarButton>Select (0)</S.ToolBarButton>
-              <S.ToolBarButton>Select All</S.ToolBarButton>
-              </S.ButtonsContainer>
+            <S.ButtonsContainer>
+              <S.ToolBarButton>{`Select (${selectedFiles.length})`}</S.ToolBarButton>
+              <S.ToolBarButton onClick={handleSelectAll}>Select All</S.ToolBarButton>
+            </S.ButtonsContainer>
           </BaseRow>
         </BaseCol>
       </BaseRow>
@@ -37,7 +52,7 @@ const MediaManager: React.FC = () => {
         <BaseRow gutter={[32, 24]}>
           {dummyItems.map((item) => (
             <BaseCol span={isTablet ? 4 : 6}>
-              <MediaItem file={item} />
+              <MediaItem file={item} selected={isSelected(item)} />
             </BaseCol>
           ))}
         </BaseRow>
