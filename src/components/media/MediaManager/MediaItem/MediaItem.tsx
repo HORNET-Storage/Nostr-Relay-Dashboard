@@ -5,9 +5,22 @@ import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import * as S from './MediaItem.styles';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { MoreOutlined } from '@ant-design/icons';
+import { MenuProps } from 'antd';
+import { BaseDropdown } from '@app/components/common/BaseDropdown/Dropdown';
 interface MediaItemProps {
   file: MediaFile;
 }
+
+const menuItems: MenuProps['items']  = [
+  {
+    key: '1',
+    label: 'Details',
+  },
+  {
+    key: '2',
+    label: 'Delete',
+  },
+];
 
 const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
   return (
@@ -22,7 +35,9 @@ const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
         </BaseCol>
         <BaseCol span={4}>
           <S.ButtonWrapper>
-            <BaseButton type="text" icon={<MoreOutlined />} size="large" />
+            <BaseDropdown menu={{ items: menuItems }} placement='bottomRight'>
+              <BaseButton type="text" icon={<MoreOutlined />} size="large" />
+            </BaseDropdown>
           </S.ButtonWrapper>
         </BaseCol>
       </BaseRow>
