@@ -7,12 +7,14 @@ import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { MoreOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import { BaseDropdown } from '@app/components/common/BaseDropdown/Dropdown';
+import { CheckOutlined } from '@ant-design/icons';
 interface MediaItemProps {
   file: MediaFile;
   selected: boolean;
 }
 
 const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
+
   const handleDelete = () => {
     // todo: delete file
   };
@@ -37,6 +39,13 @@ const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
       <S.ThumbnailContainer>
         <S.MediaTypeIndicator>{file.type}</S.MediaTypeIndicator>
         <S.MediaThumbnail src={file.thumbnail} alt={file.name} />
+        {selected && (
+          <S.Overlay>
+            <S.CheckmarkIcon>
+              <CheckOutlined />
+            </S.CheckmarkIcon>
+          </S.Overlay>
+        )}
       </S.ThumbnailContainer>
       <BaseRow>
         <BaseCol span={20}>

@@ -47,20 +47,40 @@ export const ButtonWrapper = styled.div`
   justify-content: center;
   align-items: flex-end;
   text-align: center;
-  padding-left: .75rem;
-  `;
+  padding-left: 0.75rem;
+`;
 
-  export const ThumbnailContainer = styled.div` 
+export const ThumbnailContainer = styled.div`
   position: relative;
-  `;
+`;
 
-  export const MediaTypeIndicator = styled.div`
+export const MediaTypeIndicator = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  padding: .25rem .5rem;
-  font-size: .75rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
   background-color: var(--background-color);
   color: var(--text-nft-light-color);
-  border-radius: 0 0 0 .25rem;
-  `;
+  border-radius: 0 0 0 0.25rem;
+`;
+export const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 255, 0.3); /* Transparent blue */
+  opacity: 0.6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+`;
+
+export const CheckmarkIcon = styled.div`
+  font-size: 24px;
+  color: blue; /* Blue checkmark */
+  padding: 5px;
+  background: transparent;
+`;

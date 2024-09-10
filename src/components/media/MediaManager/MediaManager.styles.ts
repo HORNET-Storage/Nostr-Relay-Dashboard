@@ -18,10 +18,10 @@ export const BreadcrumbWrapper = styled.div<{ isTablet?: boolean }>`
   display: flex;
     padding-bottom:2rem;
   ${(props) =>
-    props.isTablet && css`
-    padding-bottom:0;
-    `
-  }
+    props.isTablet &&
+    css`
+      padding-bottom: 0;
+    `}
   }
 
   text-align: center;
