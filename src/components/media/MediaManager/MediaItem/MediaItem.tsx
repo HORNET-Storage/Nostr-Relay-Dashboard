@@ -25,7 +25,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
   const menuItems: MenuProps['items'] = [
     {
       key: '1',
-      label: 'Donwload',
+      label: 'Download',
       onClick: handleDownload,
     },
     {
