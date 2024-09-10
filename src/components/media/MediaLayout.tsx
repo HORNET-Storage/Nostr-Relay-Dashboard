@@ -7,6 +7,7 @@ const MediaLayout: React.FC = () => {
     <>
       <PageTitle>Media Manager</PageTitle>
       <S.MediaManagerWrapper>
+        <S.PageHeader>Media Manager</S.PageHeader>
         <MediaManager />
       </S.MediaManagerWrapper>
     </>

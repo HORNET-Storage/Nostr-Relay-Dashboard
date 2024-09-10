@@ -60,8 +60,8 @@ export const MediaTypeIndicator = styled.div`
   top: 0;
   right: 0;
   padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  background-color: var(--background-color);
+  font-size: 1rem;
+  background-color: var(--ant-primary-7);
   color: var(--text-nft-light-color);
   border-radius: 0 0 0 0.25rem;
 `;
@@ -71,8 +71,10 @@ export const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 255, 0.3); /* Transparent blue */
-  opacity: 0.6;
+
+  background-color:  var(--primary-color);
+
+  opacity: 0.5;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,7 +83,7 @@ export const Overlay = styled.div`
 
 export const CheckmarkIcon = styled.div`
   font-size: 24px;
-  color: blue; /* Blue checkmark */
+  color: white;
   padding: 5px;
   background: transparent;
 `;

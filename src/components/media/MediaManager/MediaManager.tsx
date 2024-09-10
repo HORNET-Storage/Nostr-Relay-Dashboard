@@ -5,6 +5,7 @@ const dummyThumbnail = 'https://via.placeholder.com/150';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
 import { useResponsive } from '@app/hooks/useResponsive';
+import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
 export type MediaFile = {
   id: string;
   path: string;
@@ -18,6 +19,9 @@ const MediaManager: React.FC = () => {
   const { isTablet } = useResponsive();
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [files, setFiles] = useState<MediaFile[]>(dummyItems);
+
+  const [path, setPath] = useState<string>('/media/images');
+  const [breadcrumbItems, setBreadcrumbItems] = useState<string[]>(path.length <= 0 ? ['/'] : path.split('/'));
 
   const [selectionModeActive, setSelectionModeActive] = useState<boolean>(false);
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
@@ -55,17 +59,27 @@ const MediaManager: React.FC = () => {
     setIsAllSelected(false);
   }, [selectedFiles, files]);
 
+  useEffect(() => { 
+    setBreadcrumbItems(path.length <= 0 ? ['/'] : path.split('/'));
+  }, [path]);
+
+
   return (
     <S.MediaManagerContainer>
       <BaseRow>
         <BaseCol span={isTablet ? 10 : 24}>
           <S.BreadcrumbWrapper isTablet={isTablet}>
-            <S.Breadcrumb>/ Test</S.Breadcrumb>
+            <S.Breadcrumb>
+                {breadcrumbItems.map((item, index) => (
+                    <BreadcrumbItem key={index}>{item}</BreadcrumbItem>
+                ))}
+            </S.Breadcrumb>
           </S.BreadcrumbWrapper>
         </BaseCol>
-        <BaseCol span={14}>
+        <BaseCol span={isTablet? 14 : 24}>
           <BaseRow>
             <S.ButtonsContainer>
+              <S.ToolBarButton>Delete</S.ToolBarButton>
               <S.ToolBarButton
                 $isActive={selectionModeActive}
                 onClick={handleSelectButton}
@@ -80,7 +94,7 @@ const MediaManager: React.FC = () => {
       <S.MediaItemsContainer>
         <BaseRow gutter={[32, 24]}>
           {dummyItems.map((item) => (
-            <BaseCol key={item.id} onClick={() => handleSelect(item)} span={isTablet ? 4 : 6}>
+            <BaseCol key={item.id} onClick={() => handleSelect(item)} span={isTablet ? 4 : 12}>
               <MediaItem file={item} selected={isSelected(item)} />
             </BaseCol>
           ))}
@@ -144,6 +158,222 @@ const dummyItems: MediaFile[] = [
     size: 10240,
     type: 'application/pdf',
     createdAt: new Date('2023-05-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '7',
+    path: '/media/image3.jpg',
+    name: 'image3.jpg',
+    size: 4096,
+    type: 'image/jpeg',
+    createdAt: new Date('2023-06-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '8',
+    path: '/media/video2.mp4',
+    name: 'video2.mp4',
+    size: 8192,
+    type: 'video/mp4',
+    createdAt: new Date('2023-06-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '9',
+    path: '/media/audio2.mp3',
+    name: 'audio2.mp3',
+    size: 3072,
+    type: 'audio/mpeg',
+    createdAt: new Date('2023-07-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '10',
+    path: '/media/image4.jpg',
+    name: 'image4.jpg',
+    size: 2048,
+    type: 'image/jpeg',
+    createdAt: new Date('2023-07-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '11',
+    path: '/media/document3.pdf',
+    name: 'document3.pdf',
+    size: 10240,
+    type: 'application/pdf',
+    createdAt: new Date('2023-08-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '12',
+    path: '/media/video3.mp4',
+    name: 'video3.mp4',
+    size: 6144,
+    type: 'video/mp4',
+    createdAt: new Date('2023-08-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '13',
+    path: '/media/image5.jpg',
+    name: 'image5.jpg',
+    size: 5120,
+    type: 'image/jpeg',
+    createdAt: new Date('2023-09-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '14',
+    path: '/media/audio3.mp3',
+    name: 'audio3.mp3',
+    size: 4096,
+    type: 'audio/mpeg',
+    createdAt: new Date('2023-09-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '15',
+    path: '/media/image6.jpg',
+    name: 'image6.jpg',
+    size: 1024,
+    type: 'image/jpeg',
+    createdAt: new Date('2023-10-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '16',
+    path: '/media/document4.pdf',
+    name: 'document4.pdf',
+    size: 10240,
+    type: 'application/pdf',
+    createdAt: new Date('2023-10-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '17',
+    path: '/media/video4.mp4',
+    name: 'video4.mp4',
+    size: 5120,
+    type: 'video/mp4',
+    createdAt: new Date('2023-11-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '18',
+    path: '/media/image7.jpg',
+    name: 'image7.jpg',
+    size: 2048,
+    type: 'image/jpeg',
+    createdAt: new Date('2023-11-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '19',
+    path: '/media/audio4.mp3',
+    name: 'audio4.mp3',
+    size: 3072,
+    type: 'audio/mpeg',
+    createdAt: new Date('2023-12-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '20',
+    path: '/media/image8.jpg',
+    name: 'image8.jpg',
+    size: 5120,
+    type: 'image/jpeg',
+    createdAt: new Date('2023-12-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '21',
+    path: '/media/document5.pdf',
+    name: 'document5.pdf',
+    size: 10240,
+    type: 'application/pdf',
+    createdAt: new Date('2024-01-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '22',
+    path: '/media/video5.mp4',
+    name: 'video5.mp4',
+    size: 8192,
+    type: 'video/mp4',
+    createdAt: new Date('2024-01-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '23',
+    path: '/media/audio5.mp3',
+    name: 'audio5.mp3',
+    size: 3072,
+    type: 'audio/mpeg',
+    createdAt: new Date('2024-02-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '24',
+    path: '/media/image9.jpg',
+    name: 'image9.jpg',
+    size: 1024,
+    type: 'image/jpeg',
+    createdAt: new Date('2024-02-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '25',
+    path: '/media/document6.pdf',
+    name: 'document6.pdf',
+    size: 10240,
+    type: 'application/pdf',
+    createdAt: new Date('2024-03-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '26',
+    path: '/media/video6.mp4',
+    name: 'video6.mp4',
+    size: 5120,
+    type: 'video/mp4',
+    createdAt: new Date('2024-03-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '27',
+    path: '/media/image10.jpg',
+    name: 'image10.jpg',
+    size: 2048,
+    type: 'image/jpeg',
+    createdAt: new Date('2024-04-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '28',
+    path: '/media/audio6.mp3',
+    name: 'audio6.mp3',
+    size: 3072,
+    type: 'audio/mpeg',
+    createdAt: new Date('2024-04-15'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '29',
+    path: '/media/image11.jpg',
+    name: 'image11.jpg',
+    size: 5120,
+    type: 'image/jpeg',
+    createdAt: new Date('2024-05-01'),
+    thumbnail: dummyThumbnail,
+  },
+  {
+    id: '30',
+    path: '/media/document7.pdf',
+    name: 'document7.pdf',
+    size: 10240,
+    type: 'application/pdf',
+    createdAt: new Date('2024-05-15'),
     thumbnail: dummyThumbnail,
   },
 ];

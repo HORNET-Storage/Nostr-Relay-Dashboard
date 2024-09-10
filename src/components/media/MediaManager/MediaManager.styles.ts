@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseBreadcrumb } from '@app/components/common/BaseBreadcrumb/BaseBreadcrumb';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
+
 export const MediaManagerContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -44,7 +45,10 @@ export const ButtonsContainer = styled.div`
 `;
 
 export const MediaItemsContainer = styled.div`
+    height: 100%;
+    overflow-y: auto;
   padding-top: 2rem;
+
 `;
 
 export const ToolBarButton = styled(BaseButton)<{ $isActive? : boolean }>`
@@ -59,3 +63,4 @@ export const ToolBarButton = styled(BaseButton)<{ $isActive? : boolean }>`
           color: var(--text-main-color) !important;
           border-color: var(--border-base-color) ;`}
 `;
+

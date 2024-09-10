@@ -8,6 +8,9 @@ import { MoreOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import { BaseDropdown } from '@app/components/common/BaseDropdown/Dropdown';
 import { CheckOutlined } from '@ant-design/icons';
+import MusicIcon from '@app/components/common/icons/MusicIcon';
+import VideoIcon from '@app/components/common/icons/VideoIcon';
+import ImageIcon from '@app/components/common/icons/ImageIcon';
 interface MediaItemProps {
   file: MediaFile;
   selected: boolean;
@@ -21,7 +24,25 @@ const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
   const handleDownload = () => {
     //todo: download file
   };
-
+const parseType = (fileType: string) => {
+  const parsedType =  fileType.split('/')[0];
+  return parsedType;
+}
+  
+  const getMediaTypeIcon = (type: string) => {
+    //TODO: this will need to be updated to handle how types are declared in the backend
+    const parsedType = parseType(type);
+    switch (parsedType) {
+      case 'audio':
+        return <MusicIcon />;
+      case 'video':
+        return <VideoIcon />;
+      case 'image':
+        return <ImageIcon />;
+      default:
+        return <ImageIcon />;
+    }
+  };
   const menuItems: MenuProps['items'] = [
     {
       key: '1',
@@ -37,7 +58,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
   return (
     <S.MediaItemContainer>
       <S.ThumbnailContainer>
-        <S.MediaTypeIndicator>{file.type}</S.MediaTypeIndicator>
+        <S.MediaTypeIndicator>{getMediaTypeIcon(file.type)}</S.MediaTypeIndicator>
         <S.MediaThumbnail src={file.thumbnail} alt={file.name} />
         {selected && (
           <S.Overlay>
