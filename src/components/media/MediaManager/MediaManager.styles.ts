@@ -47,6 +47,15 @@ export const MediaItemsContainer = styled.div`
   padding-top: 2rem;
 `;
 
-export const ToolBarButton = styled(BaseButton)`
+export const ToolBarButton = styled(BaseButton)<{ $isActive? : boolean }>`
   font-size: 0.8rem;
+  ${(props) =>
+    props.$isActive
+      ? css`
+          color: var(--ant-primary-color-hover);
+          border-color: var(--ant-primary-color-hover);
+        `
+      : css `
+          color: var(--text-main-color) !important;
+          border-color: var(--border-base-color) ;`}
 `;

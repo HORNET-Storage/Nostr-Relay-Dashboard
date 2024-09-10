@@ -29,6 +29,7 @@ export const MediaInfoContainer = styled.div`
 `;
 
 export const MediaThumbnail = styled.img`
+ cursor: pointer;
   width: 100%;
   height: 100%;
   object-fit: cover;

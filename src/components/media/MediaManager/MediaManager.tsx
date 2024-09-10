@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as S from './MediaManager.styles';
 import MediaItem from './MediaItem/MediaItem';
 const dummyThumbnail = 'https://via.placeholder.com/150';
@@ -19,6 +19,18 @@ const MediaManager: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [files, setFiles] = useState<MediaFile[]>(dummyItems);
 
+  const [selectionModeActive, setSelectionModeActive] = useState<boolean>(false);
+  const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
+
+  const handleSelect = (file: MediaFile) => {
+    if (!selectionModeActive) return;
+
+    if (selectedFiles.some((selectedFile) => selectedFile.id === file.id)) {
+      setSelectedFiles(selectedFiles.filter((selectedFile) => selectedFile.id !== file.id));
+      return;
+    }
+    setSelectedFiles([...selectedFiles, file]);
+  };
   const handleSelectAll = () => {
     if (selectedFiles.length === files.length) {
       setSelectedFiles([]);
@@ -31,6 +43,18 @@ const MediaManager: React.FC = () => {
     return selectedFiles.some((selectedFile) => selectedFile.id === file.id);
   };
 
+  const handleSelectButton = () => {
+    setSelectionModeActive(!selectionModeActive);
+  };
+
+  useEffect(() => {
+    if (selectedFiles.length === files.length) {
+      setIsAllSelected(true);
+      return;
+    }
+    setIsAllSelected(false);
+  }, [selectedFiles, files]);
+
   return (
     <S.MediaManagerContainer>
       <BaseRow>
@@ -42,8 +66,13 @@ const MediaManager: React.FC = () => {
         <BaseCol span={14}>
           <BaseRow>
             <S.ButtonsContainer>
-              <S.ToolBarButton>{`Select (${selectedFiles.length})`}</S.ToolBarButton>
-              <S.ToolBarButton onClick={handleSelectAll}>Select All</S.ToolBarButton>
+              <S.ToolBarButton
+                $isActive={selectionModeActive}
+                onClick={handleSelectButton}
+              >{`Select (${selectedFiles.length})`}</S.ToolBarButton>
+              <S.ToolBarButton $isActive={isAllSelected} onClick={handleSelectAll}>
+                Select All
+              </S.ToolBarButton>
             </S.ButtonsContainer>
           </BaseRow>
         </BaseCol>
@@ -51,7 +80,7 @@ const MediaManager: React.FC = () => {
       <S.MediaItemsContainer>
         <BaseRow gutter={[32, 24]}>
           {dummyItems.map((item) => (
-            <BaseCol span={isTablet ? 4 : 6}>
+            <BaseCol key={item.id} onClick={() => handleSelect(item)} span={isTablet ? 4 : 6}>
               <MediaItem file={item} selected={isSelected(item)} />
             </BaseCol>
           ))}

@@ -16,7 +16,7 @@ interface MediaItemProps {
 const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
 
   const handleDelete = () => {
-    // todo: delete file
+    // todo: delete file; both this and download will probably need onDeleted and onDownloaded props
   };
   const handleDownload = () => {
     //todo: download file
