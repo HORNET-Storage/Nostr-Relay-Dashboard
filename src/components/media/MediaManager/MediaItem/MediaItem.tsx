@@ -10,17 +10,16 @@ import { BaseDropdown } from '@app/components/common/BaseDropdown/Dropdown';
 interface MediaItemProps {
   file: MediaFile;
 }
-const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
 
+const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
   const handleDelete = () => {
     // todo: delete file
-  
-  }
-  const handleDownload = () => {  
-  //todo: download file
-  }
-  
-  const menuItems: MenuProps['items']  = [
+  };
+  const handleDownload = () => {
+    //todo: download file
+  };
+
+  const menuItems: MenuProps['items'] = [
     {
       key: '1',
       label: 'Donwload',
@@ -29,12 +28,15 @@ const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
     {
       key: '2',
       label: 'Delete',
-      onClick: handleDelete,  
+      onClick: handleDelete,
     },
   ];
   return (
     <S.MediaItemContainer>
-      <S.MediaThumbnail src={file.thumbnail} alt={file.name} />
+      <S.ThumbnailContainer>
+        <S.MediaTypeIndicator>{file.type}</S.MediaTypeIndicator>
+        <S.MediaThumbnail src={file.thumbnail} alt={file.name} />
+      </S.ThumbnailContainer>
       <BaseRow>
         <BaseCol span={20}>
           <S.MediaInfoContainer>
@@ -44,7 +46,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ file }) => {
         </BaseCol>
         <BaseCol span={4}>
           <S.ButtonWrapper>
-            <BaseDropdown menu={{ items: menuItems }} placement='bottomRight'>
+            <BaseDropdown menu={{ items: menuItems }} placement="bottomRight">
               <BaseButton type="text" icon={<MoreOutlined />} size="large" />
             </BaseDropdown>
           </S.ButtonWrapper>

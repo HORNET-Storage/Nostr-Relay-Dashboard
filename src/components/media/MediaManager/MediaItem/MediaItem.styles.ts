@@ -49,3 +49,18 @@ export const ButtonWrapper = styled.div`
   text-align: center;
   padding-left: .75rem;
   `;
+
+  export const ThumbnailContainer = styled.div` 
+  position: relative;
+  `;
+
+  export const MediaTypeIndicator = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: .25rem .5rem;
+  font-size: .75rem;
+  background-color: var(--background-color);
+  color: var(--text-nft-light-color);
+  border-radius: 0 0 0 .25rem;
+  `;
