@@ -61,6 +61,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           try {
             // Ensure user is authenticated
             if (!isAuthenticated) {
+              console.log("Not Authenticated.")
               await login(); // Perform login if not authenticated
             }
       
@@ -79,9 +80,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       
             if (response.status === 401) {
               const errorText = await response.text();
-              if (errorText.includes("Token expired")) {
+              if (errorText.includes("Token expired") || errorText.includes("Unauthorized: Invalid token")) {
                 // Token has expired, trigger a re-login
-                notificationController.error({ message: 'Session expired. Please log in again.' });
+                console.log('Session expired. Please log in again.');
                 deleteWalletToken(); // Clear the old token
                 await login(); // Re-initiate login
               }
@@ -170,9 +171,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   
       if (response.status === 401) {
         const errorText = await response.text();
-        if (errorText.includes("Token expired")) {
+        if (errorText.includes("Token expired") || errorText.includes("Unauthorized: Invalid token")) {
           // Token has expired, trigger a re-login
-          notificationController.error({ message: 'Session expired. Please log in again.' });
+          console.log('Session expired. Please log in again.');
           deleteWalletToken(); // Clear the old token
           await login(); // Re-initiate login
         }

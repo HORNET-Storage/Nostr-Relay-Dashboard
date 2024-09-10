@@ -112,8 +112,8 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
       if (response.status === 401) {
         const errorText = await response.text();
-        if (errorText.includes('Token expired')) {
-          notificationController.error({ message: 'Session expired. Please log in again.' });
+        if (errorText.includes("Token expired") || errorText.includes("Unauthorized: Invalid token")) {
+          console.log('Session expired. Please log in again.');
           deleteWalletToken(); // Clear the old token
           await login(); // Re-initiate login
         }

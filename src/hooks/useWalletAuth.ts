@@ -25,6 +25,8 @@ const useWalletAuth = () => {
         return;
       }
 
+      console.log("getting challenge.")
+
       // Fetch the Nostr public key
       const npub = await window.nostr.getPublicKey();
 
@@ -68,7 +70,7 @@ const useWalletAuth = () => {
       setToken(token);
       setIsAuthenticated(true);
 
-      notificationController.success({ message: 'Wallet login successful!' });
+      console.log('Wallet login successful!')
     } catch (error) {
       console.error('Error during wallet login:', error);
       notificationController.error({ message: 'Wallet authentication failed' });
