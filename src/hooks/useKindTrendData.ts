@@ -10,7 +10,7 @@ interface MonthlyKindData {
   totalSize: number;
 }
 
-const useKindTrendData = (kindNumber: number) => {
+const useKindTrendData = (kindNumber: number | null) => {
   const [trendData, setTrendData] = useState<MonthlyKindData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
@@ -18,6 +18,11 @@ const useKindTrendData = (kindNumber: number) => {
   const handleLogout = useHandleLogout();
 
   useEffect(() => {
+    if (kindNumber === null) {
+      // Don't fetch data if kindNumber is null
+      return;
+    }
+
     const fetchTrendData = async () => {
       setIsLoading(true);
       try {
@@ -43,7 +48,6 @@ const useKindTrendData = (kindNumber: number) => {
         }
 
         const data = await response.json();
-        console.log('Trend data response:', data);
         setTrendData(data);
       } catch (error) {
         console.error('Error fetching kind trend data:', error);
@@ -60,6 +64,7 @@ const useKindTrendData = (kindNumber: number) => {
 };
 
 export default useKindTrendData;
+
 
 
 // import { useState, useEffect } from 'react';

@@ -44,7 +44,8 @@ const EditableTable: React.FC = () => {
   const [sortField, setSortField] = useState<string>('totalSize');
   const { isMobile, isDesktop, isTablet } = useResponsive();
 
-  const { trendData, isLoading: isTrendLoading } = useKindTrendData(currentKindNumber || 0);
+  const { trendData, isLoading: isTrendLoading } = useKindTrendData(currentKindNumber);
+
 
   useEffect(() => {
     if (initialKindData && initialKindData.length > 0) {
@@ -66,9 +67,13 @@ const EditableTable: React.FC = () => {
   }, [initialKindData, sortOrder, sortField]);
 
   const showModal = (kindNumber: number) => {
+    if (kindNumber === null || kindNumber === undefined) {
+      return; // Don't open the modal if the kindNumber is not valid
+    }
     setCurrentKindNumber(kindNumber);
     setIsModalVisible(true);
   };
+
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -228,26 +233,26 @@ const EditableTable: React.FC = () => {
   return (
     <div>
       <BaseForm form={form} component={false}>
-        {isLoading ? <BaseSkeleton /> : 
-        sortedData.length > 0 ? (
-          <BaseTable
-            size={isDesktop || isTablet ? 'middle' : 'small'}
-            bordered
-            style={{ padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem' }}
-            dataSource={sortedData}
-            columns={columns}
-            rowClassName="editable-row"
-            pagination={false}
-            loading={isLoading}
-            onChange={handleChange}
-          />
-        ) : (
-          <div>{'No Data Available'}</div>
-        )
-      }
+        {isLoading ? <BaseSkeleton /> :
+          sortedData.length > 0 ? (
+            <BaseTable
+              size={isDesktop || isTablet ? 'middle' : 'small'}
+              bordered
+              style={{ padding: isMobile ? ' 0 .5rem .5rem .5rem' : '0 1.5rem 1.5rem 1.5rem' }}
+              dataSource={sortedData}
+              columns={columns}
+              rowClassName="editable-row"
+              pagination={false}
+              loading={isLoading}
+              onChange={handleChange}
+            />
+          ) : (
+            <div>{'No Data Available'}</div>
+          )
+        }
       </BaseForm>
       <Modal
-        title={`Kind ${currentKindNumber}`}
+        title={`Kind ${currentKindNumber || 'N/A'}`}
         open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
@@ -263,6 +268,7 @@ const EditableTable: React.FC = () => {
           <div>{t('common.noTrendDataAvailable')}</div>
         )}
       </Modal>
+
     </div>
   );
 };
