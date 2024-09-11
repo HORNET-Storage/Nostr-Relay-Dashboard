@@ -3,7 +3,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming you have these services for token management
 import { useDispatch } from 'react-redux';
 import { message } from 'antd';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from './authUtils';
 
 interface ActivityDataItem {
   month: string;
@@ -26,8 +26,8 @@ const useActivityData = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${config.baseURL}/activitydata`, {
-          method: 'POST',
+        const response = await fetch(`${config.baseURL}/api/activitydata`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`, // Attach the JWT token to the request
@@ -78,7 +78,7 @@ export default useActivityData;
 //     const fetchData = async () => {
 //       setIsLoading(true);
 //       try {
-//         const response = await fetch(`${config.baseURL}/activitydata`, {
+//         const response = await fetch(`${config.baseURL}/api/activitydata`, {
 //           method: 'POST',
 //           headers: {
 //             'Content-Type': 'application/json',

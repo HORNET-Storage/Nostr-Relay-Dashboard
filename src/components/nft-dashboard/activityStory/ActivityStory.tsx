@@ -23,6 +23,7 @@ import {
 } from 'chart.js';
 import { TransactionCard } from './ActivityStoryItem/ActivityStoryItem.styles';
 import ButtonTrigger from '../unconfirmed-transactions/components/ButtonTrigger/ButtonTrigger';
+import { useHandleLogout } from '@app/hooks/authUtils';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -37,15 +38,21 @@ export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const handleLogout = useHandleLogout();
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    getUserActivities().then((res) => {
-      setStory(res);
-      setIsLoading(false);
-    });
-  }, []);
+    getUserActivities(handleLogout)
+      .then((res) => {
+        setStory(res);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Failed to load user activities:', error);
+        setIsLoading(false);
+      });
+  }, [handleLogout]);
 
   const activityContent =
     story.length > 0 ? (

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
 import { useDispatch } from 'react-redux';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from './authUtils';
 
 interface Earning {
   date: number;
@@ -28,7 +28,7 @@ export const useBitcoinRates = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${config.baseURL}/bitcoin-rates/last-30-days`, {
+        const response = await fetch(`${config.baseURL}/api/bitcoin-rates/last-30-days`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export const useBitcoinRates = () => {
 //   useEffect(() => {
 //     const fetchBitcoinRates = async () => {
 //       try {
-//         const response = await fetch(`${config.baseURL}/bitcoin-rates/last-30-days`);
+//         const response = await fetch(`${config.baseURL}/api/bitcoin-rates/last-30-days`);
 //         if (!response.ok) {
 //           throw new Error(`Network response was not ok (status: ${response.status})`);
 //         }

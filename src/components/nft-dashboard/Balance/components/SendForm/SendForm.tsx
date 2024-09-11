@@ -196,7 +196,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         // Fetch the JWT token using readToken()
         const pendingToken = readToken();
         
-        const pendingResponse = await fetch(`${config.baseURL}/pending-transactions`, {
+        const pendingResponse = await fetch(`${config.baseURL}/api/pending-transactions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

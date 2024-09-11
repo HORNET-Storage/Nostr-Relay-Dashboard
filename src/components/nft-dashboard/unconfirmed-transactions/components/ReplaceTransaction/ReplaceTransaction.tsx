@@ -136,7 +136,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           enable_rbf: true, // RBF status
         };
 
-        const pendingResponse = await fetch(`${config.baseURL}/replacement-transactions`, {
+        const pendingResponse = await fetch(`${config.baseURL}/api/replacement-transactions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

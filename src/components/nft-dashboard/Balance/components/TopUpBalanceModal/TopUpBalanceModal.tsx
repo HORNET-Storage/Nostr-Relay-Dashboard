@@ -7,7 +7,7 @@ import axios from 'axios';
 import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
 import { useDispatch } from 'react-redux';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from '@app/hooks/authUtils';
 
 interface TopUpBalanceModalProps extends TopUpDataProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
       }
 
       axios
-        .get(`${config.baseURL}/addresses`, {
+        .get(`${config.baseURL}/api/addresses`, {
           headers: {
             'Authorization': `Bearer ${token}`, // Attach the JWT token to the request
           },
@@ -104,7 +104,7 @@ export const TopUpBalanceModal: React.FC<TopUpBalanceModalProps> = ({
 //     if (isOpen) {
 //       setIsLoading(true);
 //       axios
-//         .get(`${config.baseURL}/addresses`)
+//         .get(`${config.baseURL}/api/addresses`)
 //         .then((response) => {
 //           setAddresses(response.data);
 //           setIsLoading(false);

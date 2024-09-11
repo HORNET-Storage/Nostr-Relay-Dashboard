@@ -4,7 +4,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
 import { useDispatch } from 'react-redux';
 import { message } from 'antd';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from './authUtils';
 
 interface BarChartDataItem {
   month: string;
@@ -28,13 +28,12 @@ const useBarChartData = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${config.baseURL}/barchartdata`, {
-          method: 'POST',
+        const response = await fetch(`${config.baseURL}/api/barchartdata`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`, // Attach the JWT token to the request
           },
-          body: JSON.stringify({}), // If needed, include a payload here
         });
 
         if (!response.ok) {
@@ -82,7 +81,7 @@ export default useBarChartData;
 //     const fetchData = async () => {
 //       setIsLoading(true);
 //       try {
-//         const response = await fetch(`${config.baseURL}/barchartdata`, {
+//         const response = await fetch(`${config.baseURL}/api/barchartdata`, {
 //           method: 'POST',
 //           headers: {
 //             'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
 import { useDispatch } from 'react-redux';
 import { message } from 'antd';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from './authUtils';
 
 interface KindData {
   kindNumber: number;

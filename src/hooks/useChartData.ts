@@ -1,163 +1,78 @@
-import { useState, useEffect, useCallback } from 'react';
-import config from '@app/config/config';
-import { readToken } from '@app/services/localStorage.service'; // Assuming you have these services
+// src/hooks/useChartData.ts
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import config from '@app/config/config';
+import { readToken } from '@app/services/localStorage.service';
 import { message } from 'antd';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from './authUtils';
 
-interface RelaySettings {
-  mode: string;
-  protocol: string[];
-  chunked: string[];
-  chunksize: string;
-  maxFileSize: number;
-  maxFileSizeUnit: string;
-  kinds: string[];
-  dynamicKinds: string[];
-  photos: string[];
-  videos: string[];
-  gitNestr: string[];
-  audio: string[];
-  appBuckets: string[];
-  dynamicAppBuckets: string[];
-  isKindsActive: boolean;
-  isPhotosActive: boolean;
-  isVideosActive: boolean;
-  isGitNestrActive: boolean;
-  isAudioActive: boolean;
+interface ChartDataItem {
+  value: number;
+  name: string;
 }
 
-const getInitialSettings = (): RelaySettings => {
-  const savedSettings = localStorage.getItem('relaySettings');
-  return savedSettings
-    ? JSON.parse(savedSettings)
-    : {
-        mode: 'smart',
-        protocol: ['WebSocket'],
-        chunked: ['unchunked'],
-        chunksize: '2',
-        maxFileSize: 100,
-        maxFileSizeUnit: 'MB',
-        dynamicKinds: [],
-        kinds: [],
-        photos: [],
-        videos: [],
-        gitNestr: [],
-        audio: [],
-        appBuckets: [],
-        dynamicAppBuckets: [],
-        isKindsActive: true,
-        isPhotosActive: true,
-        isVideosActive: true,
-        isGitNestrActive: true,
-        isAudioActive: true,
-      };
-};
-
-const useRelaySettings = () => {
-  const [relaySettings, setRelaySettings] = useState<RelaySettings>(getInitialSettings());
+const useChartData = () => {
+  const [chartData, setChartData] = useState<ChartDataItem[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { t } = useTranslation();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    localStorage.setItem('relaySettings', JSON.stringify(relaySettings));
-  }, [relaySettings]);
 
   const handleLogout = useHandleLogout();
 
-  const fetchSettings = useCallback(async () => {
-    try {
-      const token = readToken(); // Read JWT from localStorage
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await fetch(`${config.baseURL}/relay-settings`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Add JWT to Authorization header
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          handleLogout(); // Logout on invalid token
-          throw new Error('Authentication failed. Please log in again.');
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const token = readToken();
+        if (!token) {
+          throw new Error('No authentication token found');
         }
-        throw new Error(`Network response was not ok (status: ${response.status})`);
-      }
 
-      const data = await response.json();
+        const response = await fetch(`${config.baseURL}/api/relaycount`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
 
-      const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
-      const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
-
-      const newAppBuckets = data.relay_settings.dynamicAppBuckets?.filter((bucket: string) => !storedAppBuckets.includes(bucket)) || [];
-      const newDynamicKinds = data.relay_settings.dynamicKinds?.filter((kind: string) => !storedDynamicKinds.includes(kind)) || [];
-
-      if (newAppBuckets.length > 0) {
-        localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
-      }
-      if (newDynamicKinds.length > 0) {
-        localStorage.setItem('dynamicKinds', JSON.stringify([...storedDynamicKinds, ...newDynamicKinds]));
-      }
-
-      setRelaySettings({
-        ...data.relay_settings,
-        protocol: Array.isArray(data.relay_settings.protocol) ? data.relay_settings.protocol : [data.relay_settings.protocol],
-        chunked: Array.isArray(data.relay_settings.chunked) ? data.relay_settings.chunked : [data.relay_settings.chunked],
-      });
-
-    } catch (error) {
-      console.error('Error fetching settings:', error);
-      message.error(error instanceof Error ? error.message : 'An error occurred');
-    }
-  }, []);
-
-  const updateSettings = useCallback((category: keyof RelaySettings, value: string | string[] | boolean | number) => {
-    setRelaySettings((prevSettings) => ({
-      ...prevSettings,
-      [category]: value,
-    }));
-  }, []);
-
-  const saveSettings = useCallback(async () => {
-    try {
-      const token = readToken();
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await fetch(`${config.baseURL}/relay-settings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Add JWT to Authorization header
-        },
-        body: JSON.stringify({ relay_settings: relaySettings }),
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          handleLogout(); // Logout on invalid token
-          throw new Error('Authentication failed. Please log in again.');
+        if (!response.ok) {
+          if (response.status === 401) {
+            handleLogout();
+            throw new Error('Authentication failed. You have been logged out.');
+          }
+          throw new Error(`Network response was not ok (status: ${response.status})`);
         }
-        throw new Error(`Network response was not ok (status: ${response.status})`);
+
+        const data = await response.json();
+
+        // Process the data into chartDataItems using translated names
+        const newChartData: ChartDataItem[] = [
+          { value: data.kinds, name: t('categories.kinds') },
+          { value: data.photos, name: t('categories.photos') },
+          { value: data.videos, name: t('categories.videos') },
+          { value: data.audio, name: t('categories.audio') },
+          { value: data.misc, name: t('categories.misc') },
+        ];
+
+        setChartData(newChartData);
+      } catch (error) {
+        console.error('Error:', error);
+        message.error(error instanceof Error ? error.message : 'An error occurred');
+        setChartData(null);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      localStorage.setItem('settingsCache', JSON.stringify(relaySettings));
-      message.success('Settings saved successfully!');
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      message.error(error instanceof Error ? error.message : 'An error occurred');
-    }
-  }, [relaySettings]);
+    fetchData();
+  }, [t, dispatch]);
 
-  return { relaySettings, fetchSettings, updateSettings, saveSettings };
+  return { chartData, isLoading };
 };
 
-export default useRelaySettings;
-
+export default useChartData;
 
 
 // import { useState, useEffect } from 'react';
@@ -198,7 +113,7 @@ export default useRelaySettings;
 //           throw new Error('No authentication token found');
 //         }
 //         console.log('Sending request to server...');
-//         const response = await fetch(`${config.baseURL}/relay-count`, {
+//         const response = await fetch(`${config.baseURL}/api/relaycount`, {
 //           method: 'GET',
 //           headers: {
 //             'Content-Type': 'application/json',

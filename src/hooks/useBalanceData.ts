@@ -3,7 +3,7 @@ import config from '@app/config/config';
 import { readToken } from '@app/services/localStorage.service'; // Assuming these services exist
 import { useDispatch } from 'react-redux';
 import { message } from 'antd';
-import { useHandleLogout } from '@app/utils/authUtils';
+import { useHandleLogout } from './authUtils';
 
 interface Transaction {
   id: number;
@@ -36,7 +36,7 @@ const useBalanceData = () => {
         }
 
         // Fetch balance data
-        const balanceResponse = await fetch(`${config.baseURL}/balance/usd`, {
+        const balanceResponse = await fetch(`${config.baseURL}/api/balance/usd`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ const useBalanceData = () => {
         setBalanceData(balanceData);
 
         // Fetch transaction data
-        const transactionsResponse = await fetch(`${config.baseURL}/transactions/latest`, {
+        const transactionsResponse = await fetch(`${config.baseURL}/api/transactions/latest`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

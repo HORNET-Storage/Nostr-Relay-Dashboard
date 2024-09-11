@@ -21,7 +21,7 @@ const usePendingTransactions = () => {
       // Fetch the JWT token using readToken()
       const pendingToken = readToken();
       try {
-        const response = await fetch(`${config.baseURL}/pending-transactions`, {
+        const response = await fetch(`${config.baseURL}/api/pending-transactions`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
