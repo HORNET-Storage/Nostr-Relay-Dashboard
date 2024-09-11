@@ -1,7 +1,9 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ActivityStatusType } from '@app/interfaces/interfaces';
+import { readToken } from '@app/services/localStorage.service';
 import config from '@app/config/config';
+import { useHandleLogout } from '@app/utils/authUtils';
 
 export interface WalletTransaction {
   id: number;
@@ -12,9 +14,22 @@ export interface WalletTransaction {
 }
 
 export const getUserActivities = (): Promise<WalletTransaction[]> => {
-  return fetch(`${config.baseURL}/transactions/latest`)
+  const token = readToken(); // Read the JWT token from local storage
+
+  const handleLogout = useHandleLogout();
+
+  return fetch(`${config.baseURL}/transactions/latest`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Add JWT to Authorization header
+    },
+  })
     .then((response) => {
       if (!response.ok) {
+        if (response.status === 401) {
+          handleLogout(); // Log out the user if the token is invalid or expired
+        }
         throw new Error('Network response was not ok');
       }
       return response.json();
@@ -25,7 +40,6 @@ export const getUserActivities = (): Promise<WalletTransaction[]> => {
         return [];
       }
       // Assuming your backend response matches the WalletTransaction interface
-      // eslint-disable-next-line
       return data.map((item: any) => ({
         id: item.ID,
         witness_tx_id: item.WitnessTxId,

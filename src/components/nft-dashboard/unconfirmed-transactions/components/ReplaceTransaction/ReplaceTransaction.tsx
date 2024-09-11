@@ -9,7 +9,7 @@ import config from '@app/config/config';
 import useBalanceData from '@app/hooks/useBalanceData';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import authentication hook
 import { notificationController } from '@app/controllers/notificationController'; // Handle notifications
-import { deleteWalletToken } from '@app/services/localStorage.service'; // Delete wallet token if expired
+import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Delete wallet token if expired
 
 interface ReplaceTransactionProps {
   onCancel: () => void;
@@ -122,6 +122,8 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
       const result = await response.json();
 
+      const pendingToken = readToken();
+
       // Handle different statuses from the wallet (success, pending, or failed)
       if (result.status === 'success' || result.status === 'pending') {
         // Step 2: If the replacement transaction succeeds or is pending, update the pending transactions
@@ -136,7 +138,10 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
         const pendingResponse = await fetch(`${config.baseURL}/replacement-transactions`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${pendingToken}`, // Include the JWT token in the Authorization header
+          },
           body: JSON.stringify(updatePendingRequest),
         });
 

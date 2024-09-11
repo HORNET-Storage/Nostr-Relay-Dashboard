@@ -11,8 +11,7 @@ import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
 import config from '@app/config/config';
 import TieredFees from './components/TieredFees/TieredFees';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import the auth hook
-import { notificationController } from '@app/controllers/notificationController';
-import { deleteWalletToken } from '@app/services/localStorage.service'; // Assuming this is where deleteWalletToken is defined
+import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Assuming this is where deleteWalletToken is defined
 
 
 interface SendFormProps {
@@ -193,14 +192,20 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           recipient_address: formData.address,
           enable_rbf: enableRBF, // Already boolean and correct
         };
-  
+        
+        // Fetch the JWT token using readToken()
+        const pendingToken = readToken();
+        
         const pendingResponse = await fetch(`${config.baseURL}/pending-transactions`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${pendingToken}`, // Use the token from readToken()
+          },
           body: JSON.stringify(pendingTransaction),
         });
-  
-        const pendingResult = await pendingResponse.json();
+        
+        const pendingResult = await pendingResponse.json();        
   
         // Step 3: Handle the final result from updating pending transactions
         if (pendingResponse.ok) {
