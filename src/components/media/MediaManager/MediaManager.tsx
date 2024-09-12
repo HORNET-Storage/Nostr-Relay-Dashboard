@@ -17,7 +17,7 @@ export type MediaFile = {
   thumbnail: string;
 };
 const MediaManager: React.FC = () => {
-  const { isTablet, isDesktop} = useResponsive();
+  const { isTablet, isDesktop, is4k} = useResponsive();
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [files, setFiles] = useState<MediaFile[]>(dummyItems);
  const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null); // Store file for viewing
