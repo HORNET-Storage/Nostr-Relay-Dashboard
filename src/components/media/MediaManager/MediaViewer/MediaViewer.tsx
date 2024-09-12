@@ -11,13 +11,13 @@ type MediaViewerProps = {
 
 function getMediaTag(file: MediaFile) {
   if (file.type.startsWith('image')) {
-    return <img src={file.thumbnail} alt={file.name} style={{ width: '75%' }} />;
+    return <S.Image src={file.thumbnail} alt={file.name}/>;
   }
   if (file.type.startsWith('video')) {
-    return <video controls src={file.path} style={{ width: '100%' }} />;
+    return <S.Video controls src={file.path}  />;
   }
   if (file.type.startsWith('audio')) {
-    return <audio controls src={file.path} style={{ width: '100%' }} />;
+    return <S.Audio controls src={file.path}  />;
   }
   return <S.NotSupported>File type not supported</S.NotSupported>;
 }
@@ -34,26 +34,26 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ visible, onClose, file, files
           ? // loop through files before the selected file
             // and render a SplideSlide for each file
             files.slice(0, selectedIndex).map((file) => (
-              <SplideSlide>
+              <S.Slide>
                 <S.MediaWrapper>{getMediaTag(file)}</S.MediaWrapper>
-              </SplideSlide>
+              </S.Slide>
             ))
           : //loop through all files if file is not apart of files for some reason
             files.map((file) => (
-              <SplideSlide>
+              <S.Slide>
                 <S.MediaWrapper>{getMediaTag(file)}</S.MediaWrapper>
-              </SplideSlide>
+              </S.Slide>
             ))}
-        <SplideSlide>
+        <S.Slide>
           <S.MediaWrapper>{getMediaTag(file)}</S.MediaWrapper>
-        </SplideSlide>
+        </S.Slide>
         {selectedIndex < files.length - 1
           ? // loop through files after the selected file
             // and render a SplideSlide for each file
             files.slice(selectedIndex + 1).map((file) => (
-              <SplideSlide>
+              <S.Slide>
                 <S.MediaWrapper>{getMediaTag(file)}</S.MediaWrapper>
-              </SplideSlide>
+              </S.Slide>
             ))
           : null}
       </Splide>
