@@ -124,7 +124,7 @@ const MediaManager: React.FC = () => {
           ))}
         </BaseRow>
       </S.MediaItemsContainer>
-      <MediaViewer visible={viewerVisible} onClose={handleCloseViewer} file={selectedFileForViewer} />
+      <MediaViewer visible={viewerVisible} onClose={handleCloseViewer} file={selectedFileForViewer} files={files} />
     </S.MediaManagerContainer>
   );
 };

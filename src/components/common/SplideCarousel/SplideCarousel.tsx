@@ -2,7 +2,6 @@
 // @ts-nocheck
 import React, { forwardRef, PropsWithChildren } from 'react';
 import { Splide, SplideProps } from '@splidejs/react-splide';
-import '@splidejs/splide/dist/css/splide.min.css';
 import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
 interface BaseCarouselProps extends SplideProps {
   slidesToShow?: number;
