@@ -67,6 +67,7 @@ export const MediaTypeIndicator = styled.div`
 `;
 export const Overlay = styled.div`
   position: absolute;
+  cursor: pointer;
   top: 0;
   left: 0;
   width: 100%;

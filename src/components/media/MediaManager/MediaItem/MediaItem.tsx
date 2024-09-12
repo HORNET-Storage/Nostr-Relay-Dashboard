@@ -13,22 +13,27 @@ import VideoIcon from '@app/components/common/icons/VideoIcon';
 import ImageIcon from '@app/components/common/icons/ImageIcon';
 interface MediaItemProps {
   file: MediaFile;
+  onClick?: (file: MediaFile) => void;
   selected: boolean;
 }
 
-const MediaItem: React.FC<MediaItemProps> = ({ file, selected}) => {
-
+const MediaItem: React.FC<MediaItemProps> = ({ file, selected, onClick }) => {
   const handleDelete = () => {
     // todo: delete file; both this and download will probably need onDeleted and onDownloaded props
   };
   const handleDownload = () => {
     //todo: download file
   };
-const parseType = (fileType: string) => {
-  const parsedType =  fileType.split('/')[0];
-  return parsedType;
-}
-  
+  const parseType = (fileType: string) => {
+    const parsedType = fileType.split('/')[0];
+    return parsedType;
+  };
+
+  const handleThumbnailClick = () => {
+    if (onClick) {
+      onClick(file);
+    }
+  };
   const getMediaTypeIcon = (type: string) => {
     //TODO: this will need to be updated to handle how types are declared in the backend
     const parsedType = parseType(type);
@@ -59,9 +64,9 @@ const parseType = (fileType: string) => {
     <S.MediaItemContainer>
       <S.ThumbnailContainer>
         <S.MediaTypeIndicator>{getMediaTypeIcon(file.type)}</S.MediaTypeIndicator>
-        <S.MediaThumbnail src={file.thumbnail} alt={file.name} />
+        <S.MediaThumbnail src={file.thumbnail} alt={file.name} onClick={handleThumbnailClick} />
         {selected && (
-          <S.Overlay>
+          <S.Overlay onClick={handleThumbnailClick}>
             <S.CheckmarkIcon>
               <CheckOutlined />
             </S.CheckmarkIcon>

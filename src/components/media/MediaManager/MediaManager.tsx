@@ -124,8 +124,8 @@ const MediaManager: React.FC = () => {
       <S.MediaItemsContainer>
         <BaseRow gutter={[32, 24]}>
           {dummyItems.map((item) => (
-            <BaseCol key={item.id} onClick={() => handleSelect(item)} span={getMediaItemColumnSize()}>
-              <MediaItem file={item} selected={isSelected(item)} />
+            <BaseCol key={item.id} span={getMediaItemColumnSize()}>
+              <MediaItem file={item} selected={isSelected(item)} onClick={() => handleSelect(item)} />
             </BaseCol>
           ))}
         </BaseRow>
