@@ -17,7 +17,7 @@ export type MediaFile = {
   thumbnail: string;
 };
 const MediaManager: React.FC = () => {
-  const { isTablet } = useResponsive();
+  const { isTablet, isDesktop} = useResponsive();
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [files, setFiles] = useState<MediaFile[]>(dummyItems);
  const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null); // Store file for viewing
@@ -77,6 +77,17 @@ const MediaManager: React.FC = () => {
     setSelectedFileForViewer(null);
   };
 
+  const getMediaItemColumnSize
+  = () => {
+    if (isTablet) {
+      if(isDesktop) return 4;
+      return 6
+    }else{
+      return 12;
+    }
+
+  };
+
   return (
     <S.MediaManagerContainer>
       <BaseRow>
@@ -107,7 +118,7 @@ const MediaManager: React.FC = () => {
       <S.MediaItemsContainer>
         <BaseRow gutter={[32, 24]}>
           {dummyItems.map((item) => (
-            <BaseCol key={item.id} onClick={() => handleSelect(item)} span={isTablet ? 4 : 12}>
+            <BaseCol key={item.id} onClick={() => handleSelect(item)} span={getMediaItemColumnSize()}>
               <MediaItem file={item} selected={isSelected(item)} />
             </BaseCol>
           ))}
