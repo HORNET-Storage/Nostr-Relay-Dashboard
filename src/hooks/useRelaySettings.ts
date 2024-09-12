@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import config from '@app/config/config';
+import { readToken } from '@app/services/localStorage.service';
+import { useHandleLogout } from './authUtils';
 
 interface RelaySettings {
   mode: string;
@@ -57,14 +59,23 @@ const useRelaySettings = () => {
     localStorage.setItem('relaySettings', JSON.stringify(relaySettings));
   }, [relaySettings]);
 
+  const handleLogout = useHandleLogout();
+
+  const token = readToken();
+
   const fetchSettings = useCallback(async () => {
     try {
       const response = await fetch(`${config.baseURL}/api/relay-settings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
+      if (response.status === 401 ) {
+        console.error('Unauthorized: Invalid or expired token');
+        handleLogout();
+      }
       if (!response.ok) {
         throw new Error(`Network response was not ok (status: ${response.status})`);
       }
@@ -117,6 +128,7 @@ const useRelaySettings = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ relay_settings: relaySettings }),
       });
