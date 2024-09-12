@@ -116,6 +116,9 @@ export const doLogout = createAsyncThunk('auth/doLogout', async (_, { dispatch }
   } catch (error) {
     console.error('Logout error:', error);
     message.error('An error occurred during logout');
+  } finally {
+    // Ensure user is redirected to login page after logout attempt
+    window.location.href = '/login';  // Redirect to the login page
   }
 });
 
