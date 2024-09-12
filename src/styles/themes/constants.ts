@@ -64,6 +64,7 @@ export const BREAKPOINTS = {
   lg: 992,
   xl: 1280,
   xxl: 1920,
+  xxxl: 2560,
 } as const;
 
 const getMedia = <T extends number>(breakpoint: T): `(min-width: ${T}px)` => `(min-width: ${breakpoint}px)`;
@@ -75,4 +76,5 @@ export const media = {
   lg: getMedia(BREAKPOINTS.lg),
   xl: getMedia(BREAKPOINTS.xl),
   xxl: getMedia(BREAKPOINTS.xxl),
+  xxxl: getMedia(BREAKPOINTS.xxxl),
 };

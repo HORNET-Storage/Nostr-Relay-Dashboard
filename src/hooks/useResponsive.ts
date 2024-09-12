@@ -6,6 +6,7 @@ interface ResponsiveReturnValues {
   isTablet: boolean;
   isDesktop: boolean;
   isBigScreen: boolean;
+  is4k: boolean;
   mobileOnly: boolean;
   tabletOnly: boolean;
   desktopOnly: boolean;
@@ -21,6 +22,7 @@ export const useResponsive = (): ResponsiveReturnValues => {
   const isTablet = useMediaQuery({ query: media.md });
   const isDesktop = useMediaQuery({ query: media.xl });
   const isBigScreen = useMediaQuery({ query: media.xxl });
+  const is4k = useMediaQuery({ query: media.xxxl });
 
   const mobileOnly = useMediaQuery({
     query: `(max-width: ${BREAKPOINTS.md - 0.02}px)`,
@@ -34,11 +36,14 @@ export const useResponsive = (): ResponsiveReturnValues => {
     query: `(min-width: ${BREAKPOINTS.xl}px) and (max-width: ${BREAKPOINTS.xxl - 0.02}px)`,
   });
 
+
+
   return {
     isMobile,
     isTablet,
     isDesktop,
     isBigScreen,
+    is4k,
     mobileOnly,
     tabletOnly,
     desktopOnly,
