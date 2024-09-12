@@ -8,9 +8,14 @@ export const MediaManagerContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-export const Breadcrumb = styled(BaseBreadcrumb)`
-  font-size: 1rem;
+export const Breadcrumb = styled(BaseBreadcrumb)<{ $is4kScreen: boolean }>`
+  font-size: 1.2rem;
   padding-left: 1rem;
+  ${(props) =>
+    props.$is4kScreen &&
+    css`
+      font-size: 2rem;
+    `}
 `;
 
 export const BreadcrumbWrapper = styled.div<{ isTablet?: boolean }>`
@@ -54,7 +59,7 @@ export const MediaItemsContainer = styled.div`
   padding-top: 2rem;
 `;
 
-export const ToolBarButton = styled(BaseButton)<{ $isActive?: boolean }>`
+export const ToolBarButton = styled(BaseButton)<{ $isActive?: boolean; $is4kScreen: boolean }>`
   font-size: 0.8rem;
   ${(props) =>
     props.$isActive
@@ -66,4 +71,9 @@ export const ToolBarButton = styled(BaseButton)<{ $isActive?: boolean }>`
           color: var(--text-main-color) !important;
           border-color: var(--border-base-color);
         `}
+  ${(props) =>
+    props.$is4kScreen &&
+    css`
+      font-size: 1.2rem;
+    `}
 `;

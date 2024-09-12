@@ -17,10 +17,10 @@ export type MediaFile = {
   thumbnail: string;
 };
 const MediaManager: React.FC = () => {
-  const { isTablet, isDesktop, is4k} = useResponsive();
+  const { isTablet, isDesktop, is4k } = useResponsive();
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>([]);
   const [files, setFiles] = useState<MediaFile[]>(dummyItems);
- const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null); // Store file for viewing
+  const [selectedFileForViewer, setSelectedFileForViewer] = useState<MediaFile | null>(null); // Store file for viewing
   const [viewerVisible, setViewerVisible] = useState(false); // Control modal visibility
 
   const [path, setPath] = useState<string>('/media/images');
@@ -29,11 +29,10 @@ const MediaManager: React.FC = () => {
   const [selectionModeActive, setSelectionModeActive] = useState<boolean>(false);
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
- 
   const handleSelect = (file: MediaFile) => {
     if (!selectionModeActive) {
       setSelectedFileForViewer(file);
-      setViewerVisible(true); 
+      setViewerVisible(true);
       return;
     }
 
@@ -68,7 +67,7 @@ const MediaManager: React.FC = () => {
     setIsAllSelected(false);
   }, [selectedFiles, files]);
 
-  useEffect(() => { 
+  useEffect(() => {
     setBreadcrumbItems(path.length <= 0 ? ['/'] : path.split('/'));
   }, [path]);
 
@@ -77,15 +76,13 @@ const MediaManager: React.FC = () => {
     setSelectedFileForViewer(null);
   };
 
-  const getMediaItemColumnSize
-  = () => {
+  const getMediaItemColumnSize = () => {
     if (isTablet) {
-      if(isDesktop) return 4;
-      return 6
-    }else{
+      if (isDesktop) return 4;
+      return 6;
+    } else {
       return 12;
     }
-
   };
 
   return (
@@ -93,22 +90,31 @@ const MediaManager: React.FC = () => {
       <BaseRow>
         <BaseCol span={isTablet ? 10 : 24}>
           <S.BreadcrumbWrapper isTablet={isTablet}>
-            <S.Breadcrumb>
-                {breadcrumbItems.map((item, index) => (
-                    <BreadcrumbItem key={index}>{item}</BreadcrumbItem>
-                ))}
+            <S.Breadcrumb $is4kScreen={is4k}>
+              {breadcrumbItems.map((item, index) => (
+                <BreadcrumbItem key={index}>{item}</BreadcrumbItem>
+              ))}
             </S.Breadcrumb>
           </S.BreadcrumbWrapper>
         </BaseCol>
-        <BaseCol span={isTablet? 14 : 24}>
+        <BaseCol span={isTablet ? 14 : 24}>
           <BaseRow>
             <S.ButtonsContainer>
-              <S.ToolBarButton>Delete</S.ToolBarButton>
+              <S.ToolBarButton $is4kScreen={is4k} size={is4k ? 'large' : 'middle'}>
+                Delete
+              </S.ToolBarButton>
               <S.ToolBarButton
                 $isActive={selectionModeActive}
                 onClick={handleSelectButton}
+                $is4kScreen={is4k}
+                size={is4k ? 'large' : 'middle'}
               >{`Select (${selectedFiles.length})`}</S.ToolBarButton>
-              <S.ToolBarButton $isActive={isAllSelected} onClick={handleSelectAll}>
+              <S.ToolBarButton
+                $isActive={isAllSelected}
+                $is4kScreen={is4k}
+                size={is4k ? 'large' : 'middle'}
+                onClick={handleSelectAll}
+              >
                 Select All
               </S.ToolBarButton>
             </S.ButtonsContainer>
