@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MediaFile } from '../MediaManager';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseCol } from '@app/components/common/BaseCol/BaseCol';
@@ -82,7 +82,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ file, selected, onClick }) => {
         </BaseCol>
         <BaseCol span={4}>
           <S.ButtonWrapper>
-            <BaseDropdown menu={{ items: menuItems }} placement="bottomRight">
+            <BaseDropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
               <BaseButton type="text" icon={<MoreOutlined />} size="large" />
             </BaseDropdown>
           </S.ButtonWrapper>
