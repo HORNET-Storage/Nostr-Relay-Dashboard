@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Splide, SplideSlide } from '@splidejs/react-splide';
+import { Splide } from '@splidejs/react-splide';
 import { MediaFile } from '../MediaManager'; // Assuming you already have this type
 import * as S from './MediaViewer.styles';
 type MediaViewerProps = {
@@ -11,13 +11,13 @@ type MediaViewerProps = {
 
 function getMediaTag(file: MediaFile) {
   if (file.type.startsWith('image')) {
-    return <S.Image src={file.thumbnail} alt={file.name}/>;
+    return <S.Image src={file.thumbnail} alt={file.name} />;
   }
   if (file.type.startsWith('video')) {
-    return <S.Video controls src={file.path}  />;
+    return <S.Video controls src={file.path} />;
   }
   if (file.type.startsWith('audio')) {
-    return <S.Audio controls src={file.path}  />;
+    return <S.Audio controls src={file.path} />;
   }
   return <S.NotSupported>File type not supported</S.NotSupported>;
 }
@@ -29,7 +29,7 @@ const MediaViewer: React.FC<MediaViewerProps> = ({ visible, onClose, file, files
 
   return (
     <S.Modal centered={true} open={visible} onCancel={onClose} footer={null} width={800}>
-      <Splide aria-label="Media">
+      <Splide options={{ start: selectedIndex >= 0 ? selectedIndex : 0 }} aria-label="Media">
         {selectedIndex > 0
           ? // loop through files before the selected file
             // and render a SplideSlide for each file
