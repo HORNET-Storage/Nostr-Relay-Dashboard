@@ -91,12 +91,16 @@ export const ActivityStory: React.FC = () => {
   };
   const prepareChartData = () => {
     const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
-    const amounts = sortedStory.map((item) => {
+    
+    // Filter out negative values and their corresponding labels
+    const positiveStory = sortedStory.filter((item) => parseFloat(item.value) > 0);
+  
+    const labels = positiveStory.map((item) => new Date(item.date).toLocaleDateString());
+    const amounts = positiveStory.map((item) => {
       const amount = parseFloat(item.value);
       return isNaN(amount) ? 0 : amount;
     });
-
+  
     return {
       labels,
       datasets: [
@@ -121,6 +125,7 @@ export const ActivityStory: React.FC = () => {
       ],
     };
   };
+  
 
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,
