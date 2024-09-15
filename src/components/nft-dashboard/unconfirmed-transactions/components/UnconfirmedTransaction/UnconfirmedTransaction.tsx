@@ -1,9 +1,11 @@
-import React from 'react';
-import * as S from './UnconfirmedTransaction.styles'
+import React, { useState } from 'react';
+import * as S from './UnconfirmedTransaction.styles';
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 import { useResponsive } from '@app/hooks/useResponsive';
 import { truncateString } from '@app/utils/utils';
-
+import CopyToClipboard from 'react-copy-to-clipboard';
+import { Button } from 'antd';
+import {CopyOutlined } from '@ant-design/icons';
 interface UnconfirmedTransactionProps {
   tx_id: string;
   date_created: string;
@@ -12,25 +14,31 @@ interface UnconfirmedTransactionProps {
 }
 
 const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, date_created, amount, feeAmount }) => {
-
-  const {isTablet} = useResponsive();
+  const { isTablet } = useResponsive();
+  const onCopy = () => {
+    //display Copied to clipboard
+  }
   return (
-    
     <S.TransactionWrapper>
-      <S.IDWrapper>
-      <S.Value>{!isTablet ? truncateString(tx_id, 10) :  truncateString(tx_id, 30)}</S.Value>
+      <S.IDWrapper $isMobile= {!isTablet}>
+        <S.Value>
+          {!isTablet ? truncateString(tx_id, 20) : truncateString(tx_id, 35)}
+          <S.CopyWrapper>
+            <CopyToClipboard text={tx_id}>
+              <Button icon={<CopyOutlined />} size="small" />
+            </CopyToClipboard>
+          </S.CopyWrapper>
+        </S.Value>
+
         <S.Label>Transaction ID</S.Label>
-       
       </S.IDWrapper>
       <S.DataWrapper>
-      <S.Value>{date_created}</S.Value>
+        <S.Value>{date_created}</S.Value>
         <S.Label>Date Created</S.Label>
-   
       </S.DataWrapper>
       <S.DataWrapper>
-      <S.Value>{amount}</S.Value>
+        <S.Value>{amount}</S.Value>
         <S.Label>Amount</S.Label>
-       
       </S.DataWrapper>
     </S.TransactionWrapper>
   );

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const TransactionWrapper = styled.div`
   width: 100%;
@@ -6,19 +6,23 @@ export const TransactionWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
 `;
 
-export const IDWrapper = styled.div`
+export const IDWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
-  width: 40%;
   flex-direction: column;
   gap: 0.3rem;
+  ${({ $isMobile }) =>
+    $isMobile &&
+    css`
+      width: 100%;
+    `}
 `;
 
 export const DataWrapper = styled.div`
   display: flex;
-  width: 22%;
   flex-direction: column;
   gap: 0.3rem;
 `;
@@ -26,7 +30,7 @@ export const DataWrapper = styled.div`
 export const Value = styled.span`
   font-size: 1rem;
   color: var(--text-main-color);
-  font-weight: semibold;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -34,4 +38,8 @@ export const Value = styled.span`
 export const Label = styled.span`
   font-size: 0.8rem;
   color: var(--text-nft-light-color);
+`;
+
+export const CopyWrapper = styled.span`
+  padding-left: 1rem;
 `;

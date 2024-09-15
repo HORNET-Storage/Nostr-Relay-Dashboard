@@ -3,7 +3,7 @@ import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 
 export const Modal = styled(BaseModal)`
   width: fit-content !important;
-  min-width: 50vw;
+  min-width: 75vw;
   .ant-modal{
     width:
   }
