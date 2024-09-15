@@ -1,6 +1,11 @@
+// src/hooks/useChartData.ts
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import config from '@app/config/config';
+import { readToken } from '@app/services/localStorage.service';
+import { message } from 'antd';
+import { useHandleLogout } from './authUtils';
 
 interface ChartDataItem {
   value: number;
@@ -11,63 +16,72 @@ const useChartData = () => {
   const [chartData, setChartData] = useState<ChartDataItem[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const handleLogout = useHandleLogout();
 
   useEffect(() => {
-    console.log('Component mounted, starting data fetch...');
-
     const fetchData = async () => {
-      console.log('Preparing to fetch data...');
       setIsLoading(true);
-
       try {
-        console.log('Sending request to server...');
-        const response = await fetch(`${config.baseURL}/relaycount`, {
-          method: 'POST',
+        const token = readToken();
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await fetch(`${config.baseURL}/api/relaycount`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
-          body: JSON.stringify({ relaycount: [] }), // No need to send kinds, server knows the categories
         });
+
         if (!response.ok) {
+          if (response.status === 401) {
+            handleLogout();
+            throw new Error('Authentication failed. You have been logged out.');
+          }
           throw new Error(`Network response was not ok (status: ${response.status})`);
         }
-        const data = await response.json(); // Expecting a response like { "kinds": 10, "photos": 5, "videos": 3, "gitNestr": 2, "audio": 6, "misc": 4 }
-        console.log('Response Data:', data);
+
+        const data = await response.json();
 
         // Process the data into chartDataItems using translated names
         const newChartData: ChartDataItem[] = [
           { value: data.kinds, name: t('categories.kinds') },
           { value: data.photos, name: t('categories.photos') },
           { value: data.videos, name: t('categories.videos') },
-          // { value: data.gitNestr, name: t('categories.gitNestr') }, // Not yet ready
-          { value: data.audio, name: t('categories.audio') }, // Add the audio slice
-          { value: data.misc, name: t('categories.misc') }, // Add the misc slice
+          { value: data.audio, name: t('categories.audio') },
+          { value: data.misc, name: t('categories.misc') },
         ];
 
         setChartData(newChartData);
       } catch (error) {
         console.error('Error:', error);
+        message.error(error instanceof Error ? error.message : 'An error occurred');
+        setChartData(null);
       } finally {
-        console.log('Fetching process complete.');
         setIsLoading(false);
       }
     };
 
     fetchData();
-
-    return () => {
-      console.log('Cleanup called; Component unmounting...');
-    };
-  }, [t]);
+  }, [t, dispatch]);
 
   return { chartData, isLoading };
 };
 
 export default useChartData;
 
+
 // import { useState, useEffect } from 'react';
 // import { useTranslation } from 'react-i18next';
+// import { useDispatch } from 'react-redux';
 // import config from '@app/config/config';
+// import { readToken, deleteToken, deleteUser } from '@app/services/localStorage.service';
+// import { setUser } from '@app/store/slices/userSlice';
+// import { message } from 'antd';
 
 // interface ChartDataItem {
 //   value: number;
@@ -78,41 +92,56 @@ export default useChartData;
 //   const [chartData, setChartData] = useState<ChartDataItem[] | null>(null);
 //   const [isLoading, setIsLoading] = useState<boolean>(true);
 //   const { t } = useTranslation();
+//   const dispatch = useDispatch();
+
+//   const handleLogout = () => {
+//     deleteToken();
+//     deleteUser();
+//     dispatch(setUser(null));
+//     console.log('Token deleted, user logged out');
+//     message.info('You have been logged out. Please login again.');
+//   };
 
 //   useEffect(() => {
 //     console.log('Component mounted, starting data fetch...');
-
 //     const fetchData = async () => {
 //       console.log('Preparing to fetch data...');
 //       setIsLoading(true);
-
 //       try {
+//         const token = readToken();
+//         if (!token) {
+//           throw new Error('No authentication token found');
+//         }
 //         console.log('Sending request to server...');
-//         const response = await fetch(`${config.baseURL}/relaycount`, {
-//           method: 'POST',
+//         const response = await fetch(`${config.baseURL}/api/relaycount`, {
+//           method: 'GET',
 //           headers: {
 //             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`,
 //           },
-//           body: JSON.stringify({ relaycount: [] }), // No need to send kinds, server knows the categories
 //         });
 //         if (!response.ok) {
+//           if (response.status === 401) {
+//             handleLogout();
+//             throw new Error('Authentication failed. You have been logged out.');
+//           }
 //           throw new Error(`Network response was not ok (status: ${response.status})`);
 //         }
-//         const data = await response.json(); // Expecting a response like { "kinds": 10, "photos": 5, "videos": 3, "gitNestr": 2, "misc": 4 }
+//         const data = await response.json();
 //         console.log('Response Data:', data);
-
 //         // Process the data into chartDataItems using translated names
 //         const newChartData: ChartDataItem[] = [
 //           { value: data.kinds, name: t('categories.kinds') },
 //           { value: data.photos, name: t('categories.photos') },
 //           { value: data.videos, name: t('categories.videos') },
-//           { value: data.gitNestr, name: t('categories.gitNestr') },
-//           { value: data.misc, name: t('categories.misc') }, // Add the misc slice
+//           { value: data.audio, name: t('categories.audio') },
+//           { value: data.misc, name: t('categories.misc') },
 //         ];
-
 //         setChartData(newChartData);
 //       } catch (error) {
 //         console.error('Error:', error);
+//         message.error(error instanceof Error ? error.message : 'An error occurred');
+//         setChartData(null);
 //       } finally {
 //         console.log('Fetching process complete.');
 //         setIsLoading(false);
@@ -124,73 +153,9 @@ export default useChartData;
 //     return () => {
 //       console.log('Cleanup called; Component unmounting...');
 //     };
-//   }, [t]);
+//   }, [t, dispatch]);
 
 //   return { chartData, isLoading };
-// };
-
-// export default useChartData;
-
-// import { useState, useEffect } from 'react';
-// import { useTranslation } from 'react-i18next';  // Import useTranslation hook
-
-// interface ChartDataItem {
-//   value: number;
-//   name: string;
-// }
-
-// const useChartData = () => {
-//     const [chartData, setChartData] = useState<ChartDataItem[] | null>(null);
-//     const [isLoading, setIsLoading] = useState<boolean>(true);
-//     const { t } = useTranslation();  // Initialize the translation hook
-
-//     useEffect(() => {
-//         console.log("Component mounted, starting data fetch...");
-
-//         const fetchData = async () => {
-//             console.log("Preparing to fetch data...");
-//             setIsLoading(true);
-//             const kinds = [0, 1, 3, 5, 6, 10000, 1984, 30000, 30008, 30009, 30023, 36810, 7, 8, 9372, 9373, 9735, 9802]
-//             ; // The kinds you want to count
-
-//             try {
-//                 console.log("Sending request to server...");
-//                 const response = await fetch('http://localhost:5000/relaycount', {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json'
-//                     },
-//                     body: JSON.stringify({ relaycount: kinds })
-//                 });
-//                 if (!response.ok) {
-//                     throw new Error(`Network response was not ok (status: ${response.status})`);
-//                 }
-//                 const data = await response.json(); // Expecting a response like { "0": 2, "1": 3, ... }
-//                 console.log("Response Data:", data);
-
-//                 // Process the data into chartDataItems using translated names
-//                 const newChartData = kinds.map(kind => ({
-//                     value: data[kind.toString()],  // Access the response by converting kind to string key
-//                     name: t(`checkboxes.kind${kind}`) // Use the translated name for each kind
-//                 })).filter(item => item.value !== undefined); // Filter out any undefined values if kind was not in response
-
-//                 setChartData(newChartData);
-//             } catch (error) {
-//                 console.error('Error:', error);
-//             } finally {
-//                 console.log("Fetching process complete.");
-//                 setIsLoading(false);
-//             }
-//         };
-
-//         fetchData();
-
-//         return () => {
-//             console.log("Cleanup called; Component unmounting...");
-//         };
-//     }, [t]);  // Add t to the dependency array to re-run the effect when the translation changes
-
-//     return { chartData, isLoading };
 // };
 
 // export default useChartData;

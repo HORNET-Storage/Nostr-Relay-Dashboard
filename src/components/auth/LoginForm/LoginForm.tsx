@@ -45,7 +45,6 @@ export const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
-  const [event, setEvent] = useState<any>(null);
 
   useEffect(() => {
     const fetchPublicKey = async () => {
@@ -60,37 +59,44 @@ export const LoginForm: React.FC = () => {
         console.error('Failed to get public key:', error);
       }
     };
-
-    fetchPublicKey();
-
-    const isFirstLoad = localStorage.getItem('isFirstLoad');
-    if (!isFirstLoad) {
-      window.location.reload();
-      localStorage.setItem('isFirstLoad', 'true');
-    }
+  
+    const intervalId = setInterval(() => {
+      if (window.nostr) {
+        fetchPublicKey();
+        clearInterval(intervalId);
+      }
+    }, 1000); // Retry every 1 second
+  
+    return () => clearInterval(intervalId); // Clear the interval on component unmount
   }, [form]);
+  
+
+  const [event, setEvent] = useState<any>(null);
 
   const handleSubmit = async (values: LoginFormData) => {
     try {
+      if (!window.nostr) {
+        notificationController.error({ message: 'Nostr extension is not available' });
+        return;
+      }
+      
       const { success, event } = await login(values);
       if (success && event) {
         setEvent(event);
-        // Automatically proceed to verification
         const signedEvent = await window.nostr.signEvent(event);
         console.log('Signed event:', signedEvent);
-
+  
         const response = await verifyChallenge({
           challenge: signedEvent.content,
           signature: signedEvent.sig,
           messageHash: signedEvent.id,
           event: signedEvent,
         });
-
+  
         if (response.success) {
           if (response.token && response.user) {
             persistToken(response.token);
             dispatch(setUser(response.user));
-            // Set the token in the API instance
             notificationController.success({
               message: 'Login successful',
               description: 'You have successfully logged in!',
@@ -105,6 +111,7 @@ export const LoginForm: React.FC = () => {
       notificationController.error({ message: error.message });
     }
   };
+  
 
   return (
     <Auth.FormWrapper>

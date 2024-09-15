@@ -23,6 +23,7 @@ import {
 } from 'chart.js';
 import { TransactionCard } from './ActivityStoryItem/ActivityStoryItem.styles';
 import ButtonTrigger from '../unconfirmed-transactions/components/ButtonTrigger/ButtonTrigger';
+import { useHandleLogout } from '@app/hooks/authUtils';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -37,15 +38,21 @@ export const ActivityStory: React.FC = () => {
   const [story, setStory] = useState<WalletTransaction[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const handleLogout = useHandleLogout();
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    getUserActivities().then((res) => {
-      setStory(res);
-      setIsLoading(false);
-    });
-  }, []);
+    getUserActivities(handleLogout)
+      .then((res) => {
+        setStory(res);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Failed to load user activities:', error);
+        setIsLoading(false);
+      });
+  }, [handleLogout]);
 
   const activityContent =
     story.length > 0 ? (
@@ -84,12 +91,16 @@ export const ActivityStory: React.FC = () => {
   };
   const prepareChartData = () => {
     const sortedStory = [...story].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const labels = sortedStory.map((item) => new Date(item.date).toLocaleDateString());
-    const amounts = sortedStory.map((item) => {
+    
+    // Filter out negative values and their corresponding labels
+    const positiveStory = sortedStory.filter((item) => parseFloat(item.value) > 0);
+  
+    const labels = positiveStory.map((item) => new Date(item.date).toLocaleDateString());
+    const amounts = positiveStory.map((item) => {
       const amount = parseFloat(item.value);
       return isNaN(amount) ? 0 : amount;
     });
-
+  
     return {
       labels,
       datasets: [
@@ -114,6 +125,7 @@ export const ActivityStory: React.FC = () => {
       ],
     };
   };
+  
 
   const chartOptions: ChartOptions<'line'> = {
     responsive: true,

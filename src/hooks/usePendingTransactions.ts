@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import config from '@app/config/config';
+import { readToken } from '@app/services/localStorage.service';
 
 export interface PendingTransaction {
-    TxID: string;
-    FeeRate: number;
-    Timestamp: string; // ISO format string
-    Amount: string;
-    RecipientAddress: string; // Add recipient address
+    txid: string;
+    feeRate: number;
+    timestamp: string; // ISO format string
+    amount: string;
+    recipient_address: string; // Add recipient address
+    enable_rbf: boolean
   }  
 
 const usePendingTransactions = () => {
@@ -16,11 +18,14 @@ const usePendingTransactions = () => {
   useEffect(() => {
     const fetchPendingTransactions = async () => {
       setIsLoading(true);
+      // Fetch the JWT token using readToken()
+      const pendingToken = readToken();
       try {
-        const response = await fetch(`${config.baseURL}/pending-transactions`, {
+        const response = await fetch(`${config.baseURL}/api/pending-transactions`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${pendingToken}`, // Use the token from readToken()
           },
         });
         if (!response.ok) {

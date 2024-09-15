@@ -15,6 +15,8 @@ import { setUser } from '@app/store/slices/userSlice';
 import { deleteToken, deleteUser, persistToken, readToken } from '@app/services/localStorage.service';
 import { notificationController } from '@app/controllers/notificationController';
 import { createSignedMessage } from '@app/hooks/useSigner';
+import config from '@app/config/config';
+import { message } from 'antd';
 
 // Define the initial state for the auth slice
 export interface AuthSlice {
@@ -87,11 +89,37 @@ export const doSetNewPassword = createAsyncThunk('auth/doSetNewPassword', async 
 );
 
 // Define async thunk for logout
-export const doLogout = createAsyncThunk('auth/doLogout', (payload, { dispatch }) => {
-  deleteToken();
-  deleteUser();
-  dispatch(setUser(null));
-  console.log('Token deleted');
+export const doLogout = createAsyncThunk('auth/doLogout', async (_, { dispatch }) => {
+  try {
+    const token = readToken();
+    if (token) {
+      const response = await fetch(`${config.baseURL}/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Logout failed on server');
+      }
+    }
+    
+    // Clean up local storage
+    deleteToken();
+    deleteUser();
+
+    // Clear the user state
+    dispatch(setUser(null));
+
+    console.log('Token deleted and user logged out');
+  } catch (error) {
+    console.error('Logout error:', error);
+    message.error('An error occurred during logout');
+  } finally {
+    // Ensure user is redirected to login page after logout attempt
+    window.location.href = '/login';  // Redirect to the login page
+  }
 });
 
 // Create the auth slice
