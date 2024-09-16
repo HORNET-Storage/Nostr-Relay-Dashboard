@@ -1,4 +1,4 @@
-# H.O.R.N.E.T Storage Nostr Relay Panel
+# Dashboard Panel for H.O.R.N.E.T Storage Nostr Relay
 
 This repository is home to the hornet storage panal which is a typescript / react web application designed for managing a hornet storage nostr multimedia relay which can be found here: https://github.com/HORNET-Storage/hornet-storage
 
