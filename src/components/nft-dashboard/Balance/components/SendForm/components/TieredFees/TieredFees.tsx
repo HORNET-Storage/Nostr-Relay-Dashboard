@@ -52,8 +52,6 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 
   // Update estimated fees whenever the fees or transaction size change
   useEffect(() => {
-    console.log('txSize:', txSize);
-    console.log('fees:', fees);
     if (txSize) {
       setEstimatedFee({
         low: txSize * fees.low,

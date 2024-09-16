@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-
+import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 interface ResponsiveProps {
   isMobile: boolean;
 }
@@ -24,7 +24,7 @@ export const ValueWrapper = styled.div<ResponsiveProps>`
     `}
   width: 90%;
   padding: 1rem;
-  margin-left:1rem;
+  margin-left: 1rem;
   background-color: var(--additional-background-color);
   border-radius: 0.5rem;
 `;
@@ -37,19 +37,32 @@ export const FieldValue = styled.span`
   font-size: 1rem;
   color: var(--text-main-color);
 `;
+export const BalanceInfo = styled.small`
+  color: var(--subtext-color);
+  margin-left: 1.3rem;
+`;
 
 export const ButtonRow = styled.div`
-    padding-top: 1rem;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    justify-content: center;
-    pading: .5rem 2rem;
-    `;
-
-export const Button = styled(BaseButton)`
-
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  pading: 0.5rem 2rem;
 `;
+export const FeeInput = styled(BaseInput)<{ isMobile: boolean }>`
+
+  
+  padding: 1rem;
+  background-color: var(--additional-background-color);
+  border-radius: 0.5rem;
+    ${(props) =>
+    props.isMobile &&
+    css`
+      width: 100%;
+    `}
+`;
+export const Button = styled(BaseButton)``;
 export const TiersRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -85,7 +98,7 @@ export const ToggleCustomFee = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  
+
   &:hover {
     background-color: #e0e0e0;
   }
