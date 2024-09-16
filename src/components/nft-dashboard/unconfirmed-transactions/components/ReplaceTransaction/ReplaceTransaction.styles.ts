@@ -103,3 +103,10 @@ export const ToggleCustomFee = styled.button`
     background-color: #e0e0e0;
   }
 `;
+export const RBFWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+`;
