@@ -21,9 +21,11 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const { isDesktop, isTablet } = useResponsive();
   const { balanceData, isLoading: isBalanceLoading } = useBalanceData(); // Fetch balance data using the hook
   const { isAuthenticated, login, token } = useWalletAuth(); // Use wallet authentication
+
   const [inValidAmount, setInvalidAmount] = useState(false);
   const [newFee, setNewFee] = useState(transaction.feeRate); // Fee rate in sat/vB
   const [txSize, setTxSize] = useState<number | null>(null); // State to store transaction size
+  const [totalCost, setTotalCost] = useState<number>(parseInt(transaction.amount)); // State to store total cost
   const [loading, setLoading] = useState(false); // Add loading state
   const [isFinished, setIsFinished] = useState(false); // Add finished state
   const [result, setResult] = useState<{ isSuccess: boolean; message: string; txid: string }>({
@@ -44,7 +46,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Include JWT token
+            Authorization: `Bearer ${token}`, // Include JWT token
           },
           body: JSON.stringify({
             recipient_address: transaction.recipient_address, // Use the original recipient address
@@ -75,8 +77,11 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   }, [transaction.txid, transaction.amount, newFee, isAuthenticated, login, token]);
 
   // Calculate the total transaction cost (Amount + Calculated Fee)
-  const totalCost = txSize && newFee ? Number(transaction.amount) + newFee * txSize : Number(transaction.amount);
 
+  useEffect(() => {
+    const totalCost = txSize && newFee ? Number(transaction.amount) + newFee * txSize : Number(transaction.amount);
+    setTotalCost(totalCost);
+  }, [txSize, newFee, transaction.amount]);
   // Check if the total cost exceeds the user's balance
   const isBalanceInsufficient = balanceData?.latest_balance !== undefined && totalCost > balanceData.latest_balance;
 
@@ -105,14 +110,14 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include JWT token
+          Authorization: `Bearer ${token}`, // Include JWT token
         },
         body: JSON.stringify(replaceRequest),
       });
 
       if (response.status === 401) {
         const errorText = await response.text();
-        if (errorText.includes("Token expired") || errorText.includes("Unauthorized: Invalid token")) {
+        if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
           console.log('Session expired. Please log in again.');
           deleteWalletToken(); // Clear the old token
           await login(); // Re-initiate login
@@ -140,7 +145,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${pendingToken}`, // Include the JWT token in the Authorization header
+            Authorization: `Bearer ${pendingToken}`, // Include the JWT token in the Authorization header
           },
           body: JSON.stringify(updatePendingRequest),
         });
@@ -153,7 +158,11 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           setIsFinished(true);
           onReplace(); // Notify parent that the replacement and update were successful
         } else {
-          setResult({ isSuccess: false, message: pendingResult.error || 'Failed to update pending transaction.', txid: '' });
+          setResult({
+            isSuccess: false,
+            message: pendingResult.error || 'Failed to update pending transaction.',
+            txid: '',
+          });
           setIsFinished(true);
         }
       } else {
@@ -226,9 +235,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         </S.FieldDisplay>
 
         {/* Show error message if balance is insufficient */}
-        {isBalanceInsufficient && (
-          <S.ErrorMessage>Insufficient balance to complete the transaction.</S.ErrorMessage>
-        )}
+        {isBalanceInsufficient && <S.ErrorMessage>Insufficient balance to complete the transaction.</S.ErrorMessage>}
 
         <S.ButtonRow>
           <S.Button onClick={onCancel}>Cancel</S.Button>
