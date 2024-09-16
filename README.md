@@ -5,8 +5,6 @@ This repository is home to the hornet storage panal which is a typescript / reac
 ### Live Demo
 We have a live demo that can be found at http://hornetstorage.net for anyone that wants to see what the panel looks like.
 
-*All data displayed on the demo is read directly from the database however it is dummy data inserted for the sake of the demo*
-
 ## Key Features
 - Manage your hornet-storage relay config directly from the panel
 - Switch between our new dumb and smart model for accepting nostr notes
