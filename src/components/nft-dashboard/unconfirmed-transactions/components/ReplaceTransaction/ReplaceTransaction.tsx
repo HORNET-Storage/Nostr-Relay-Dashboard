@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import * as S from './ReplaceTransaction.styles';
 import { useResponsive } from '@app/hooks/useResponsive';
 import TieredFees from '@app/components/nft-dashboard/Balance/components/SendForm/components/TieredFees/TieredFees';
@@ -10,6 +10,7 @@ import useBalanceData from '@app/hooks/useBalanceData';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import authentication hook
 import { notificationController } from '@app/controllers/notificationController'; // Handle notifications
 import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Delete wallet token if expired
+import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 
 interface ReplaceTransactionProps {
   onCancel: () => void;
@@ -22,12 +23,18 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const { balanceData, isLoading: isBalanceLoading } = useBalanceData(); // Fetch balance data using the hook
   const { isAuthenticated, login, token } = useWalletAuth(); // Use wallet authentication
 
+  const [isLoadingSize, setIsLoadingSize] = useState(false); //tx size fetching states
+  const [sizeFetched, setSizeFetched] = useState(false);
+
   const [inValidAmount, setInvalidAmount] = useState(false);
-  const [newFee, setNewFee] = useState(transaction.feeRate); // Fee rate in sat/vB
-  const [txSize, setTxSize] = useState<number | null>(null); // State to store transaction size
-  const [totalCost, setTotalCost] = useState<number>(parseInt(transaction.amount)); // State to store total cost
   const [loading, setLoading] = useState(false); // Add loading state
   const [isFinished, setIsFinished] = useState(false); // Add finished state
+  //transaction data
+  const [newFeeRate, setNewFeeRate] = useState(transaction.feeRate); // Fee rate in sat/vB
+  const [txSize, setTxSize] = useState<number | null>(null); // State to store transaction size
+  const [newFee, setNewFee] = useState<number>(0); // State to store the new fee
+  const [totalCost, setTotalCost] = useState<number>(parseInt(transaction.amount)); // State to store total cost
+
   const [result, setResult] = useState<{ isSuccess: boolean; message: string; txid: string }>({
     isSuccess: false,
     message: '',
@@ -36,10 +43,16 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
   // Fetch the transaction size when the component mounts
   useEffect(() => {
+    if (isLoadingSize || sizeFetched )return; //wait for the token to be available
     const fetchTransactionSize = async () => {
+      setIsLoadingSize(true);
       try {
         if (!isAuthenticated) {
           await login(); // Ensure user is logged in
+        }
+        if(!token){
+          setIsLoadingSize(false);
+          return;
         }
 
         const response = await fetch('http://localhost:9003/calculate-tx-size', {
@@ -67,27 +80,33 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
         const result = await response.json();
         setTxSize(result.txSize); // Set the transaction size
+        setSizeFetched(true);
       } catch (error) {
         console.error('Error fetching transaction size:', error);
         setTxSize(null);
       }
+      setIsLoadingSize(false); // Stop loading
     };
 
     fetchTransactionSize();
-  }, [transaction.txid, transaction.amount, newFee, isAuthenticated, login, token]);
+  }, [transaction.txid, transaction.amount, isAuthenticated, login, token]);
 
   // Calculate the total transaction cost (Amount + Calculated Fee)
 
   useEffect(() => {
-    const totalCost = txSize && newFee ? Number(transaction.amount) + newFee * txSize : Number(transaction.amount);
+    const totalCost = txSize && newFee ? Number(transaction.amount) + newFee : Number(transaction.amount);
     setTotalCost(totalCost);
   }, [txSize, newFee, transaction.amount]);
+
+  useEffect(() => {
+    setNewFee(newFeeRate * (txSize || 0)); // Update the new fee based on the fee rate and transaction size
+  }, [newFeeRate, txSize]);
   // Check if the total cost exceeds the user's balance
   const isBalanceInsufficient = balanceData?.latest_balance !== undefined && totalCost > balanceData.latest_balance;
 
-  const handleFeeChange = (fee: number) => {
-    setNewFee(fee); // Update the new fee when it changes
-  };
+  const handleFeeRateChange = useCallback((fee: number) => {
+    setNewFeeRate(fee); // Update the new fee when it changes
+  }, []);
 
   const handleReplace = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -207,11 +226,12 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           </S.ValueWrapper>
         </S.FieldDisplay>
         {/* Pass the transaction size to TieredFees to dynamically calculate the fee */}
-        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} txSize={txSize} />
+        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
         <S.FieldDisplay>
           <S.FieldLabel>New Fee</S.FieldLabel>
           <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
-            <input
+            <S.FeeInput
+              isMobile={!isTablet}
               type="number" // Use 'number' input type to allow numerical values
               value={newFee} // Bind the input value to the newFee state
               onChange={(e) => {
@@ -232,6 +252,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
             {/* Calculate total amount (Amount + Fee based on transaction size) */}
             <S.FieldValue>{totalCost}</S.FieldValue>
           </S.ValueWrapper>
+          <S.BalanceInfo>{`Balance: ${balanceData ? balanceData.latest_balance : 0}`}</S.BalanceInfo>
         </S.FieldDisplay>
 
         {/* Show error message if balance is insufficient */}
