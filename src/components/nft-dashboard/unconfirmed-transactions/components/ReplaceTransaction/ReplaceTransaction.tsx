@@ -65,6 +65,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
             recipient_address: transaction.recipient_address, // Use the original recipient address
             spend_amount: parseInt(transaction.amount.toString()), // The original amount
             priority_rate: newFeeRate, // The current fee rate
+            
           }),
         });
 
@@ -123,6 +124,8 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         choice: 2, // Replace transaction option
         original_tx_id: transaction.txid, // Send the original transaction ID
         new_fee_rate: newFeeRate, // Send the updated fee rate
+        enable_rbf: enableRBF, // Send the RBF 
+
       };
 
       const response = await fetch('http://localhost:9003/transaction', {
