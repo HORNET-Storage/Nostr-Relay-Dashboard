@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as S from './TieredFees.styles';
 import { useResponsive } from '@app/hooks/useResponsive';
 import { tiers } from '../../SendForm';
+import { set } from 'date-fns';
 
 interface FeeRecommendation {
   fastestFee: number;
@@ -16,17 +17,21 @@ type Fees = {
 interface TieredFeesProps {
   handleFeeChange: (fee: number) => void;
   inValidAmount: boolean;
-  txSize: number | null;  // Transaction size passed down from SendForm
+  txSize: number | null; // Transaction size passed down from SendForm
 }
 
 const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange, txSize }) => {
   const { isDesktop, isTablet } = useResponsive();
+  const [loadingRecommendation, setLoadingRecommendation] = useState(false);
+  const [fetchedrecommendation, setFetchedRecommendation] = useState(false);
   const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
   const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
   const [estimatedFee, setEstimatedFee] = useState({ low: 0, med: 0, high: 0 });
 
   useEffect(() => {
+    if (loadingRecommendation || fetchedrecommendation) return;
     const fetchFees = async () => {
+      setLoadingRecommendation(true);
       try {
         const response = await fetch('https://mempool.space/api/v1/fees/recommended');
         const data: FeeRecommendation = await response.json();
@@ -35,9 +40,11 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
           med: data.halfHourFee,
           high: data.fastestFee,
         });
+        setFetchedRecommendation(true);
       } catch (error) {
         console.error('Failed to fetch fees:', error);
       }
+      setLoadingRecommendation(false);
     };
 
     fetchFees();
@@ -45,6 +52,8 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 
   // Update estimated fees whenever the fees or transaction size change
   useEffect(() => {
+    console.log('txSize:', txSize);
+    console.log('fees:', fees);
     if (txSize) {
       setEstimatedFee({
         low: txSize * fees.low,
@@ -60,7 +69,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 
   useEffect(() => {
     handleFeeChange(fees[selectedTier as tiers]);
-  }, [selectedTier]);
+  }, [selectedTier, fees]);
 
   return (
     <S.TiersWrapper $isMobile={!isDesktop || !isTablet}>
@@ -122,7 +131,6 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 };
 
 export default TieredFees;
-
 
 // import React, { useEffect, useState } from 'react';
 // import * as S from './TieredFees.styles';
