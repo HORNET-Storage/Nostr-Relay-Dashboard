@@ -5,6 +5,7 @@ import { truncateString } from '@app/utils/utils';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { Button, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
+import ClipboardCopy from '@app/components/common/CopyToClipboard/CopyToClipboard';
 interface UnconfirmedTransactionProps {
   tx_id: string;
   date_created: string;
@@ -13,10 +14,10 @@ interface UnconfirmedTransactionProps {
 }
 
 const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, date_created, amount, feeAmount }) => {
-  const { isDesktop, isTablet} = useResponsive();
+  const { isDesktop, isTablet } = useResponsive();
   const copied = () => {
- message.success('Copied to clipboard');
-  }
+    message.success('Copied to clipboard');
+  };
   const onCopy = () => {
     //display Copied to clipboard
     copied();
@@ -27,9 +28,7 @@ const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, 
         <S.Value>
           <S.TxIDWrapper> {tx_id} </S.TxIDWrapper>
           <S.CopyWrapper $isDesktop={isDesktop}>
-            <CopyToClipboard text={tx_id}>
-              <Button onClick={onCopy} icon={<CopyOutlined />} size="small" />
-            </CopyToClipboard>
+            <ClipboardCopy textToCopy={tx_id} />
           </S.CopyWrapper>
         </S.Value>
 
