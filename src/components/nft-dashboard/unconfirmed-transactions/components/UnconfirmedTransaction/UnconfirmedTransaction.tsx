@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import * as S from './UnconfirmedTransaction.styles';
-import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 import { useResponsive } from '@app/hooks/useResponsive';
 import { truncateString } from '@app/utils/utils';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -14,21 +13,19 @@ interface UnconfirmedTransactionProps {
 }
 
 const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, date_created, amount, feeAmount }) => {
-  const { isTablet } = useResponsive();
-  const [messageApi, contextHolder] = message.useMessage();
+  const { isDesktop, isTablet} = useResponsive();
   const copied = () => {
-    messageApi.open({ content: 'Copied to clipboard', duration: 1, type: 'success' });
-  };
+ message.success('Copied to clipboard');
+  }
   const onCopy = () => {
     //display Copied to clipboard
     copied();
   };
   return (
     <S.TransactionWrapper>
-      {contextHolder}
-      <S.IDWrapper $isMobile={!isTablet}>
+      <S.IDWrapper $isMobile={!isDesktop}>
         <S.Value>
-          {!isTablet ? truncateString(tx_id, 20) : truncateString(tx_id, 45)}
+          {!isTablet ? truncateString(tx_id, 15) :tx_id}
           <S.CopyWrapper>
             <CopyToClipboard text={tx_id}>
               <Button onClick={onCopy} icon={<CopyOutlined />} size="small" />
