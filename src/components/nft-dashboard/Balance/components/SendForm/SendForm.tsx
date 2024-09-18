@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { useResponsive } from '@app/hooks/useResponsive';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import * as S from './SendForm.styles';
 import { truncateString } from '@app/utils/utils';
@@ -12,7 +11,6 @@ import config from '@app/config/config';
 import TieredFees from './components/TieredFees/TieredFees';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import the auth hook
 import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Assuming this is where deleteWalletToken is defined
-
 
 interface SendFormProps {
   onSend: (status: boolean, address: string, amount: number, txid?: string, message?: string) => void;
@@ -56,19 +54,20 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       const fetchTransactionSize = async () => {
-        if (formData.amount.length > 0) {
+        if (formData.address.length > 0) {
+          //this should use bech32 regex
           try {
             // Ensure user is authenticated
             if (!isAuthenticated) {
-              console.log("Not Authenticated.")
+              console.log('Not Authenticated.');
               await login(); // Perform login if not authenticated
             }
-      
+
             const response = await fetch('http://localhost:9003/calculate-tx-size', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, // Include JWT token in headers
+                Authorization: `Bearer ${token}`, // Include JWT token in headers
               },
               body: JSON.stringify({
                 recipient_address: formData.address,
@@ -76,10 +75,10 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
                 priority_rate: fee,
               }),
             });
-      
+
             if (response.status === 401) {
               const errorText = await response.text();
-              if (errorText.includes("Token expired") || errorText.includes("Unauthorized: Invalid token")) {
+              if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
                 // Token has expired, trigger a re-login
                 console.log('Session expired. Please log in again.');
                 deleteWalletToken(); // Clear the old token
@@ -87,7 +86,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
               }
               throw new Error(errorText);
             }
-      
+
             const result = await response.json();
             setTxSize(result.txSize);
           } catch (error) {
@@ -96,7 +95,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           }
         }
       };
-      
 
       fetchTransactionSize();
     }, 500); // Debounce for 500ms
@@ -139,11 +137,11 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   const handleSend = async () => {
     if (loading || inValidAmount) return;
-  
+
     setLoading(true);
-  
+
     const selectedFee = fee; // The user-selected fee rate
-  
+
     const transactionRequest = {
       choice: 1, // New transaction option
       recipient_address: formData.address,
@@ -151,26 +149,26 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       priority_rate: selectedFee,
       enable_rbf: enableRBF,
     };
-  
+
     try {
       // Step 1: Ensure the user is authenticated
       if (!isAuthenticated) {
         await login(); // Perform login if not authenticated
       }
-  
+
       // Step 2: Initiate the new transaction with the JWT token
       const response = await fetch('http://localhost:9003/transaction', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include JWT token in headers
+          Authorization: `Bearer ${token}`, // Include JWT token in headers
         },
         body: JSON.stringify(transactionRequest),
       });
-  
+
       if (response.status === 401) {
         const errorText = await response.text();
-        if (errorText.includes("Token expired") || errorText.includes("Unauthorized: Invalid token")) {
+        if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
           // Token has expired, trigger a re-login
           console.log('Session expired. Please log in again.');
           deleteWalletToken(); // Clear the old token
@@ -178,9 +176,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         }
         throw new Error(errorText);
       }
-  
+
       const result = await response.json();
-  
+
       // Check the status from the wallet's response
       if (result.status === 'success' || result.status === 'pending') {
         // Step 2: If the transaction succeeds or is pending, update the pending transactions
@@ -192,21 +190,21 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           recipient_address: formData.address,
           enable_rbf: enableRBF, // Already boolean and correct
         };
-        
+
         // Fetch the JWT token using readToken()
         const pendingToken = readToken();
-        
+
         const pendingResponse = await fetch(`${config.baseURL}/api/pending-transactions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${pendingToken}`, // Use the token from readToken()
+            Authorization: `Bearer ${pendingToken}`, // Use the token from readToken()
           },
           body: JSON.stringify(pendingTransaction),
         });
-        
-        const pendingResult = await pendingResponse.json();        
-  
+
+        const pendingResult = await pendingResponse.json();
+
         // Step 3: Handle the final result from updating pending transactions
         if (pendingResponse.ok) {
           setLoading(false);
@@ -228,7 +226,6 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       setLoading(false); // Ensure loading stops in all cases
     }
   };
-  
 
   useEffect(() => {
     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
@@ -275,7 +272,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton
-          disabled={loading || isLoading || inValidAmount || authLoading}
+          disabled={loading || isLoading || inValidAmount || authLoading || addressError}
           onClick={handleSend}
           size="large"
           type="primary"

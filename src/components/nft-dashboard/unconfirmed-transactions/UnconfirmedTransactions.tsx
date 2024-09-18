@@ -81,7 +81,7 @@ const UnconfirmedTransactions: React.FC = () => {
                   <S.RowWrapper $isMobile={!isDesktop} key={transaction.txid}>
                     <S.TransactionWrapper>
                       <UnconfirmedTransaction
-                        tx_id={transaction.txid + '' + i} 
+                        tx_id={transaction.txid + '' + i}
                         date_created={new Date(transaction.timestamp).toLocaleDateString()}
                         amount={
                           transaction.amount !== undefined && transaction.amount !== null
@@ -94,7 +94,7 @@ const UnconfirmedTransactions: React.FC = () => {
                       {/* Disable the Replace button if enable_rbf is false */}
                       <S.ReplaceButton
                         $isMobile={!isDesktop}
-                        // disabled={!transaction.enable_rbf} // Disable if enable_rbf is false
+                        disabled={!transaction.enable_rbf} // Disable if enable_rbf is false
                         onClick={() => handleOpenReplaceTransaction(transaction)}
                       >
                         Replace

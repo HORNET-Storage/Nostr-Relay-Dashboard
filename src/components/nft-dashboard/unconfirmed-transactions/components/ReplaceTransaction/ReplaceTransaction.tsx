@@ -10,7 +10,8 @@ import useBalanceData from '@app/hooks/useBalanceData';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import authentication hook
 import { notificationController } from '@app/controllers/notificationController'; // Handle notifications
 import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Delete wallet token if expired
-import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
+import ClipboardCopy from '@app/components/common/CopyToClipboard/CopyToClipboard';
+//import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
 interface ReplaceTransactionProps {
   onCancel: () => void;
   onReplace: () => void;
@@ -33,7 +34,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const [txSize, setTxSize] = useState<number | null>(null); // State to store transaction size
   const [newFee, setNewFee] = useState<number>(0); // State to store the new fee
   const [totalCost, setTotalCost] = useState<number>(parseInt(transaction.amount)); // State to store total cost
-  const [enableRBF, setEnableRBF] = useState(false); // State to store RBF status
+  // const [enableRBF, setEnableRBF] = useState(false); // State to store RBF status
 
   const [result, setResult] = useState<{ isSuccess: boolean; message: string; txid: string }>({
     isSuccess: false,
@@ -43,14 +44,14 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
   // Fetch the transaction size when the component mounts
   useEffect(() => {
-    if (isLoadingSize || sizeFetched )return; //wait for the token to be available
+    if (isLoadingSize || sizeFetched) return; //wait for the token to be available
     const fetchTransactionSize = async () => {
       setIsLoadingSize(true);
       try {
         if (!isAuthenticated) {
           await login(); // Ensure user is logged in
         }
-        if(!token){
+        if (!token) {
           setIsLoadingSize(false);
           return;
         }
@@ -65,7 +66,6 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
             recipient_address: transaction.recipient_address, // Use the original recipient address
             spend_amount: parseInt(transaction.amount.toString()), // The original amount
             priority_rate: newFeeRate, // The current fee rate
-            
           }),
         });
 
@@ -108,7 +108,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const handleFeeRateChange = useCallback((fee: number) => {
     setNewFeeRate(fee); // Update the new fee when it changes
   }, []);
- 
+
   const handleReplace = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setLoading(true); // Start loading
@@ -124,8 +124,6 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         choice: 2, // Replace transaction option
         original_tx_id: transaction.txid, // Send the original transaction ID
         new_fee_rate: newFeeRate, // Send the updated fee rate
-        enable_rbf: enableRBF, // Send the RBF 
-
       };
 
       const response = await fetch('http://localhost:9003/transaction', {
@@ -219,7 +217,10 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         <S.FieldDisplay>
           <S.FieldLabel>Transaction ID</S.FieldLabel>
           <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
-            <S.FieldValue>{transaction.txid}</S.FieldValue>
+            <S.FieldValue>{transaction.txid}
+               {"  "}
+               <ClipboardCopy textToCopy={transaction.txid} />
+            </S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
         <S.FieldDisplay>
@@ -228,14 +229,14 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
             <S.FieldValue>{transaction.amount}</S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
-        {/* Pass the transaction size to TieredFees to dynamically calculate the fee */}
+        {/* 
         <S.RBFWrapper>
           <BaseCheckbox
             checked={enableRBF}
             onChange={(e) => setEnableRBF(e.target.checked)} // Update the state when the checkbox is toggled
           />
           RBF Opt In
-        </S.RBFWrapper>
+        </S.RBFWrapper> */}
         <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
         <S.FieldDisplay>
           <S.FieldLabel>New Fee Rate</S.FieldLabel>
@@ -251,7 +252,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
                 }
               }}
               min={0} // Minimum value of 0 for the fee
-              step={.25} // Optional: define the increment step for the fee input
+              step={0.25} // Optional: define the increment step for the fee input
             />
           </S.ValueWrapper>
         </S.FieldDisplay>
@@ -259,19 +260,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         <S.FieldDisplay>
           <S.FieldLabel>New Fee</S.FieldLabel>
           <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
-            <S.FeeInput
-              isMobile={!isTablet}
-              type="number" // Use 'number' input type to allow numerical values
-              value={newFee} // Bind the input value to the newFee state
-              onChange={(e) => {
-                const fee = parseFloat(e.target.value);
-                if (!isNaN(fee)) {
-                  setNewFee(fee); // Update the newFee state
-                }
-              }}
-              min={0} // Minimum value of 0 for the fee
-              step={1} // Optional: define the increment step for the fee input
-            />
+            <S.FieldValue>{newFee}</S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
 
