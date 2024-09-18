@@ -25,8 +25,8 @@ const UnconfirmedTransaction: React.FC<UnconfirmedTransactionProps> = ({ tx_id, 
     <S.TransactionWrapper>
       <S.IDWrapper $isMobile={!isDesktop}>
         <S.Value>
-          {!isTablet ? truncateString(tx_id, 15) :tx_id}
-          <S.CopyWrapper>
+          <S.TxIDWrapper> {tx_id} </S.TxIDWrapper>
+          <S.CopyWrapper $isDesktop={isDesktop}>
             <CopyToClipboard text={tx_id}>
               <Button onClick={onCopy} icon={<CopyOutlined />} size="small" />
             </CopyToClipboard>

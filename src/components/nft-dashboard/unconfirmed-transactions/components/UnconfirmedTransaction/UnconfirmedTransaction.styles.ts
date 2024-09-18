@@ -7,7 +7,7 @@ export const TransactionWrapper = styled.div`
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
 export const IDWrapper = styled.div<{ $isMobile: boolean }>`
@@ -20,6 +20,14 @@ export const IDWrapper = styled.div<{ $isMobile: boolean }>`
       width: 100%;
     `}
 `;
+export const TxIDWrapper = styled.span`
+  font-size: 1rem;
+  color: var(--text-main-color);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
 export const DataWrapper = styled.div`
   display: flex;
@@ -29,6 +37,8 @@ export const DataWrapper = styled.div`
 
 export const Value = styled.span`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
   color: var(--text-main-color);
   font-weight: 600;
   white-space: nowrap;
@@ -40,6 +50,10 @@ export const Label = styled.span`
   color: var(--text-nft-light-color);
 `;
 
-export const CopyWrapper = styled.span`
+export const CopyWrapper = styled.span<{ $isDesktop: boolean }>`
+  margin-right: 1.5rem;
   padding-left: 1rem;
+  ${({ $isDesktop }) => $isDesktop && css`
+  
+  `}
 `;

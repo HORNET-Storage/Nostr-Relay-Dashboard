@@ -238,6 +238,25 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         </S.RBFWrapper>
         <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
         <S.FieldDisplay>
+          <S.FieldLabel>New Fee Rate</S.FieldLabel>
+          <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+            <S.FeeInput
+              isMobile={!isTablet}
+              type="number" // Use 'number' input type to allow numerical values
+              value={newFeeRate} // Bind the input value to the newFee state
+              onChange={(e) => {
+                const fee = parseFloat(e.target.value);
+                if (!isNaN(fee)) {
+                  setNewFeeRate(fee); // Update the newFee state
+                }
+              }}
+              min={0} // Minimum value of 0 for the fee
+              step={.25} // Optional: define the increment step for the fee input
+            />
+          </S.ValueWrapper>
+        </S.FieldDisplay>
+
+        <S.FieldDisplay>
           <S.FieldLabel>New Fee</S.FieldLabel>
           <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
             <S.FeeInput

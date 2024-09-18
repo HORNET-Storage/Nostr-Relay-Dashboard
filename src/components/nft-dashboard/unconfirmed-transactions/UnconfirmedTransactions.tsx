@@ -77,11 +77,11 @@ const UnconfirmedTransactions: React.FC = () => {
               <S.NoTransactionsText>No unconfirmed transactions available.</S.NoTransactionsText>
             ) : (
               <S.ScrollPanel>
-                {pendingTransactions.map((transaction) => (
-                  <S.RowWrapper $isMobile={!isDesktop || !isTablet} key={transaction.txid}>
+                {pendingTransactions.map((transaction, i) => (
+                  <S.RowWrapper $isMobile={!isDesktop} key={transaction.txid}>
                     <S.TransactionWrapper>
                       <UnconfirmedTransaction
-                        tx_id={transaction.txid}
+                        tx_id={transaction.txid + '' + i} 
                         date_created={new Date(transaction.timestamp).toLocaleDateString()}
                         amount={
                           transaction.amount !== undefined && transaction.amount !== null
@@ -90,11 +90,11 @@ const UnconfirmedTransactions: React.FC = () => {
                         }
                       />
                     </S.TransactionWrapper>
-                    <S.ButtonWrapper $isMobile={!isDesktop || !isTablet}>
+                    <S.ButtonWrapper $isMobile={!isDesktop}>
                       {/* Disable the Replace button if enable_rbf is false */}
                       <S.ReplaceButton
-                        $isMobile={!isDesktop || !isTablet}
-                        disabled={!transaction.enable_rbf} // Disable if enable_rbf is false
+                        $isMobile={!isDesktop}
+                        // disabled={!transaction.enable_rbf} // Disable if enable_rbf is false
                         onClick={() => handleOpenReplaceTransaction(transaction)}
                       >
                         Replace
