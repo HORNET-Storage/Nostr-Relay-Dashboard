@@ -83,7 +83,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
           <br />
           {`Priority`}
           <S.RateValueWrapper>
-            <span>{`${fees.low} sat/vB`}</span>
+          {`${fees.low}`} <br /> {`sat/vB`}
             <S.RateValue>{`${estimatedFee.low} Sats`}</S.RateValue> {/* Show estimated fee */}
           </S.RateValueWrapper>
         </S.TierCardContent>
@@ -101,7 +101,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
           <br />
           {`Priority`}
           <S.RateValueWrapper>
-            <span>{`${fees.med} sat/vB`}</span>
+          {`${fees.med}`} <br /> {`sat/vB`}
             <S.RateValue>{`${estimatedFee.med} Sats`}</S.RateValue> {/* Show estimated fee */}
           </S.RateValueWrapper>
         </S.TierCardContent>
@@ -119,7 +119,9 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
           <br />
           {`Priority`}
           <S.RateValueWrapper>
-            <span>{`${fees.high} sat/vB`}</span>
+            <span>
+              {`${fees.high}`} <br /> {`sat/vB`}
+            </span>
             <S.RateValue>{`${estimatedFee.high} Sats`}</S.RateValue> {/* Show estimated fee */}
           </S.RateValueWrapper>
         </S.TierCardContent>

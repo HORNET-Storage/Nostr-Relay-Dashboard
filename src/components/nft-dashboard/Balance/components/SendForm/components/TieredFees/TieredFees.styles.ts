@@ -2,11 +2,12 @@ import styled, { css } from 'styled-components';
 import { BaseCard } from '@app/components/common/BaseCard/BaseCard';
 
 export const TierCard = styled(BaseCard)<{ $isMobile?: boolean }>`
-  width: 30%;
+  width: 33%;
+  min-width: 150px;
   ${(props) =>
     props.$isMobile &&
     css`
-      width: 100%;
+      width: 80%;
     `}
   background-color: var(--additional-background-color);
   cursor: pointer;
@@ -73,5 +74,6 @@ export const TiersWrapper = styled.div<ResponsiveProps>`
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      align-items: center;
     `}
 `;
