@@ -21,7 +21,7 @@ interface ReplaceTransactionProps {
 const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onReplace, transaction }) => {
   const { isDesktop, isTablet } = useResponsive();
   const { balanceData, isLoading: isBalanceLoading } = useBalanceData(); // Fetch balance data using the hook
-  const { isAuthenticated, login, token } = useWalletAuth(); // Use wallet authentication
+  const { isAuthenticated, login, token} = useWalletAuth(); // Use wallet authentication
 
   const [isLoadingSize, setIsLoadingSize] = useState(false); //tx size fetching states
 
@@ -34,7 +34,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const [newFee, setNewFee] = useState<number>(0); // State to store the new fee
   const [totalCost, setTotalCost] = useState<number>(parseInt(transaction.amount)); // State to store total cost
   // const [enableRBF, setEnableRBF] = useState(false); // State to store RBF status
-
+  const memoizedLogin = useCallback(login, []);
   const [result, setResult] = useState<{ isSuccess: boolean; message: string; txid: string }>({
     isSuccess: false,
     message: '',
@@ -48,6 +48,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
       setIsLoadingSize(true);
       try {
         if (!isAuthenticated) {
+          console.log("not auth")
           await login(); // Ensure user is logged in
         }
         if (!token) {
@@ -88,7 +89,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
     };
 
     fetchTransactionSize();
-  }, [transaction.txid, transaction.amount, isAuthenticated, login, token]);
+  }, [transaction.txid, transaction.amount, isAuthenticated, memoizedLogin, token]);
 
   // Calculate the total transaction cost (Amount + Calculated Fee)
 
@@ -98,10 +99,16 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   }, [txSize, newFee, transaction.amount]);
 
   useEffect(() => {
+    if (totalCost <= 0 || (balanceData && totalCost > balanceData.latest_balance)) {
+      setInvalidAmount(true);
+    } else {
+      setInvalidAmount(false);
+    }
+  }, [totalCost]);
+
+  useEffect(() => {
     setNewFee(newFeeRate * (txSize || 0)); // Update the new fee based on the fee rate and transaction size
   }, [newFeeRate, txSize]);
-  // Check if the total cost exceeds the user's balance
-  const isBalanceInsufficient = balanceData?.latest_balance !== undefined && totalCost > balanceData.latest_balance;
 
   const handleFeeRateChange = useCallback((fee: number) => {
     setNewFeeRate(fee); // Update the new fee when it changes
@@ -214,7 +221,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
       <S.ContentWrapper>
         <S.FieldDisplay>
           <S.FieldLabel>Transaction ID</S.FieldLabel>
-          <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
             <S.FieldValue>{transaction.txid}
                {"  "}
                <ClipboardCopy textToCopy={transaction.txid} />
@@ -223,7 +230,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         </S.FieldDisplay>
         <S.FieldDisplay>
           <S.FieldLabel>Amount</S.FieldLabel>
-          <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
             <S.FieldValue>{transaction.amount}</S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
@@ -238,9 +245,9 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
         <S.FieldDisplay>
           <S.FieldLabel>New Fee Rate</S.FieldLabel>
-          <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
             <S.FeeInput
-              isMobile={!isTablet}
+              $isMobile={!isTablet}
               type="number" // Use 'number' input type to allow numerical values
               value={newFeeRate} // Bind the input value to the newFee state
               onChange={(e) => {
@@ -257,14 +264,14 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
         <S.FieldDisplay>
           <S.FieldLabel>New Fee</S.FieldLabel>
-          <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
             <S.FieldValue>{newFee}</S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
 
         <S.FieldDisplay>
           <S.FieldLabel>Total</S.FieldLabel>
-          <S.ValueWrapper isMobile={!isDesktop || !isTablet}>
+          <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
             {/* Calculate total amount (Amount + Fee based on transaction size) */}
             <S.FieldValue>{totalCost}</S.FieldValue>
           </S.ValueWrapper>
@@ -272,12 +279,12 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
         </S.FieldDisplay>
 
         {/* Show error message if balance is insufficient */}
-        {isBalanceInsufficient && <S.ErrorMessage>Insufficient balance to complete the transaction.</S.ErrorMessage>}
+        {inValidAmount && <S.ErrorMessage>Insufficient balance to complete the transaction.</S.ErrorMessage>}
 
         <S.ButtonRow>
           <S.Button onClick={onCancel}>Cancel</S.Button>
           {/* Disable replace button if total cost exceeds balance */}
-          <S.Button onClick={handleReplace} disabled={isBalanceInsufficient}>
+          <S.Button onClick={handleReplace} disabled={inValidAmount}>
             Replace
           </S.Button>
         </S.ButtonRow>
