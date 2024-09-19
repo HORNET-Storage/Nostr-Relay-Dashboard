@@ -24,7 +24,6 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
   const { isAuthenticated, login, token } = useWalletAuth(); // Use wallet authentication
 
   const [isLoadingSize, setIsLoadingSize] = useState(false); //tx size fetching states
-  const [sizeFetched, setSizeFetched] = useState(false);
 
   const [inValidAmount, setInvalidAmount] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
@@ -44,7 +43,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
   // Fetch the transaction size when the component mounts
   useEffect(() => {
-    if (isLoadingSize || sizeFetched) return; //wait for the token to be available
+    if (isLoadingSize) return;
     const fetchTransactionSize = async () => {
       setIsLoadingSize(true);
       try {
@@ -65,7 +64,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           body: JSON.stringify({
             recipient_address: transaction.recipient_address, // Use the original recipient address
             spend_amount: parseInt(transaction.amount.toString()), // The original amount
-            priority_rate: newFeeRate, // The current fee rate
+            priority_rate: newFeeRate,
           }),
         });
 
@@ -81,7 +80,6 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
 
         const result = await response.json();
         setTxSize(result.txSize); // Set the transaction size
-        setSizeFetched(true);
       } catch (error) {
         console.error('Error fetching transaction size:', error);
         setTxSize(null);
