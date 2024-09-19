@@ -53,9 +53,10 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   // Debounced effect to calculate transaction size when the amount changes, with JWT
   useEffect(() => {
+   
     const debounceTimeout = setTimeout(() => {
       const fetchTransactionSize = async () => {
-        if (isValidAddress(formData.address)) {
+        if (isValidAddress(formData.address) && isDetailsOpen) {
           //this should use bech32 regex
           try {
             // Ensure user is authenticated
@@ -117,13 +118,12 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     setFeeRate(fee); // Update the new fee when it changes
   }, []);
 
-  
+
   function validateBech32Address(address: string) {
     try {
       const decoded = bech32.decode(address);
       const validPrefixes = ['bc', 'tb']; // 'bc' for mainnet, 'tb' for testnet
       if (validPrefixes.includes(decoded.prefix)) {
-        console.log('Address is valid Bech32.');
         return true;
       } else {
         console.log('Invalid prefix.');

@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 interface ResponsiveProps {
-  isMobile: boolean;
+  $isMobile: boolean;
 }
 export const ContentWrapper = styled.div`
   display: flex;
@@ -18,7 +18,7 @@ export const FieldDisplay = styled.div`
 
 export const ValueWrapper = styled.div<ResponsiveProps>`
   ${(props) =>
-    props.isMobile &&
+    props.$isMobile &&
     css`
       width: 100%;
     `}
@@ -50,14 +50,14 @@ export const ButtonRow = styled.div`
   justify-content: center;
   pading: 0.5rem 2rem;
 `;
-export const FeeInput = styled(BaseInput)<{ isMobile: boolean }>`
+export const FeeInput = styled(BaseInput)<{ $isMobile: boolean }>`
 
   
   padding: 1rem;
   background-color: var(--additional-background-color);
   border-radius: 0.5rem;
     ${(props) =>
-    props.isMobile &&
+    props.$isMobile &&
     css`
       width: 100%;
     `}
