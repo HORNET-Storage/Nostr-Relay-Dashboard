@@ -70,7 +70,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
   }, [selectedTier, fees]);
 
   return (
-    <S.TiersWrapper $isMobile={!isDesktop || !isTablet}>
+    <S.TiersWrapper $isMobile={!isDesktop && !isTablet}>
       <S.TierCard
         $isMobile={!isDesktop}
         onClick={() => handleTierChange({ id: 'low' })}
