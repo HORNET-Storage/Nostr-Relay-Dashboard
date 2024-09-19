@@ -49,6 +49,12 @@ export const InputWrapper = styled.div`
   flex-direction: column;
   gap: 0.5rem;
 `;
+
+export const InputHeaderWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+`;
 export const TiersContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -69,6 +75,7 @@ export const Recipient = styled.span`
 export const ErrorText = styled.small`
   color: var(--error-color);
   display: flex;
+  op
   flex-direction: row;
   align-items: center;
 `;

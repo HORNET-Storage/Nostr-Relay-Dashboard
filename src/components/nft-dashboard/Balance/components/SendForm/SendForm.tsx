@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
@@ -11,7 +11,7 @@ import config from '@app/config/config';
 import TieredFees from './components/TieredFees/TieredFees';
 import useWalletAuth from '@app/hooks/useWalletAuth'; // Import the auth hook
 import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Assuming this is where deleteWalletToken is defined
-
+import { bech32 } from 'bech32';
 interface SendFormProps {
   onSend: (status: boolean, address: string, amount: number, txid?: string, message?: string) => void;
 }
@@ -41,6 +41,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const [amountWithFee, setAmountWithFee] = useState<number | null>(null);
 
   const [fee, setFee] = useState<number>(0);
+  const [feeRate, setFeeRate] = useState<number>(0);
   const [formData, setFormData] = useState({
     address: '',
     amount: '1',
@@ -54,7 +55,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       const fetchTransactionSize = async () => {
-        if (formData.address.length > 0) {
+        if (isValidAddress(formData.address)) {
           //this should use bech32 regex
           try {
             // Ensure user is authenticated
@@ -72,7 +73,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
               body: JSON.stringify({
                 recipient_address: formData.address,
                 spend_amount: parseInt(formData.amount),
-                priority_rate: fee,
+                priority_rate: feeRate,
               }),
             });
 
@@ -100,22 +101,50 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     }, 500); // Debounce for 500ms
 
     return () => clearTimeout(debounceTimeout); // Clear the timeout if the amount changes before 500ms
-  }, [formData.amount, fee, isAuthenticated, login, token]);
+  }, [formData.amount, feeRate, isAuthenticated, login, token]);
 
   // Calculate the fee based on the transaction size
   useEffect(() => {
-    if (txSize && fee) {
-      const estimatedFee = txSize * fee;
-      setAmountWithFee(parseInt(formData.amount) + estimatedFee);
-    }
-  }, [txSize, fee]);
+    const estimatedFee = txSize ? txSize * feeRate : 0; // Calculate the fee based on the tx size and fee rate
+    setFee(estimatedFee);
+  }, [txSize, feeRate]);
 
-  const handleFeeChange = (fee: number) => {
-    setFee(fee);
-  };
+  useEffect(() => {
+    setAmountWithFee(parseInt(formData.amount) + fee); // Update the amount with fee when the fee changes
+  }, [fee, formData.amount]);
+
+  const handleFeeRateChange = useCallback((fee: number) => {
+    setFeeRate(fee); // Update the new fee when it changes
+  }, []);
+
+  
+  function validateBech32Address(address: string) {
+    try {
+      const decoded = bech32.decode(address);
+      const validPrefixes = ['bc', 'tb']; // 'bc' for mainnet, 'tb' for testnet
+      if (validPrefixes.includes(decoded.prefix)) {
+        console.log('Address is valid Bech32.');
+        return true;
+      } else {
+        console.log('Invalid prefix.');
+        return false;
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Invalid Bech32 address:', err.message);
+      } else {
+        console.error('Invalid Bech32 address:', err);
+      }
+      return false;
+    }
+  }
 
   const isValidAddress = (address: string) => {
-    return address.length > 0;
+    //TODO: add some sort of bech32 regex here
+    if (address.length === 0) {
+      return false;
+    }
+    return validateBech32Address(address);
   };
 
   const handleAddressSubmit = () => {
@@ -140,7 +169,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
     setLoading(true);
 
-    const selectedFee = fee; // The user-selected fee rate
+    const selectedFee = feeRate; // The user-selected fee rate
 
     const transactionRequest = {
       choice: 1, // New transaction option
@@ -156,6 +185,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         await login(); // Perform login if not authenticated
       }
 
+  
       // Step 2: Initiate the new transaction with the JWT token
       const response = await fetch('http://localhost:9003/transaction', {
         method: 'POST',
@@ -238,7 +268,10 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const receiverPanel = () => (
     <>
       <S.InputWrapper>
-        <S.InputHeader>Address</S.InputHeader>
+        <S.InputHeaderWrapper>
+          <S.InputHeader>Address</S.InputHeader>
+          {addressError && <S.ErrorText>Invalid Address</S.ErrorText>}
+        </S.InputHeaderWrapper>
         <BaseInput name="address" value={formData.address} onChange={handleInputChange} placeholder="Send to" />
       </S.InputWrapper>
       <BaseButton onClick={handleAddressSubmit}>Continue</BaseButton>
@@ -268,7 +301,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           />
           RBF Opt In
         </S.RBFWrapper>
-        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeChange} txSize={txSize} />
+        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton
