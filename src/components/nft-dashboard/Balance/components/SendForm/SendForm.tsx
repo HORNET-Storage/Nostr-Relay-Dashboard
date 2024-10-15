@@ -65,7 +65,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
               await login(); // Perform login if not authenticated
             }
 
-            const response = await fetch('http://localhost:9003/calculate-tx-size', {
+            const response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
 
       // Step 2: Initiate the new transaction with the JWT token
-      const response = await fetch('http://localhost:9003/transaction', {
+      const response = await fetch(`${config.walletBaseURL}/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
