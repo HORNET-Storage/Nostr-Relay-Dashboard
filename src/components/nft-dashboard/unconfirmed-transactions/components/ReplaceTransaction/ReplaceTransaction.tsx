@@ -21,7 +21,7 @@ interface ReplaceTransactionProps {
 const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onReplace, transaction }) => {
   const { isDesktop, isTablet } = useResponsive();
   const { balanceData, isLoading: isBalanceLoading } = useBalanceData(); // Fetch balance data using the hook
-  const { isAuthenticated, login, token} = useWalletAuth(); // Use wallet authentication
+  const { isAuthenticated, login, token } = useWalletAuth(); // Use wallet authentication
 
   const [isLoadingSize, setIsLoadingSize] = useState(false); //tx size fetching states
 
@@ -223,8 +223,8 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           <S.FieldLabel>Transaction ID</S.FieldLabel>
           <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
             <S.FieldValue>{transaction.txid}
-               {"  "}
-               <ClipboardCopy textToCopy={transaction.txid} />
+              {"  "}
+              <ClipboardCopy textToCopy={transaction.txid} />
             </S.FieldValue>
           </S.ValueWrapper>
         </S.FieldDisplay>
@@ -242,7 +242,13 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
           />
           RBF Opt In
         </S.RBFWrapper> */}
-        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
+        <TieredFees
+          invalidAmount={inValidAmount} // Make sure to pass the correct boolean prop
+          handleFeeChange={handleFeeRateChange}
+          transactionSize={txSize} // Pass the estimated transaction size
+          originalFeeRate={transaction.feeRate} // Pass the original fee rate from the transaction to adjust the replacement fees
+        />
+
         <S.FieldDisplay>
           <S.FieldLabel>New Fee Rate</S.FieldLabel>
           <S.ValueWrapper $isMobile={!isDesktop || !isTablet}>
@@ -257,7 +263,7 @@ const ReplaceTransaction: React.FC<ReplaceTransactionProps> = ({ onCancel, onRep
                 }
               }}
               min={0} // Minimum value of 0 for the fee
-              step={0.25} // Optional: define the increment step for the fee input
+              step={1} // Optional: define the increment step for the fee input
             />
           </S.ValueWrapper>
         </S.FieldDisplay>

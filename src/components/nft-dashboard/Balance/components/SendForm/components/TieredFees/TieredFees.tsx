@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import * as S from './TieredFees.styles';
-import { useResponsive } from '@app/hooks/useResponsive';
-import { tiers } from '../../SendForm';
-import { set } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import * as S from "./TieredFees.styles";
+import { useResponsive } from "@app/hooks/useResponsive";
 
 interface FeeRecommendation {
   fastestFee: number;
@@ -11,71 +9,104 @@ interface FeeRecommendation {
   economyFee: number;
   minimumFee: number;
 }
-type Fees = {
-  [key in tiers]: number;
-};
-interface TieredFeesProps {
-  handleFeeChange: (fee: number) => void;
-  inValidAmount: boolean;
-  txSize: number | null; // Transaction size passed down from SendForm
+
+type Tier = "low" | "med" | "high";
+
+interface Fees {
+  low: number;
+  med: number;
+  high: number;
 }
 
-const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange, txSize }) => {
+
+// interface Fees {
+//   [key in Tier]: number;
+// }
+
+interface TieredFeesProps {
+  handleFeeChange: (fee: number) => void;
+  invalidAmount: boolean;
+  transactionSize: number | null; // Transaction size passed down from parent
+  originalFeeRate?: number; // Optional original fee rate (used for replacements)
+}
+
+const DEFAULT_FEES: Fees = { low: 3, med: 4, high: 5 };
+
+const TieredFees: React.FC<TieredFeesProps> = ({
+  handleFeeChange,
+  invalidAmount,
+  transactionSize,
+  originalFeeRate = 0,
+}) => {
   const { isDesktop, isTablet } = useResponsive();
+  const [selectedTier, setSelectedTier] = useState<Tier>("low");
+  const [fees, setFees] = useState<Fees>(DEFAULT_FEES);
+  const [estimatedFee, setEstimatedFee] = useState<Fees>({ low: 0, med: 0, high: 0 });
   const [loadingRecommendation, setLoadingRecommendation] = useState(false);
-  const [fetchedrecommendation, setFetchedRecommendation] = useState(false);
-  const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
-  const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
-  const [estimatedFee, setEstimatedFee] = useState({ low: 0, med: 0, high: 0 });
+  const [fetchedRecommendation, setFetchedRecommendation] = useState(false);
 
-  useEffect(() => {
-    if (loadingRecommendation || fetchedrecommendation) return;
-    const fetchFees = async () => {
-      setLoadingRecommendation(true);
-      try {
-        const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-        const data: FeeRecommendation = await response.json();
-        setFees({
-          low: data.economyFee,
-          med: data.halfHourFee,
-          high: data.fastestFee,
-        });
-        setFetchedRecommendation(true);
-      } catch (error) {
-        console.error('Failed to fetch fees:', error);
-      }
-      setLoadingRecommendation(false);
-    };
-
-    fetchFees();
-  }, []);
-
-  // Update estimated fees whenever the fees or transaction size change
-  useEffect(() => {
-    if (txSize) {
-      setEstimatedFee({
-        low: txSize * fees.low,
-        med: txSize * fees.med,
-        high: txSize * fees.high,
-      });
+  // Adjust fees for replacement transactions if originalFeeRate > 0
+  const adjustFees = (fetchedFees: Fees) => {
+    if (originalFeeRate > 0) {
+      const adjustedFees = { ...fetchedFees };
+      adjustedFees.low = Math.max(originalFeeRate + 1, fetchedFees.low);
+      adjustedFees.med = Math.max(adjustedFees.low + 1, fetchedFees.med);
+      adjustedFees.high = Math.max(adjustedFees.med + 1, fetchedFees.high);
+      return adjustedFees;
     }
-  }, [fees, txSize]);
-
-  const handleTierChange = (tier: any) => {
-    setSelectedTier(tier.id);
+    return fetchedFees;
   };
 
   useEffect(() => {
-    handleFeeChange(fees[selectedTier as tiers]);
-  }, [selectedTier, fees]);
+    if (loadingRecommendation || fetchedRecommendation) return;
+    const fetchFees = async () => {
+      setLoadingRecommendation(true);
+      try {
+        const response = await fetch("https://mempool.space/api/v1/fees/recommended");
+        const data: FeeRecommendation = await response.json();
+        const fetchedFees: Fees = {
+          low: data.economyFee,
+          med: data.halfHourFee,
+          high: data.fastestFee,
+        };
+        const adjustedFees = adjustFees(fetchedFees);
+        setFees(adjustedFees);
+        setFetchedRecommendation(true);
+      } catch (error) {
+        console.error("Failed to fetch fees:", error);
+        setFees(adjustFees(DEFAULT_FEES));
+      }
+      setLoadingRecommendation(false);
+    };
+    fetchFees();
+  }, [originalFeeRate]);
+
+  // Update estimated fees whenever the fees or transaction size change
+  useEffect(() => {
+    if (transactionSize) {
+      setEstimatedFee({
+        low: Math.ceil(transactionSize * fees.low),
+        med: Math.ceil(transactionSize * fees.med),
+        high: Math.ceil(transactionSize * fees.high),
+      });
+    }
+  }, [fees, transactionSize]);
+
+  const handleTierChange = (tier: Tier) => {
+    setSelectedTier(tier);
+  };
+
+  useEffect(() => {
+    handleFeeChange(fees[selectedTier]);
+  }, [selectedTier, fees, handleFeeChange]);
 
   return (
     <S.TiersWrapper $isMobile={!isDesktop && !isTablet}>
       <S.TierCard
         $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'low' })}
-        className={`tier-hover ${selectedTier === 'low' ? 'selected' : ''} ${
-          selectedTier === 'low' && inValidAmount ? 'invalidAmount' : ''
+        onClick={() => handleTierChange("low")}
+        className={`tier-hover ${selectedTier === "low" ? "selected" : ""} ${
+          selectedTier === "low" && invalidAmount ? "invalidAmount" : ""
         } `}
       >
         <S.TierCardContent>
@@ -83,7 +114,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
           <br />
           {`Priority`}
           <S.RateValueWrapper>
-          {`${fees.low}`} <br /> {`sat/vB`}
+            {`${fees.low}`} <br /> {`sat/vB`}
             <S.RateValue>{`${estimatedFee.low} Sats`}</S.RateValue> {/* Show estimated fee */}
           </S.RateValueWrapper>
         </S.TierCardContent>
@@ -91,9 +122,9 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 
       <S.TierCard
         $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'med' })}
-        className={`tier-hover ${selectedTier === 'med' ? 'selected' : ''} ${
-          selectedTier === 'med' && inValidAmount ? 'invalidAmount' : ''
+        onClick={() => handleTierChange("med")}
+        className={`tier-hover ${selectedTier === "med" ? "selected" : ""} ${
+          selectedTier === "med" && invalidAmount ? "invalidAmount" : ""
         } `}
       >
         <S.TierCardContent>
@@ -101,7 +132,7 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
           <br />
           {`Priority`}
           <S.RateValueWrapper>
-          {`${fees.med}`} <br /> {`sat/vB`}
+            {`${fees.med}`} <br /> {`sat/vB`}
             <S.RateValue>{`${estimatedFee.med} Sats`}</S.RateValue> {/* Show estimated fee */}
           </S.RateValueWrapper>
         </S.TierCardContent>
@@ -109,9 +140,9 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 
       <S.TierCard
         $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'high' })}
-        className={`tier-hover ${selectedTier === 'high' ? 'selected' : ''} ${
-          selectedTier === 'high' && inValidAmount ? 'invalidAmount' : ''
+        onClick={() => handleTierChange("high")}
+        className={`tier-hover ${selectedTier === "high" ? "selected" : ""} ${
+          selectedTier === "high" && invalidAmount ? "invalidAmount" : ""
         } `}
       >
         <S.TierCardContent>
@@ -131,118 +162,3 @@ const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange,
 };
 
 export default TieredFees;
-
-// import React, { useEffect, useState } from 'react';
-// import * as S from './TieredFees.styles';
-// import { useResponsive } from '@app/hooks/useResponsive';
-// import { tiers } from '../../SendForm';
-
-// interface FeeRecommendation {
-//   fastestFee: number;
-//   halfHourFee: number;
-//   hourFee: number;
-//   economyFee: number;
-//   minimumFee: number;
-// }
-// type Fees = {
-//   [key in tiers]: number;
-// };
-// interface TieredFeesProps {
-//   // Define the props for your component here
-//   handleFeeChange: (fee: number) => void;
-//   inValidAmount: boolean;
-// }
-
-// const TieredFees: React.FC<TieredFeesProps> = ({ inValidAmount, handleFeeChange }) => {
-//   const { isDesktop, isTablet } = useResponsive();
-//   const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
-//   const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
-
-//   useEffect(() => {
-//     const fetchFees = async () => {
-//       try {
-//         const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-//         const data: FeeRecommendation = await response.json();
-//         setFees({
-//           low: data.economyFee,
-//           med: data.halfHourFee,
-//           high: data.fastestFee,
-//         });
-//       } catch (error) {
-//         console.error('Failed to fetch fees:', error);
-//       }
-//     };
-
-//     fetchFees();
-//   }, []);
-//   const handleTierChange = (tier: any) => {
-//     console.log(tier);
-//     setSelectedTier(tier.id);
-//   };
-
-//   useEffect(() => {
-//     handleFeeChange(fees[selectedTier as tiers]);
-//   }, [selectedTier]);
-//   return (
-//     <S.TiersWrapper $isMobile={!isDesktop || !isTablet }>
-//       <S.TierCard
-//         $isMobile={!isDesktop}
-//         onClick={() => handleTierChange({ id: 'low', rate: fees.med })}
-//         className={`tier-hover ${selectedTier === 'low' ? 'selected' : ''} ${
-//           selectedTier === 'low' && inValidAmount ? 'invalidAmount' : ''
-//         } `}
-//       >
-//         <S.TierCardContent>
-//           {`Low`}
-//           <br />
-//           {`Priority`}
-//           <S.RateValueWrapper>
-//             <span>{`${fees.low} sat/vB`}</span>
-//             <S.RateValue>{`${fees.low} Sats`}</S.RateValue>
-//           </S.RateValueWrapper>
-//         </S.TierCardContent>
-//       </S.TierCard>
-
-//       <S.TierCard
-//         $isMobile={!isDesktop}
-//         onClick={() => handleTierChange({ id: 'med', rate: fees.med })}
-//         className={`tier-hover ${selectedTier === 'med' ? 'selected' : ''} ${
-//           selectedTier === 'med' && inValidAmount ? 'invalidAmount' : ''
-//         } `}
-//       >
-//         <S.TierCardContent>
-//           {`Medium`}
-//           <br />
-//           {`Priority`}
-//           <S.RateValueWrapper>
-//             <span>{`${fees.med} sat/vB`}</span>
-//             <S.RateValue>{`${fees.med} Sats`}</S.RateValue>
-//           </S.RateValueWrapper>
-//         </S.TierCardContent>
-//       </S.TierCard>
-
-//       <S.TierCard
-//         $isMobile={!isDesktop}
-//         onClick={() => handleTierChange({ id: 'high', rate: fees.high })}
-//         className={`tier-hover ${selectedTier === 'high' ? 'selected' : ''} ${
-//           selectedTier === 'high' && inValidAmount ? 'invalidAmount' : ''
-//         } `}
-//       >
-//         <S.TierCardContent>
-//           <S.TierCardAmount>
-//             {' '}
-//             {`High`}
-//             <br />
-//             {`Priority`}
-//           </S.TierCardAmount>
-//           <S.RateValueWrapper>
-//             <span>{`${fees.high} sat/vB`}</span>
-//             <S.RateValue>{`${fees.high} Sats`}</S.RateValue>
-//           </S.RateValueWrapper>
-//         </S.TierCardContent>
-//       </S.TierCard>
-//     </S.TiersWrapper>
-//   );
-// };
-
-// export default TieredFees;

@@ -53,7 +53,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   // Debounced effect to calculate transaction size when the amount changes, with JWT
   useEffect(() => {
-   
+
     const debounceTimeout = setTimeout(() => {
       const fetchTransactionSize = async () => {
         if (isValidAddress(formData.address) && isDetailsOpen) {
@@ -185,7 +185,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
         await login(); // Perform login if not authenticated
       }
 
-  
+
       // Step 2: Initiate the new transaction with the JWT token
       const response = await fetch('http://localhost:9003/transaction', {
         method: 'POST',
@@ -301,7 +301,13 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
           />
           RBF Opt In
         </S.RBFWrapper>
-        <TieredFees inValidAmount={inValidAmount} handleFeeChange={handleFeeRateChange} txSize={txSize} />
+        <TieredFees
+          invalidAmount={inValidAmount} // Note: 'invalidAmount' property is now camelCase to match prop names
+          handleFeeChange={handleFeeRateChange}
+          transactionSize={txSize} // Pass the transaction size value
+          originalFeeRate={0} // Pass 0 or appropriate value for new transactions
+        />
+
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton
