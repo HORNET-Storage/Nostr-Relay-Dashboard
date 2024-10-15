@@ -51,10 +51,6 @@ const RelaySettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<Settings>({
     mode: JSON.parse(localStorage.getItem('relaySettings') || '{}').mode || relaymode || 'unlimited',
     protocol: ['WebSocket'],
-    chunked: ['unchunked'],
-    chunksize: '2',
-    maxFileSize: 100,
-    maxFileSizeUnit: 'MB',
     kinds: [],
     dynamicKinds: [],
     photos: [],
@@ -68,7 +64,9 @@ const RelaySettingsPage: React.FC = () => {
     isVideosActive: true,
     isGitNestrActive: true,
     isAudioActive: true,
+    isFileStorageActive: false,
   });
+
   const groupedNoteOptions = categories.map((category) => ({
     ...category,
     notes: noteOptions.filter((note) => note.category === category.id),
@@ -269,18 +267,21 @@ const RelaySettingsPage: React.FC = () => {
     }));
   };
 
-  const handleChunkedChange = (checkedValues: string[]) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      chunked: checkedValues,
-    }));
-    updateSettings('chunked', checkedValues);
-  };
+  // const handleChunkedChange = (checkedValues: string[]) => {
+  //   setSettings((prevSettings) => ({
+  //     ...prevSettings,
+  //     chunked: checkedValues,
+  //   }));
+  //   updateSettings('chunked', checkedValues);
+  // };
 
   const handleSettingsChange = (category: Category, checkedValues: string[]) => {
     console.log("changing settings", category, checkedValues) 
     if (settings.mode === 'unlimited') {
-      handleBlacklistChange(category, checkedValues);
+      setBlacklist((prevBlacklist) => ({
+        ...prevBlacklist,
+        [category]: checkedValues,
+      }));
     } else {
       setSettings((prevSettings) => {
         const updatedSettings = { ...prevSettings, [category]: checkedValues };
@@ -296,30 +297,6 @@ const RelaySettingsPage: React.FC = () => {
       [category]: value,
     }));
     updateSettings(category, value);
-  };
-
-  const handleChunkSizeChange = (value: string) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      chunksize: value,
-    }));
-    updateSettings('chunksize', value);
-  };
-
-  const handleMaxFileSizeChange = (value: number) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      maxFileSize: value,
-    }));
-    updateSettings('maxFileSize', value);
-  };
-
-  const handleMaxFileSizeUnitChange = (value: string) => {
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      maxFileSizeUnit: value,
-    }));
-    updateSettings('maxFileSizeUnit', value);
   };
 
   const handleNewBucket = (bucket: string) => {
@@ -364,9 +341,7 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('gitNestr', settings.isGitNestrActive ? settings.gitNestr : []),
       updateSettings('audio', settings.isAudioActive ? settings.audio : []),
       updateSettings('protocol', settings.protocol),
-      updateSettings('chunked', settings.chunked),
-      updateSettings('maxFileSize', settings.maxFileSize),
-      updateSettings('maxFileSizeUnit', settings.maxFileSizeUnit),
+      updateSettings('isFileStorageActive', settings.isFileStorageActive),
       // updateSettings('appBuckets', settings.appBuckets),
       //updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
     ]);
@@ -402,11 +377,14 @@ const RelaySettingsPage: React.FC = () => {
   }, [fetchSettings]);
 
   useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  useEffect(() => {
     if (relaySettings) {
       setSettings({
         ...relaySettings,
         protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
-        chunked: Array.isArray(relaySettings.chunked) ? relaySettings.chunked : [relaySettings.chunked],
       });
     }
   }, [relaySettings]);
@@ -464,83 +442,21 @@ const RelaySettingsPage: React.FC = () => {
                         onChange={(checkedValues) => handleProtocolChange(checkedValues as string[])}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: '10rem auto', // Adjust the width as needed
+                          gridTemplateColumns: '10rem auto',
                         }}
                       />
                     </div>
                     <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('common.chunkedSetting')}</S.LabelSpan>{' '}
-                      <Checkbox.Group
-                        className="custom-checkbox-group"
-                        options={[
-                          { label: `Unchunked \u{1F338}`, value: 'unchunked', style: { fontSize: '.85rem' } },
-                          { label: `Chunked \u{1F333}`, value: 'chunked', style: { fontSize: '.85rem' } },
-                        ]}
-                        value={settings.chunked}
-                        onChange={(checkedValues) => handleChunkedChange(checkedValues as string[])}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: '10rem auto', // Adjust the width as needed
-                        }}
-                      />
+                      <S.LabelSpan style={{ marginBottom: '1rem' }}>{t('File Storage')}</S.LabelSpan>{' '}
+                      <BaseCheckbox
+                        checked={settings.isFileStorageActive}
+                        onChange={(e) => handleSwitchChange('isFileStorageActive', e.target.checked)}
+                        style={{ fontSize: '.85rem' }}
+                      >
+                        Enable/Disable
+                      </BaseCheckbox>
                     </div>
-                    {settings.chunked.includes('unchunked') && (
-                      <>
-                        <div style={{ marginTop: '1.5rem' }}>
-                          <strong>Max Unchunked File Size:</strong>
-                          <S.Space />
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                          <Input
-                            type="number"
-                            value={settings.maxFileSize}
-                            onChange={(e) => handleMaxFileSizeChange(Number(e.target.value))}
-                            style={{ width: 100 }}
-                          />
-                          <Select
-                            className="custom-dropdown"
-                            value={settings.maxFileSizeUnit}
-                            onChange={handleMaxFileSizeUnitChange}
-                            style={{ width: 100 }}
-                          >
-                            {maxFileSizeUnitOptions.map((unit) => (
-                              <Option key={unit} value={unit}>
-                                {unit}
-                              </Option>
-                            ))}
-                          </Select>
-                        </div>
-                      </>
-                    )}
-                    {settings.chunked.includes('chunked') && (
-                      <>
-                        <div style={{ marginTop: '1rem' }}>
-                          <strong>Max Chunked File Size:</strong>
-                          <S.Space />
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                          <Input
-                            type="number"
-                            value={settings.maxFileSize}
-                            onChange={(e) => handleMaxFileSizeChange(Number(e.target.value))}
-                            style={{ width: 100 }}
-                          />
-                          <Select
-                            className="custom-dropdown"
-                            value={settings.maxFileSizeUnit}
-                            onChange={handleMaxFileSizeUnitChange}
-                            style={{ width: 100 }}
-                          >
-                            {maxFileSizeUnitOptions.map((unit) => (
-                              <Option key={unit} value={unit}>
-                                {unit}
-                              </Option>
-                            ))}
-                          </Select>
-                        </div>
-                      </>
-                    )}
                   </BaseCol>
                 </S.Card>
               </StyledPanel>
@@ -949,83 +865,14 @@ const RelaySettingsPage: React.FC = () => {
                 </div>
                 <div style={{ borderTop: '1px solid #ccc', margin: '1rem 0' }}></div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('common.chunkedSetting')}</S.LabelSpan>
-                  <Checkbox.Group
-                    className="custom-checkbox-group"
-                    options={[
-                      {
-                        label: `Unchunked \u{1F338}`,
-                        value: 'unchunked',
-                        style: { fontSize: '.8rem' },
-                      },
-                      { label: `Chunked \u{1F333}`, value: 'chunked', style: { fontSize: '.8rem' } },
-                    ]}
-                    value={settings.chunked}
-                    onChange={(checkedValues) => handleChunkedChange(checkedValues as string[])}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '9rem auto',
-                      paddingRight: '0',
-                      justifyContent: 'start',
-                      fontSize: 'small',
-                    }}
-                  />
-                  {settings.chunked.includes('unchunked') && (
-                    <>
-                      <div style={{ marginTop: '1rem' }}>
-                        <strong>Max Unchunked File Size:</strong>
-                        <S.Space />
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                        <Input
-                          type="number"
-                          value={settings.maxFileSize}
-                          onChange={(e) => handleMaxFileSizeChange(Number(e.target.value))}
-                          style={{ width: 100 }}
-                        />
-                        <Select
-                          className="custom-dropdown"
-                          value={settings.maxFileSizeUnit}
-                          onChange={handleMaxFileSizeUnitChange}
-                          style={{ width: 100 }}
-                        >
-                          {maxFileSizeUnitOptions.map((unit) => (
-                            <Option key={unit} value={unit}>
-                              {unit}
-                            </Option>
-                          ))}
-                        </Select>
-                      </div>
-                    </>
-                  )}
-                  {settings.chunked.includes('chunked') && (
-                    <>
-                      <div style={{ marginTop: '1rem' }}>
-                        <strong>Max Chunked File Size:</strong>
-                        <S.Space />
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                        <Input
-                          type="number"
-                          value={settings.maxFileSize}
-                          onChange={(e) => handleMaxFileSizeChange(Number(e.target.value))}
-                          style={{ width: 100 }}
-                        />
-                        <Select
-                          className="custom-dropdown"
-                          value={settings.maxFileSizeUnit}
-                          onChange={handleMaxFileSizeUnitChange}
-                          style={{ width: 100 }}
-                        >
-                          {maxFileSizeUnitOptions.map((unit) => (
-                            <Option key={unit} value={unit}>
-                              {unit}
-                            </Option>
-                          ))}
-                        </Select>
-                      </div>
-                    </>
-                  )}
+                  <S.LabelSpan style={{ marginBottom: '0.5rem' }}>{t('File Storage')}</S.LabelSpan>
+                  <BaseCheckbox
+                    checked={settings.isFileStorageActive}
+                    onChange={(e) => handleSwitchChange('isFileStorageActive', e.target.checked)}
+                    style={{ fontSize: '.8rem' }}
+                  >
+                    Enable/Disable
+                  </BaseCheckbox>
                 </div>
               </BaseCol>
             </S.Card>

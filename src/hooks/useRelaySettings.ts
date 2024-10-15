@@ -6,10 +6,6 @@ import { useHandleLogout } from './authUtils';
 interface RelaySettings {
   mode: string;
   protocol: string[];
-  chunked: string[];
-  chunksize: string;
-  maxFileSize: number;
-  maxFileSizeUnit: string;
   kinds: string[];
   dynamicKinds: string[];
   photos: string[];
@@ -23,6 +19,7 @@ interface RelaySettings {
   isVideosActive: boolean;
   isGitNestrActive: boolean;
   isAudioActive: boolean;
+  isFileStorageActive: boolean;
 }
 
 const getInitialSettings = (): RelaySettings => {
@@ -32,10 +29,6 @@ const getInitialSettings = (): RelaySettings => {
     : {
         mode: 'smart',
         protocol: ['WebSocket'],
-        chunked: ['unchunked'],
-        chunksize: '2',
-        maxFileSize: 100,
-        maxFileSizeUnit: 'MB',
         dynamicKinds: [],
         kinds: [],
         photos: [],
@@ -49,6 +42,7 @@ const getInitialSettings = (): RelaySettings => {
         isVideosActive: true,
         isGitNestrActive: true,
         isAudioActive: true,
+        isFileStorageActive: false,
       };
 };
 
@@ -72,7 +66,7 @@ const useRelaySettings = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      if (response.status === 401 ) {
+      if (response.status === 401) {
         console.error('Unauthorized: Invalid or expired token');
         handleLogout();
       }
@@ -84,7 +78,7 @@ const useRelaySettings = () => {
 
       const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
       const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
-      console.log(data)
+
       const newAppBuckets =
         data.relay_settings.dynamicAppBuckets == undefined
           ? []
@@ -105,9 +99,6 @@ const useRelaySettings = () => {
         protocol: Array.isArray(data.relay_settings.protocol)
           ? data.relay_settings.protocol
           : [data.relay_settings.protocol],
-        chunked: Array.isArray(data.relay_settings.chunked)
-          ? data.relay_settings.chunked
-          : [data.relay_settings.chunked],
       });
       localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
     } catch (error) {
