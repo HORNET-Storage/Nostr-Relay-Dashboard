@@ -27,23 +27,23 @@ const getInitialSettings = (): RelaySettings => {
   return savedSettings
     ? JSON.parse(savedSettings)
     : {
-        mode: 'smart',
-        protocol: ['WebSocket'],
-        dynamicKinds: [],
-        kinds: [],
-        photos: [],
-        videos: [],
-        gitNestr: [],
-        audio: [],
-        appBuckets: [],
-        dynamicAppBuckets: [],
-        isKindsActive: true,
-        isPhotosActive: true,
-        isVideosActive: true,
-        isGitNestrActive: true,
-        isAudioActive: true,
-        isFileStorageActive: false,
-      };
+      mode: 'smart',
+      protocol: ['WebSocket'],
+      dynamicKinds: [],
+      kinds: [],
+      photos: [],
+      videos: [],
+      gitNestr: [],
+      audio: [],
+      appBuckets: [],
+      dynamicAppBuckets: [],
+      isKindsActive: true,
+      isPhotosActive: true,
+      isVideosActive: true,
+      isGitNestrActive: true,
+      isAudioActive: true,
+      isFileStorageActive: false,
+    };
 };
 
 const useRelaySettings = () => {
@@ -76,37 +76,34 @@ const useRelaySettings = () => {
 
       const data = await response.json();
 
-      const storedAppBuckets = JSON.parse(localStorage.getItem('appBuckets') || '[]');
-      const storedDynamicKinds = JSON.parse(localStorage.getItem('dynamicKinds') || '[]');
+      // Handle app buckets
+      const backendAppBuckets = data.relay_settings.appBuckets || [];
+      const backendDynamicAppBuckets = data.relay_settings.dynamicAppBuckets || [];
 
-      const newAppBuckets =
-        data.relay_settings.dynamicAppBuckets == undefined
-          ? []
-          : data.relay_settings.dynamicAppBuckets.filter((bucket: string) => !storedAppBuckets.includes(bucket));
-      const newDynamicKinds =
-        data.relay_settings.dynamicKinds == undefined
-          ? []
-          : data.relay_settings.dynamicKinds.filter((kind: string) => !storedDynamicKinds.includes(kind));
-
-      if (newAppBuckets.length > 0) {
-        localStorage.setItem('appBuckets', JSON.stringify([...storedAppBuckets, ...newAppBuckets]));
-      }
-      if (newDynamicKinds.length > 0) {
-        localStorage.setItem('dynamicKinds', JSON.stringify([...storedDynamicKinds, ...newDynamicKinds]));
-      }
       setRelaySettings({
         ...data.relay_settings,
         protocol: Array.isArray(data.relay_settings.protocol)
           ? data.relay_settings.protocol
           : [data.relay_settings.protocol],
+        appBuckets: backendAppBuckets,
+        dynamicAppBuckets: backendDynamicAppBuckets,
       });
-      localStorage.setItem('relaySettings', JSON.stringify(data.relay_settings));
+
+      localStorage.setItem('relaySettings', JSON.stringify({
+        ...data.relay_settings,
+        appBuckets: backendAppBuckets,
+        dynamicAppBuckets: backendDynamicAppBuckets,
+      }));
+
+      // Update localStorage for dynamicAppBuckets only
+      localStorage.setItem('dynamicAppBuckets', JSON.stringify(backendDynamicAppBuckets));
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
   }, []);
 
-  const updateSettings = useCallback((category: keyof RelaySettings, value: string | string[] | boolean | number) => {
+
+  const updateSettings = useCallback((category: keyof RelaySettings, value: any) => {
     setRelaySettings((prevSettings) => ({
       ...prevSettings,
       [category]: value,

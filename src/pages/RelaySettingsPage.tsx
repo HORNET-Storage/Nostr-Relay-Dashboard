@@ -17,7 +17,7 @@ import { useResponsive } from '@app/hooks/useResponsive';
 import useRelaySettings from '@app/hooks/useRelaySettings';
 import * as S from '@app/pages/uiComponentsPages/UIComponentsPage.styles';
 import { themeObject } from '@app/styles/themes/themeVariables';
-import { categories, noteOptions, appBuckets, Settings, Category } from '@app/constants/relaySettings';
+import { categories, noteOptions, appBuckets as defaultAppBuckets, Settings, Category } from '@app/constants/relaySettings';
 const { Panel } = Collapse;
 const StyledPanel = styled(Panel)``;
 const { Option } = Select;
@@ -33,8 +33,13 @@ const RelaySettingsPage: React.FC = () => {
   const [storedDynamicKinds, setStoredDynamicKinds] = useState<string[]>(
     JSON.parse(localStorage.getItem('dynamicKinds') || '[]'),
   );
+
   const [storedAppBuckets, setStoredAppBuckets] = useState<string[]>(
     JSON.parse(localStorage.getItem('appBuckets') || '[]'),
+  );
+
+  const [dynamicAppBuckets, setDynamicAppBuckets] = useState<string[]>(
+    JSON.parse(localStorage.getItem('dynamicAppBuckets') || '[]'),
   );
 
   const [loadings, setLoadings] = useState<boolean[]>([]);
@@ -75,7 +80,7 @@ const RelaySettingsPage: React.FC = () => {
   useEffect(() => {
     console.log(settings);
     console.log(blacklist)
-  }, [settings,blacklist]);
+  }, [settings, blacklist]);
   const enterLoading = (index: number) => {
     setLoadings((loadings) => {
       const newLoadings = [...loadings];
@@ -114,8 +119,8 @@ const RelaySettingsPage: React.FC = () => {
             settings.mode !== 'smart'
               ? themeObject[theme].textMain
               : relaySettings.isPhotosActive
-              ? themeObject[theme].textMain
-              : themeObject[theme].textLight,
+                ? themeObject[theme].textMain
+                : themeObject[theme].textLight,
         }}
         isActive={settings.mode !== 'smart' || '' ? true : settings.isPhotosActive}
       >
@@ -125,6 +130,17 @@ const RelaySettingsPage: React.FC = () => {
     value: format,
   }));
 
+  useEffect(() => {
+    if (relaySettings) {
+      setSettings({
+        ...relaySettings,
+        protocol: Array.isArray(relaySettings.protocol) ? relaySettings.protocol : [relaySettings.protocol],
+      });
+      setDynamicAppBuckets(relaySettings.dynamicAppBuckets);
+    }
+  }, [relaySettings]);
+
+
   const videoFormatOptions = ['avi', 'mp4', 'mov', 'wmv', 'mkv', 'flv', 'mpeg', '3gp', 'webm', 'ogg'].map((format) => ({
     label: (
       <S.CheckboxLabel
@@ -133,8 +149,8 @@ const RelaySettingsPage: React.FC = () => {
             settings.mode !== 'smart'
               ? themeObject[theme].textMain
               : relaySettings.isVideosActive
-              ? themeObject[theme].textMain
-              : themeObject[theme].textLight,
+                ? themeObject[theme].textMain
+                : themeObject[theme].textLight,
         }}
         isActive={settings.mode !== 'smart' ? true : settings.isVideosActive}
       >
@@ -144,7 +160,10 @@ const RelaySettingsPage: React.FC = () => {
     value: format,
   }));
 
-  const appBucketOptions = appBuckets.map((bucket) => ({
+  const appBucketOptions = [
+    ...defaultAppBuckets.map(bucket => ({ id: bucket.id, label: bucket.label })),
+    ...dynamicAppBuckets.map(bucket => ({ id: bucket, label: bucket }))
+  ].map((bucket) => ({
     label: (
       <S.CheckboxLabel
         style={{
@@ -152,10 +171,10 @@ const RelaySettingsPage: React.FC = () => {
             settings.mode !== 'smart'
               ? themeObject[theme].textMain
               : relaySettings.isKindsActive
-              ? themeObject[theme].textMain
-              : themeObject[theme].textLight,
+                ? themeObject[theme].textMain
+                : themeObject[theme].textLight,
         }}
-        isActive={settings.mode !== 'smart' ? true : settings.isKindsActive} //TODO: isAppBucketActive
+        isActive={settings.mode !== 'smart' ? true : settings.isKindsActive}
       >
         {bucket.label}
       </S.CheckboxLabel>
@@ -185,8 +204,8 @@ const RelaySettingsPage: React.FC = () => {
             settings.mode !== 'smart'
               ? themeObject[theme].textMain
               : relaySettings.isAudioActive
-              ? themeObject[theme].textMain
-              : themeObject[theme].textLight,
+                ? themeObject[theme].textMain
+                : themeObject[theme].textLight,
         }}
         isActive={settings.mode !== 'smart' ? true : settings.isAudioActive}
       >
@@ -209,8 +228,8 @@ const RelaySettingsPage: React.FC = () => {
             settings.mode !== 'smart'
               ? themeObject[theme].textMain
               : relaySettings.isGitNestrActive
-              ? themeObject[theme].textMain
-              : themeObject[theme].textLight,
+                ? themeObject[theme].textMain
+                : themeObject[theme].textLight,
         }}
         isActive={settings.mode !== 'smart' ? true : settings.isGitNestrActive}
       >
@@ -276,19 +295,8 @@ const RelaySettingsPage: React.FC = () => {
   // };
 
   const handleSettingsChange = (category: Category, checkedValues: string[]) => {
-    console.log("changing settings", category, checkedValues) 
-    if (settings.mode === 'unlimited') {
-      setBlacklist((prevBlacklist) => ({
-        ...prevBlacklist,
-        [category]: checkedValues,
-      }));
-    } else {
-      setSettings((prevSettings) => {
-        const updatedSettings = { ...prevSettings, [category]: checkedValues };
-        updateSettings(category, checkedValues);
-        return updatedSettings;
-      });
-    }
+    console.log("changing settings", category, checkedValues);
+    updateSettings(category, checkedValues);
   };
 
   const handleSwitchChange = (category: keyof Settings, value: boolean) => {
@@ -300,20 +308,20 @@ const RelaySettingsPage: React.FC = () => {
   };
 
   const handleNewBucket = (bucket: string) => {
-    const currentBuckets = settings.appBuckets.concat(storedAppBuckets);
-    if (currentBuckets.includes(bucket)) {
-      return;
-    }
-    setStoredAppBuckets((prevBuckets) => [...prevBuckets, bucket]);
-    handleSettingsChange('dynamicAppBuckets', [...settings.dynamicAppBuckets, bucket]);
+    if (!bucket) return;
+    if (dynamicAppBuckets.includes(bucket)) return;
+
+    const updatedDynamicAppBuckets = [...dynamicAppBuckets, bucket];
+    setDynamicAppBuckets(updatedDynamicAppBuckets);
+    updateSettings('dynamicAppBuckets', updatedDynamicAppBuckets);
+    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedDynamicAppBuckets));
   };
 
   const handleRemovedBucket = (bucket: string) => {
-    setStoredAppBuckets((prevBuckets) => prevBuckets.filter((b) => b !== bucket));
-    handleSettingsChange(
-      'appBuckets',
-      settings.appBuckets.filter((b) => b !== bucket),
-    );
+    const updatedDynamicAppBuckets = dynamicAppBuckets.filter((b) => b !== bucket);
+    setDynamicAppBuckets(updatedDynamicAppBuckets);
+    updateSettings('dynamicAppBuckets', updatedDynamicAppBuckets);
+    localStorage.setItem('dynamicAppBuckets', JSON.stringify(updatedDynamicAppBuckets));
   };
 
   const handleNewDynamicKind = (kind: string) => {
@@ -342,8 +350,8 @@ const RelaySettingsPage: React.FC = () => {
       updateSettings('audio', settings.isAudioActive ? settings.audio : []),
       updateSettings('protocol', settings.protocol),
       updateSettings('isFileStorageActive', settings.isFileStorageActive),
-      // updateSettings('appBuckets', settings.appBuckets),
-      //updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
+      updateSettings('appBuckets', settings.appBuckets),
+      updateSettings('dynamicAppBuckets', settings.dynamicAppBuckets),
     ]);
 
     await saveSettings();
@@ -390,7 +398,7 @@ const RelaySettingsPage: React.FC = () => {
   }, [relaySettings]);
 
   useEffect(() => {
-    if(settings.mode === 'unlimited') return 
+    if (settings.mode === 'unlimited') return
     console.log("resetting blacklist changing")
     setBlacklist({
       kinds: [],
@@ -401,12 +409,12 @@ const RelaySettingsPage: React.FC = () => {
     });
   }, [settings.mode]);
 
-  useEffect(() => {
-    localStorage.setItem('appBuckets', JSON.stringify(storedAppBuckets));
-  }, [storedAppBuckets]);
-  useEffect(() => {
-    localStorage.setItem('dynamicKinds', JSON.stringify(storedDynamicKinds));
-  }, [storedDynamicKinds]);
+  // useEffect(() => {
+  //   localStorage.setItem('appBuckets', JSON.stringify(storedAppBuckets));
+  // }, [storedAppBuckets]);
+  // useEffect(() => {
+  //   localStorage.setItem('dynamicKinds', JSON.stringify(storedDynamicKinds));
+  // }, [storedDynamicKinds]);
 
   useEffect(() => {
     const updateDynamicKinds = async () => {
@@ -468,8 +476,9 @@ const RelaySettingsPage: React.FC = () => {
                     <BaseCheckbox.Group
                       style={{ paddingTop: '1rem', paddingLeft: '1rem', paddingBottom: '1rem' }}
                       className={`custom-checkbox-group grid-checkbox-group`}
+                      value={settings.appBuckets}
                       onChange={(checkedValues) => handleSettingsChange('appBuckets', checkedValues as string[])}
-                      options={appBucketOptions}
+                      options={appBucketOptions.filter(option => defaultAppBuckets.some(bucket => bucket.id === option.value))}
                     />
 
                     <S.InfoCard>
@@ -506,15 +515,14 @@ const RelaySettingsPage: React.FC = () => {
                       </div>
                       <BaseCheckbox.Group
                         style={{ paddingLeft: '1rem' }}
-                        className={`custom-checkbox-group grid-checkbox-group large-label ${
-                          storedAppBuckets?.length ? 'dynamic-group' : ''
-                        } `}
-                        value={settings.dynamicAppBuckets || []}
+                        className={`custom-checkbox-group grid-checkbox-group large-label ${dynamicAppBuckets.length ? 'dynamic-group' : ''
+                          } `}
+                        value={settings.dynamicAppBuckets}
                         onChange={(checkedValues) =>
                           handleSettingsChange('dynamicAppBuckets', checkedValues as string[])
                         }
                       >
-                        {(storedAppBuckets || []).map((bucket) => (
+                        {dynamicAppBuckets.map((bucket) => (
                           <div
                             style={{ display: 'flex', flexDirection: 'row', gap: '.5rem', alignItems: 'center' }}
                             key={bucket}
@@ -610,8 +618,8 @@ const RelaySettingsPage: React.FC = () => {
                                     settings.mode !== 'smart'
                                       ? themeObject[theme].textMain
                                       : relaySettings.isKindsActive
-                                      ? themeObject[theme].textMain
-                                      : themeObject[theme].textLight,
+                                        ? themeObject[theme].textMain
+                                        : themeObject[theme].textLight,
                                 }}
                               >
                                 {t(`kind${note.kind}`)} -{' '}
@@ -655,9 +663,8 @@ const RelaySettingsPage: React.FC = () => {
                       </div>
                       <BaseCheckbox.Group
                         style={{ paddingLeft: '1rem' }}
-                        className={`custom-checkbox-group grid-checkbox-group large-label ${
-                          storedDynamicKinds?.length ? 'dynamic-group ' : ''
-                        }${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
+                        className={`custom-checkbox-group grid-checkbox-group large-label ${storedDynamicKinds?.length ? 'dynamic-group ' : ''
+                          }${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''}`}
                         value={settings.dynamicKinds || []}
                         onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                       >
@@ -712,9 +719,8 @@ const RelaySettingsPage: React.FC = () => {
                 )}
 
                 <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group ${
-                    settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
+                  className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                    }`}
                   options={photoFormatOptions}
                   value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
                   onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
@@ -741,9 +747,8 @@ const RelaySettingsPage: React.FC = () => {
                 )}
 
                 <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group ${
-                    settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
+                  className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                    }`}
                   options={videoFormatOptions}
                   value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
                   onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
@@ -797,9 +802,8 @@ const RelaySettingsPage: React.FC = () => {
                   </div>
                 )}
                 <BaseCheckbox.Group
-                  className={`custom-checkbox-group grid-checkbox-group ${
-                    settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                  }`}
+                  className={`custom-checkbox-group grid-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                    }`}
                   options={audioFormatOptions}
                   value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
                   onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
@@ -921,9 +925,8 @@ const RelaySettingsPage: React.FC = () => {
                   </div>
                   <BaseCheckbox.Group
                     style={{ paddingLeft: '1rem' }}
-                    className={`custom-checkbox-group grid-checkbox-group large-label ${
-                      storedAppBuckets?.length ? 'dynamic-group' : ''
-                    }`}
+                    className={`custom-checkbox-group grid-checkbox-group large-label ${storedAppBuckets?.length ? 'dynamic-group' : ''
+                      }`}
                     value={settings.dynamicAppBuckets || []}
                     onChange={(checkedValues) => handleSettingsChange('dynamicAppBuckets', checkedValues as string[])}
                   >
@@ -1017,8 +1020,8 @@ const RelaySettingsPage: React.FC = () => {
                                   settings.mode !== 'smart'
                                     ? themeObject[theme].textMain
                                     : relaySettings.isKindsActive
-                                    ? themeObject[theme].textMain
-                                    : themeObject[theme].textLight,
+                                      ? themeObject[theme].textMain
+                                      : themeObject[theme].textLight,
                               }}
                             >
                               {t(`kind${note.kind}`)} - <span style={{ fontWeight: 'normal' }}>{note.description}</span>
@@ -1048,9 +1051,8 @@ const RelaySettingsPage: React.FC = () => {
                   </div>
                   <BaseCheckbox.Group
                     style={{ paddingLeft: '.6rem' }}
-                    className={`custom-checkbox-group grid-checkbox-group large-label ${
-                      settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
-                    }${storedDynamicKinds?.length ? 'dynamic-group' : ''}`}
+                    className={`custom-checkbox-group grid-checkbox-group large-label ${settings.mode === 'unlimited' ? 'blacklist-mode-active ' : ''
+                      }${storedDynamicKinds?.length ? 'dynamic-group' : ''}`}
                     value={settings.dynamicKinds || []}
                     onChange={(checkedValues) => handleSettingsChange('dynamicKinds', checkedValues as string[])}
                   >
@@ -1106,9 +1108,8 @@ const RelaySettingsPage: React.FC = () => {
 
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-mobile-checkbox-group ${
-                  settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                }`}
+                className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                  }`}
                 options={photoFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.photos : settings.photos}
                 onChange={(checkedValues) => handleSettingsChange('photos', checkedValues as string[])}
@@ -1133,9 +1134,8 @@ const RelaySettingsPage: React.FC = () => {
 
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-mobile-checkbox-group ${
-                  settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                }`}
+                className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                  }`}
                 options={videoFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.videos : settings.videos}
                 onChange={(checkedValues) => handleSettingsChange('videos', checkedValues as string[])}
@@ -1188,9 +1188,8 @@ const RelaySettingsPage: React.FC = () => {
               )}
               <BaseCheckbox.Group
                 style={{ paddingLeft: '1rem' }}
-                className={`custom-checkbox-group grid-mobile-checkbox-group ${
-                  settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
-                }`}
+                className={`custom-checkbox-group grid-mobile-checkbox-group ${settings.mode === 'unlimited' ? 'blacklist-mode-active' : ''
+                  }`}
                 options={audioFormatOptions}
                 value={settings.mode == 'unlimited' ? blacklist.audio : settings.audio}
                 onChange={(checkedValues) => handleSettingsChange('audio', checkedValues as string[])}
