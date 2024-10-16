@@ -1,44 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { BaseInput } from '@app/components/common/inputs/BaseInput/BaseInput';
 import { BaseRow } from '@app/components/common/BaseRow/BaseRow';
 import { BaseButton } from '@app/components/common/BaseButton/BaseButton';
-import { useResponsive } from '@app/hooks/useResponsive';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import * as S from './SendForm.styles';
 import { truncateString } from '@app/utils/utils';
 import useBalanceData from '@app/hooks/useBalanceData';
 import { BaseCheckbox } from '@app/components/common/BaseCheckbox/BaseCheckbox';
 import config from '@app/config/config';
-
+import TieredFees from './components/TieredFees/TieredFees';
+import useWalletAuth from '@app/hooks/useWalletAuth'; // Import the auth hook
+import { deleteWalletToken, readToken } from '@app/services/localStorage.service'; // Assuming this is where deleteWalletToken is defined
+import { bech32 } from 'bech32';
 interface SendFormProps {
   onSend: (status: boolean, address: string, amount: number, txid?: string, message?: string) => void;
-}
-
-interface FeeRecommendation {
-  fastestFee: number;
-  halfHourFee: number;
-  hourFee: number;
-  economyFee: number;
-  minimumFee: number;
 }
 
 interface PendingTransaction {
   txid: string;
   feeRate: number;
   timestamp: string; // ISO format string
+  amount: number;
+  recipient_address: string;
+  enable_rbf: boolean;
 }
 
-type tiers = 'low' | 'med' | 'high';
-type Fees = {
-  [key in tiers]: number;
-};
+export type tiers = 'low' | 'med' | 'high';
 
 const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const { balanceData, isLoading } = useBalanceData();
-  const { isTablet, isDesktop } = useResponsive();
+  const { isAuthenticated, login, token, loading: authLoading } = useWalletAuth(); // Use the auth hook
+
   const [loading, setLoading] = useState(false);
 
-  const [selectedTier, setSelectedTier] = useState<tiers | null>('low');
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const [inValidAmount, setInvalidAmount] = useState(false);
@@ -46,19 +40,111 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
   const [amountWithFee, setAmountWithFee] = useState<number | null>(null);
 
+  const [fee, setFee] = useState<number>(0);
+  const [feeRate, setFeeRate] = useState<number>(0);
   const [formData, setFormData] = useState({
     address: '',
     amount: '1',
   });
 
-  const [fees, setFees] = useState<Fees>({ low: 0, med: 0, high: 0 });
+  const [txSize, setTxSize] = useState<number | null>(null);
 
-  const handleTierChange = (tier: any) => {
-    setSelectedTier(tier.id);
-  };
+  const [enableRBF, setEnableRBF] = useState(false); // Default to false
+
+  // Debounced effect to calculate transaction size when the amount changes, with JWT
+  useEffect(() => {
+
+    const debounceTimeout = setTimeout(() => {
+      const fetchTransactionSize = async () => {
+        if (isValidAddress(formData.address) && isDetailsOpen) {
+          //this should use bech32 regex
+          try {
+            // Ensure user is authenticated
+            if (!isAuthenticated) {
+              console.log('Not Authenticated.');
+              await login(); // Perform login if not authenticated
+            }
+
+            const response = await fetch(`${config.walletBaseURL}/calculate-tx-size`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`, // Include JWT token in headers
+              },
+              body: JSON.stringify({
+                recipient_address: formData.address,
+                spend_amount: parseInt(formData.amount),
+                priority_rate: feeRate,
+              }),
+            });
+
+            if (response.status === 401) {
+              const errorText = await response.text();
+              if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
+                // Token has expired, trigger a re-login
+                console.log('Session expired. Please log in again.');
+                deleteWalletToken(); // Clear the old token
+                await login(); // Re-initiate login
+              }
+              throw new Error(errorText);
+            }
+
+            const result = await response.json();
+            setTxSize(result.txSize);
+          } catch (error) {
+            console.error('Error fetching transaction size:', error);
+            setTxSize(null);
+          }
+        }
+      };
+
+      fetchTransactionSize();
+    }, 500); // Debounce for 500ms
+
+    return () => clearTimeout(debounceTimeout); // Clear the timeout if the amount changes before 500ms
+  }, [formData.amount, feeRate, isAuthenticated, login, token]);
+
+  // Calculate the fee based on the transaction size
+  useEffect(() => {
+    const estimatedFee = txSize ? txSize * feeRate : 0; // Calculate the fee based on the tx size and fee rate
+    setFee(estimatedFee);
+  }, [txSize, feeRate]);
+
+  useEffect(() => {
+    setAmountWithFee(parseInt(formData.amount) + fee); // Update the amount with fee when the fee changes
+  }, [fee, formData.amount]);
+
+  const handleFeeRateChange = useCallback((fee: number) => {
+    setFeeRate(fee); // Update the new fee when it changes
+  }, []);
+
+
+  function validateBech32Address(address: string) {
+    try {
+      const decoded = bech32.decode(address);
+      const validPrefixes = ['bc', 'tb']; // 'bc' for mainnet, 'tb' for testnet
+      if (validPrefixes.includes(decoded.prefix)) {
+        return true;
+      } else {
+        console.log('Invalid prefix.');
+        return false;
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Invalid Bech32 address:', err.message);
+      } else {
+        console.error('Invalid Bech32 address:', err);
+      }
+      return false;
+    }
+  }
 
   const isValidAddress = (address: string) => {
-    return address.length > 0;
+    //TODO: add some sort of bech32 regex here
+    if (address.length === 0) {
+      return false;
+    }
+    return validateBech32Address(address);
   };
 
   const handleAddressSubmit = () => {
@@ -83,80 +169,93 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
 
     setLoading(true);
 
-    const selectedFee = selectedTier ? fees[selectedTier] : fees.low; // Default to low if not selected
+    const selectedFee = feeRate; // The user-selected fee rate
 
     const transactionRequest = {
-      choice: 1, // Default to choice 1 for new transactions
+      choice: 1, // New transaction option
       recipient_address: formData.address,
       spend_amount: parseInt(formData.amount),
       priority_rate: selectedFee,
+      enable_rbf: enableRBF,
     };
 
     try {
-      const response = await fetch('http://localhost:9003/transaction', {
+      // Step 1: Ensure the user is authenticated
+      if (!isAuthenticated) {
+        await login(); // Perform login if not authenticated
+      }
+
+
+      // Step 2: Initiate the new transaction with the JWT token
+      const response = await fetch(`${config.walletBaseURL}/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Include JWT token in headers
         },
         body: JSON.stringify(transactionRequest),
       });
 
-      const result = await response.json();
-      setLoading(false);
+      if (response.status === 401) {
+        const errorText = await response.text();
+        if (errorText.includes('Token expired') || errorText.includes('Unauthorized: Invalid token')) {
+          // Token has expired, trigger a re-login
+          console.log('Session expired. Please log in again.');
+          deleteWalletToken(); // Clear the old token
+          await login(); // Re-initiate login
+        }
+        throw new Error(errorText);
+      }
 
-      if (result.status === 'success') {
-        // Prepare the transaction details to send to the pending-transactions endpoint
+      const result = await response.json();
+
+      // Check the status from the wallet's response
+      if (result.status === 'success' || result.status === 'pending') {
+        // Step 2: If the transaction succeeds or is pending, update the pending transactions
         const pendingTransaction: PendingTransaction = {
           txid: result.txid,
-          feeRate: selectedFee,
-          timestamp: new Date().toISOString(), // Capture the current time in ISO format
+          feeRate: Math.round(selectedFee), // Ensure feeRate is an integer
+          timestamp: new Date().toISOString(), // Already in correct ISO format expected by Go's time.Time
+          amount: parseInt(formData.amount, 10), // Parse amount as an integer
+          recipient_address: formData.address,
+          enable_rbf: enableRBF, // Already boolean and correct
         };
 
-        // Send the transaction details to the pending-transactions endpoint
-        await fetch(`${config.baseURL}/pending-transactions`, {
+        // Fetch the JWT token using readToken()
+        const pendingToken = readToken();
+
+        const pendingResponse = await fetch(`${config.baseURL}/api/pending-transactions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${pendingToken}`, // Use the token from readToken()
           },
           body: JSON.stringify(pendingTransaction),
         });
 
-        // Call the onSend callback with the result
-        onSend(true, formData.address, transactionRequest.spend_amount, result.txid, result.message);
+        const pendingResult = await pendingResponse.json();
+
+        // Step 3: Handle the final result from updating pending transactions
+        if (pendingResponse.ok) {
+          setLoading(false);
+          onSend(true, formData.address, transactionRequest.spend_amount, result.txid, pendingResult.message); // Notify parent
+        } else {
+          setLoading(false);
+          onSend(false, formData.address, 0, '', pendingResult.error || 'Failed to save pending transaction.');
+        }
       } else {
-        onSend(false, formData.address, 0, '', result.message);
+        // Handle error in the wallet's transaction response
+        setLoading(false);
+        onSend(false, formData.address, 0, '', result.message || 'Transaction failed.');
       }
     } catch (error) {
       console.error('Transaction failed:', error);
       setLoading(false);
       onSend(false, formData.address, 0, '', 'Transaction failed due to a network error.');
+    } finally {
+      setLoading(false); // Ensure loading stops in all cases
     }
   };
-
-  useEffect(() => {
-    const fetchFees = async () => {
-      try {
-        const response = await fetch('https://mempool.space/api/v1/fees/recommended');
-        const data: FeeRecommendation = await response.json();
-
-        setFees({
-          low: data.economyFee,
-          med: data.halfHourFee,
-          high: data.fastestFee,
-        });
-      } catch (error) {
-        console.error('Failed to fetch fees:', error);
-      }
-    };
-
-    fetchFees();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTier) {
-      setAmountWithFee(parseInt(formData.amount) + fees[selectedTier]);
-    }
-  }, [fees]);
 
   useEffect(() => {
     if (formData.amount.length <= 0 || (balanceData && parseInt(formData.amount) > balanceData.latest_balance)) {
@@ -169,74 +268,13 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   const receiverPanel = () => (
     <>
       <S.InputWrapper>
-        <S.InputHeader>Address</S.InputHeader>
+        <S.InputHeaderWrapper>
+          <S.InputHeader>Address</S.InputHeader>
+          {addressError && <S.ErrorText>Invalid Address</S.ErrorText>}
+        </S.InputHeaderWrapper>
         <BaseInput name="address" value={formData.address} onChange={handleInputChange} placeholder="Send to" />
       </S.InputWrapper>
       <BaseButton onClick={handleAddressSubmit}>Continue</BaseButton>
-    </>
-  );
-
-  const TieredFees = () => (
-    <>
-      <S.SubCard
-        $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'low', rate: fees.low })}
-        className={`tier-hover ${selectedTier === 'low' ? 'selected' : ''} ${
-          selectedTier === 'low' && inValidAmount ? 'invalidAmount' : ''
-        } `}
-      >
-        <S.SubCardContent>
-          <S.SubCardAmount>
-            {' '}
-            {`Low`}
-            <br />
-            {`Priority`}
-          </S.SubCardAmount>
-          <S.RateValueWrapper>
-            <span>{`${fees.low} sat/vB`}</span>
-            <S.RateValue>{`${fees.low} Sats`}</S.RateValue>
-          </S.RateValueWrapper>
-        </S.SubCardContent>
-      </S.SubCard>
-
-      <S.SubCard
-        $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'med', rate: fees.med })}
-        className={`tier-hover ${selectedTier === 'med' ? 'selected' : ''} ${
-          selectedTier === 'med' && inValidAmount ? 'invalidAmount' : ''
-        } `}
-      >
-        <S.SubCardContent>
-          {`Medium`}
-          <br />
-          {`Priority`}
-          <S.RateValueWrapper>
-            <span>{`${fees.med} sat/vB`}</span>
-            <S.RateValue>{`${fees.med} Sats`}</S.RateValue>
-          </S.RateValueWrapper>
-        </S.SubCardContent>
-      </S.SubCard>
-
-      <S.SubCard
-        $isMobile={!isDesktop}
-        onClick={() => handleTierChange({ id: 'high', rate: fees.high })}
-        className={`tier-hover ${selectedTier === 'high' ? 'selected' : ''} ${
-          selectedTier === 'high' && inValidAmount ? 'invalidAmount' : ''
-        } `}
-      >
-        <S.SubCardContent>
-          <S.SubCardAmount>
-            {' '}
-            {`High`}
-            <br />
-            {`Priority`}
-          </S.SubCardAmount>
-          <S.RateValueWrapper>
-            <span>{`${fees.high} sat/vB`}</span>
-            <S.RateValue>{`${fees.high} Sats`}</S.RateValue>
-          </S.RateValueWrapper>
-        </S.SubCardContent>
-      </S.SubCard>
     </>
   );
 
@@ -244,9 +282,9 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
     <S.FormSpacer>
       <S.InputWrapper>
         <S.TextRow>
-          <S.InputHeader>{`Amount = ${selectedTier && amountWithFee ? amountWithFee : ''}`}</S.InputHeader>
+          <S.InputHeader>{`Amount = ${amountWithFee ? amountWithFee : ''}`}</S.InputHeader>
 
-          {inValidAmount && selectedTier && <S.ErrorText>Invalid Amount</S.ErrorText>}
+          {inValidAmount && <S.ErrorText>Invalid Amount</S.ErrorText>}
         </S.TextRow>
 
         <div>
@@ -257,22 +295,23 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
       <S.TiersContainer>
         <S.InputHeader>Tiered Fees</S.InputHeader>
         <S.RBFWrapper>
-          <BaseCheckbox />
+          <BaseCheckbox
+            checked={enableRBF}
+            onChange={(e) => setEnableRBF(e.target.checked)} // Update the state when the checkbox is toggled
+          />
           RBF Opt In
         </S.RBFWrapper>
-        {isDesktop || isTablet ? (
-          <S.TiersRow>
-            <TieredFees />
-          </S.TiersRow>
-        ) : (
-          <S.TiersCol>
-            <TieredFees />
-          </S.TiersCol>
-        )}
+        <TieredFees
+          invalidAmount={inValidAmount} // Note: 'invalidAmount' property is now camelCase to match prop names
+          handleFeeChange={handleFeeRateChange}
+          transactionSize={txSize} // Pass the transaction size value
+          originalFeeRate={0} // Pass 0 or appropriate value for new transactions
+        />
+
       </S.TiersContainer>
       <BaseRow justify={'center'}>
         <S.SendFormButton
-          disabled={loading || isLoading || inValidAmount}
+          disabled={loading || isLoading || inValidAmount || authLoading || addressError}
           onClick={handleSend}
           size="large"
           type="primary"
@@ -284,7 +323,7 @@ const SendForm: React.FC<SendFormProps> = ({ onSend }) => {
   );
 
   return (
-    <BaseSpin spinning={isLoading || loading}>
+    <BaseSpin spinning={isLoading || loading || authLoading}>
       <S.SendBody justify={'center'}>
         <S.FormSpacer>
           <S.FormHeader>Send</S.FormHeader>

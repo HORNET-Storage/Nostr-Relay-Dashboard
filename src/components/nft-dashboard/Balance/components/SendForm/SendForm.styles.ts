@@ -13,20 +13,6 @@ export const TextRow = styled.div`
   gap: 1rem;
 `;
 
-export const SubCard = styled(BaseCard)<{ $isMobile?: boolean }>`
-  width: 30%;
-  ${(props) =>
-    props.$isMobile &&
-    css`
-      width: 100%;
-    `}
-  background-color: var(--additional-background-color);
-  cursor: pointer;
-  box-shadow: 0px 0px 10px 0px var(--shadow-color);
-  .ant-card-body {
-    padding: 1rem 2rem;
-  }
-`;
 export const SendBody = styled(BaseRow)`
   padding-bottom: 1rem;
 `;
@@ -45,28 +31,16 @@ export const FormHeader = styled.span`
   padding-bottom: 1rem;
 `;
 
-export const SubCardHeader = styled.span`
-  font-size: 1.5rem;
-`;
-
 export const InputHeader = styled.span`
   font-size: 1.5rem;
 `;
 
-export const SubCardAmount = styled.span`
-  font-size: 1.5rem;
-`;
-export const SubCardContent = styled.div`
-  font-size: 1.3rem;
-  height: 100%;
+export const RBFWrapper = styled.div`
   display: flex;
-  justify-content: space-around;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 1rem;
   align-items: center;
-  text-align: center;
-  gap: 3rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  justify-content: center;
 `;
 
 export const InputWrapper = styled.div`
@@ -74,6 +48,40 @@ export const InputWrapper = styled.div`
   min-width: 25vw;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+export const InputHeaderWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+`;
+export const TiersContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+export const SendFormButton = styled(BaseButton)`
+  width: 100%;
+`;
+
+export const BalanceInfo = styled.small`
+  color: var(--subtext-color);
+`;
+
+export const Recipient = styled.span`
+  color: var(--subtext-color);
+  word-break: break-all;
+`;
+export const ErrorText = styled.small`
+  color: var(--error-color);
+  display: flex;
+  op
+  flex-direction: row;
+  align-items: center;
+`;
+export const AddressText = styled.span`
+  text-decoration: underline;
+  color: var(--text-main-color);
 `;
 export const TiersRow = styled.div`
   display: flex;
@@ -87,57 +95,4 @@ export const TiersCol = styled.div`
   flex-direction: column;
   gap: 1rem;
   justify-content: space-around;
-`;
-export const SendFormButton = styled(BaseButton)`
-  width: 100%;
-`;
-export const TiersContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: all 0.5s ease;
-  padding: 1rem;
-  .tier-hover:hover {
-    background-color: var(--primary-color);
-  }
-  .selected {
-    border: 1px solid var(--primary-color);
-  }
-  .invalidAmount {
-    border: 1px solid var(--error-color);
-  }
-`;
-export const BalanceInfo = styled.small`
-  color: var(--subtext-color);
-`;
-
-export const Recipient = styled.span`
-  color: var(--subtext-color);
-  word-break: break-all;
-`;
-export const ErrorText = styled.small`
-  color: var(--error-color);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-export const AddressText = styled.span`
-  text-decoration: underline;
-  color: var(--text-main-color);
-`;
-
-export const RateValueWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-export const RateValue = styled.span`
-  color: green;
-`;
-export const RBFWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;
 `;

@@ -3,7 +3,7 @@ import { BaseModal } from '@app/components/common/BaseModal/BaseModal';
 import { BaseSpin } from '@app/components/common/BaseSpin/BaseSpin';
 import SendForm from '../SendForm/SendForm';
 import * as S from './SendModal.styles';
-import ResultScreen from '../SendForm/components/ResultScreen';
+import ResultScreen from '../SendForm/components/ResultScreen/ResultScreen';
 
 interface SendModalProps {
   isOpen: boolean;

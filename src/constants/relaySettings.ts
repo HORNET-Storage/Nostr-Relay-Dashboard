@@ -1,10 +1,6 @@
 export type Settings = {
   mode: string;
   protocol: string[];
-  chunked: string[];
-  chunksize: string;
-  maxFileSize: number;
-  maxFileSizeUnit: string;
   kinds: string[];
   dynamicKinds: string[];
   photos: string[];
@@ -18,6 +14,7 @@ export type Settings = {
   isVideosActive: boolean;
   isGitNestrActive: boolean;
   isAudioActive: boolean;
+  isFileStorageActive: boolean;
 };
 
 export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'appBuckets' | 'dynamicAppBuckets';  

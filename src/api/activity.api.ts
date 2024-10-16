@@ -1,7 +1,9 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ActivityStatusType } from '@app/interfaces/interfaces';
+import { readToken } from '@app/services/localStorage.service';
 import config from '@app/config/config';
+import { message } from 'antd';
 
 export interface WalletTransaction {
   id: number;
@@ -11,33 +13,46 @@ export interface WalletTransaction {
   value: string;
 }
 
-export const getUserActivities = (): Promise<WalletTransaction[]> => {
-  return fetch(`${config.baseURL}/transactions/latest`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (Array.isArray(data) && data.length === 0) {
-        // Handle the case where the response is an empty array
-        return [];
-      }
-      // Assuming your backend response matches the WalletTransaction interface
-      // eslint-disable-next-line
-      return data.map((item: any) => ({
-        id: item.ID,
-        witness_tx_id: item.WitnessTxId,
-        date: new Date(item.Date).getTime(),
-        output: item.Output,
-        value: item.Value,
-      }));
-    })
-    .catch((error) => {
-      console.error('Error fetching user activities:', error);
+export const getUserActivities = (handleLogout: () => void): Promise<WalletTransaction[]> => {
+  const token = readToken(); // Read the JWT token from local storage
+
+  if (!token) {
+    handleLogout(); // Call handleLogout if no token
+    return Promise.reject('No token found');
+  }
+
+  return fetch(`${config.baseURL}/api/transactions/latest`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then((data) => {
+    if (Array.isArray(data) && data.length === 0) {
+      // Handle the case where the response is an empty array
       return [];
-    });
+    }
+    // Assuming your backend response matches the WalletTransaction interface
+    // eslint-disable-next-line
+    return data.map((item: any) => ({
+      id: item.ID,
+      witness_tx_id: item.WitnessTxId,
+      date: new Date(item.Date).getTime(),
+      output: item.Output,
+      value: item.Value,
+    }));
+  })
+  .catch((error) => {
+    console.error('Error fetching user activities:', error);
+    return [];
+  });
 };
 
 export interface Activity {

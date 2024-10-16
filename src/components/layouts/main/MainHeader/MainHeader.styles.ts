@@ -12,7 +12,7 @@ export const Header = styled(BaseLayout.Header)<Header>`
   line-height: 1.5;
   z-index: 105;
 
-  @media only screen and ${media.xs} {
+  @media only screen and ${media.xxs} {
     ${(props) =>
       props.$isSiderOpened &&
       css`

@@ -75,7 +75,7 @@ export const getTotalEarning = (id: number, currency: CurrencyTypeEnum): Promise
 
 export const getBitcoinRatesForLast30Days = (): Promise<Earning[]> => {
   console.log('Fetching bitcoin rate data.');
-  return fetch('http://localhost:5000/bitcoin-rates/last-30-days')
+  return fetch('http://localhost:5000/api/bitcoin-rates/last-30-days')
     .then((response) => response.json())
     .then((data) => {
       console.log('Received data:', data); // Add log statement to see the data

@@ -58,6 +58,7 @@ export const FONT_WEIGHT = {
 } as const;
 
 export const BREAKPOINTS = {
+  xxs: 320,
   xs: 360,
   sm: 568,
   md: 768,
@@ -69,6 +70,7 @@ export const BREAKPOINTS = {
 const getMedia = <T extends number>(breakpoint: T): `(min-width: ${T}px)` => `(min-width: ${breakpoint}px)`;
 
 export const media = {
+  xxs: getMedia(BREAKPOINTS.xxs),
   xs: getMedia(BREAKPOINTS.xs),
   sm: getMedia(BREAKPOINTS.sm),
   md: getMedia(BREAKPOINTS.md),
