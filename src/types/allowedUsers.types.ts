@@ -2,7 +2,7 @@
 export type AllowedUsersMode = 'only-me' | 'invite-only' | 'public' | 'subscription';
 
 // Permission types as defined by backend
-export type PermissionType = 'all_users' | 'paid_users' | 'allowed_users' | 'only_me';
+export type PermissionType = 'all_users' | 'paid_users' | 'allowed_users' | 'only-me';
 
 // Tier structure remains the same
 export interface AllowedUsersTier {
@@ -18,6 +18,7 @@ export interface AllowedUsersSettings {
   mode: AllowedUsersMode;
   read: PermissionType;
   write: PermissionType;
+  auto_add_repo_collaborators: boolean;
   tiers: AllowedUsersTier[];
   relay_owner_npub?: string; // Optional field for only-me mode
 }
@@ -87,9 +88,9 @@ export interface ModeConfiguration {
 
 export const MODE_CONFIGURATIONS: Record<AllowedUsersMode, ModeConfiguration> = {
   'only-me': {
-    readOptions: ['only_me', 'all_users', 'allowed_users'],
-    writeOptions: ['only_me'],
-    forcedWrite: 'only_me',
+    readOptions: ['only-me', 'all_users', 'allowed_users'],
+    writeOptions: ['only-me'],
+    forcedWrite: 'only-me',
     description: 'Personal relay for single user'
   },
   'invite-only': {
@@ -144,7 +145,7 @@ export const getPermissionLabel = (permission: PermissionType): string => {
       return 'Paid Users';
     case 'allowed_users':
       return 'Allowed Users';
-    case 'only_me':
+    case 'only-me':
       return 'Only Me';
     default:
       return permission;

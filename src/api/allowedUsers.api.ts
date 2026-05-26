@@ -20,22 +20,22 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
       'Authorization': `Bearer ${token}`,
     },
   });
-  
+
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
+
   const text = await response.text();
   try {
     const data = JSON.parse(text);
-    
+
     // Extract allowed_users from the new nested structure
     const allowedUsersData = data.settings?.allowed_users;
     if (!allowedUsersData) {
       throw new Error('No allowed_users data found in response');
     }
-    
+
     // Transform tiers from backend format to frontend format
     let transformedTiers = [];
-    
+
     // Check if tiers exist in response, otherwise use defaults
     if (allowedUsersData.tiers && Array.isArray(allowedUsersData.tiers)) {
       transformedTiers = allowedUsersData.tiers.map((tier: any) => ({
@@ -49,15 +49,16 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
       const mode = allowedUsersData.mode as AllowedUsersMode;
       transformedTiers = DEFAULT_TIERS[mode] || DEFAULT_TIERS['public'];
     }
-    
+
     const transformedSettings = {
       mode: allowedUsersData.mode || 'public',
       read: allowedUsersData.read || 'all_users',
       write: allowedUsersData.write || 'all_users',
+      auto_add_repo_collaborators: Boolean(allowedUsersData.auto_add_repo_collaborators),
       tiers: transformedTiers,
       relay_owner_npub: allowedUsersData.relay_owner_npub || ''
     };
-    
+
     return transformedSettings;
   } catch (jsonError) {
     throw new Error(`Invalid JSON response: ${text}`);
@@ -66,7 +67,7 @@ export const getAllowedUsersSettings = async (): Promise<AllowedUsersSettings> =
 
 export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings): Promise<ApiResponse> => {
   const token = readToken();
-  
+
   // Transform to nested format as expected by new unified backend API
   // Note: relay_owner_npub is no longer sent in settings - it's managed via /api/allowed-users
   const nestedSettings = {
@@ -75,7 +76,8 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
         "mode": settings.mode,
         "read": settings.read,
         "write": settings.write,
-        "tiers": settings.mode === 'public' 
+        "auto_add_repo_collaborators": settings.auto_add_repo_collaborators,
+        "tiers": settings.mode === 'public'
           ? settings.tiers.filter(tier => tier.active).map(tier => ({
               "name": tier.name,
               "price_sats": tier.price_sats,
@@ -91,7 +93,7 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
       }
     }
   };
-  
+
   // Comprehensive logging for debugging
   console.group('🔧 [API] Updating Allowed Users Settings');
   console.log('📤 Original frontend settings:', settings);
@@ -104,7 +106,7 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
   console.log('🌐 Request URL:', `${config.baseURL}/api/settings`);
   console.log('📄 Request body (stringified):', JSON.stringify(nestedSettings, null, 2));
   console.groupEnd();
-  
+
   const response = await fetch(`${config.baseURL}/api/settings`, {
     method: 'POST',
     headers: {
@@ -113,16 +115,16 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
     },
     body: JSON.stringify(nestedSettings),
   });
-  
+
   const text = await response.text();
-  
+
   // Log response details
   console.group('📥 [API] Settings Update Response');
   console.log('📊 Response status:', response.status);
   console.log('✅ Response OK:', response.ok);
   console.log('📄 Response text:', text);
   console.groupEnd();
-  
+
   if (!response.ok) {
     console.error('❌ [API] Settings update failed:', {
       status: response.status,
@@ -132,7 +134,7 @@ export const updateAllowedUsersSettings = async (settings: AllowedUsersSettings)
     });
     throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
   }
-  
+
   try {
     const parsedResponse = JSON.parse(text);
     console.log('✅ [API] Settings update successful:', parsedResponse);
@@ -152,13 +154,13 @@ export const getAllowedUsers = async (page = 1, pageSize = 20): Promise<AllowedU
       'Authorization': `Bearer ${token}`,
     },
   });
-  
+
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
+
   const text = await response.text();
   try {
     const data = JSON.parse(text);
-    
+
     return {
       allowed_users: data.allowed_users || [],
       pagination: data.pagination || {
@@ -175,7 +177,7 @@ export const getAllowedUsers = async (page = 1, pageSize = 20): Promise<AllowedU
 
 export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<ApiResponse> => {
   const token = readToken();
-  
+
   // Backend expects NPUB format (not hex), so keep as-is
   console.group('👤 [API] Adding Allowed User');
   console.log('📤 Request payload:', request);
@@ -183,7 +185,7 @@ export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<Ap
   console.log('📄 Request body (stringified):', JSON.stringify(request, null, 2));
   console.log('🔑 Authorization token present:', !!token);
   console.groupEnd();
-  
+
   // Using correct POST method with request body
   const response = await fetch(`${config.baseURL}/api/allowed/add`, {
     method: 'POST',
@@ -193,16 +195,16 @@ export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<Ap
     },
     body: JSON.stringify(request),
   });
-  
+
   const text = await response.text();
-  
+
   // Log response details
   console.group('📥 [API] Add User Response');
   console.log('📊 Response status:', response.status);
   console.log('✅ Response OK:', response.ok);
   console.log('📄 Response text:', text);
   console.groupEnd();
-  
+
   if (!response.ok) {
     console.error('❌ [API] Add user failed:', {
       status: response.status,
@@ -212,7 +214,7 @@ export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<Ap
     });
     throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
   }
-  
+
   try {
     const parsedResponse = JSON.parse(text);
     console.log('✅ [API] Add user successful:', parsedResponse);
@@ -225,7 +227,7 @@ export const addAllowedUser = async (request: AddAllowedUserRequest): Promise<Ap
 
 export const removeAllowedUser = async (request: RemoveAllowedUserRequest): Promise<ApiResponse> => {
   const token = readToken();
-  
+
   // Using correct DELETE method with request body
   const response = await fetch(`${config.baseURL}/api/allowed/remove`, {
     method: 'DELETE',
@@ -235,9 +237,9 @@ export const removeAllowedUser = async (request: RemoveAllowedUserRequest): Prom
     },
     body: JSON.stringify(request),
   });
-  
+
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
+
   const text = await response.text();
   try {
     return JSON.parse(text);
@@ -249,28 +251,28 @@ export const removeAllowedUser = async (request: RemoveAllowedUserRequest): Prom
 // Relay Owner Management API (for only-me mode)
 export const getRelayOwner = async (): Promise<RelayOwnerResponse> => {
   const token = readToken();
-  
+
   console.group('🔍 [API] Getting Relay Owner');
   console.log('🌐 Request URL:', `${config.baseURL}/api/admin/owner`);
   console.log('🔑 Authorization token present:', !!token);
   console.groupEnd();
-  
+
   const response = await fetch(`${config.baseURL}/api/admin/owner`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
   });
-  
+
   const text = await response.text();
-  
+
   console.group('📥 [API] Get Owner Response');
   console.log('📊 Response status:', response.status);
   console.log('✅ Response OK:', response.ok);
   console.log('📄 Response text:', text);
   console.groupEnd();
-  
+
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
+
   try {
     const parsedResponse = JSON.parse(text);
     console.log('✅ [API] Get owner successful:', parsedResponse);
@@ -282,12 +284,12 @@ export const getRelayOwner = async (): Promise<RelayOwnerResponse> => {
 
 export const setRelayOwner = async (request: SetRelayOwnerRequest): Promise<ApiResponse> => {
   const token = readToken();
-  
+
   console.group('👤 [API] Setting Relay Owner');
   console.log('📤 Request payload:', request);
   console.log('🌐 Request URL:', `${config.baseURL}/api/admin/owner`);
   console.groupEnd();
-  
+
   const response = await fetch(`${config.baseURL}/api/admin/owner`, {
     method: 'POST',
     headers: {
@@ -296,15 +298,15 @@ export const setRelayOwner = async (request: SetRelayOwnerRequest): Promise<ApiR
     },
     body: JSON.stringify(request),
   });
-  
+
   const text = await response.text();
-  
+
   console.group('📥 [API] Set Owner Response');
   console.log('📊 Response status:', response.status);
   console.log('✅ Response OK:', response.ok);
   console.log('📄 Response text:', text);
   console.groupEnd();
-  
+
   if (!response.ok) {
     console.error('❌ [API] Set owner failed:', {
       status: response.status,
@@ -314,7 +316,7 @@ export const setRelayOwner = async (request: SetRelayOwnerRequest): Promise<ApiR
     });
     throw new Error(`HTTP error! status: ${response.status}, response: ${text}`);
   }
-  
+
   try {
     const parsedResponse = JSON.parse(text);
     console.log('✅ [API] Set owner successful:', parsedResponse);
@@ -327,16 +329,16 @@ export const setRelayOwner = async (request: SetRelayOwnerRequest): Promise<ApiR
 
 export const removeRelayOwner = async (): Promise<ApiResponse> => {
   const token = readToken();
-  
+
   const response = await fetch(`${config.baseURL}/api/admin/owner`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
     },
   });
-  
+
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
+
   const text = await response.text();
   try {
     const parsedResponse = JSON.parse(text);

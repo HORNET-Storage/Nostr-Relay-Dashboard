@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Select, Space, Alert } from 'antd';
+import { Form, Select, Space, Alert, Switch } from 'antd';
 import { AllowedUsersSettings, AllowedUsersMode, PermissionType, MODE_CONFIGURATIONS, getPermissionLabel } from '@app/types/allowedUsers.types';
 import * as S from './PermissionsConfig.styles';
 
@@ -41,6 +41,13 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
     onSettingsChange({
       ...settings,
       write: value
+    });
+  };
+
+  const handleAutoAddRepoCollaboratorsChange = (checked: boolean) => {
+    onSettingsChange({
+      ...settings,
+      auto_add_repo_collaborators: checked
     });
   };
 
@@ -107,6 +114,17 @@ export const PermissionsConfig: React.FC<PermissionsConfigProps> = ({
                 placeholder="Select write permission"
               />
             </S.ForcedSelectWrapper>
+          </Form.Item>
+
+          <Form.Item
+            label={<span style={{ color: '#d9d9d9' }}>Auto-add repo collaborators to relay write access</span>}
+            extra={<span style={{ color: '#8c8c8c' }}>Adds write and maintainer collaborators to allowed users. Removals stay manual.</span>}
+          >
+            <Switch
+              checked={settings.auto_add_repo_collaborators}
+              onChange={handleAutoAddRepoCollaboratorsChange}
+              disabled={disabled || settings.write !== 'allowed_users'}
+            />
           </Form.Item>
         </Form>
       </Space>

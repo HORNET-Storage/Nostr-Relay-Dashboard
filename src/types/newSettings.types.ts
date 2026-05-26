@@ -23,6 +23,7 @@ export interface AllowedUsersSettings {
   mode: "free" | "paid" | "exclusive";
   read_access: ReadAccessConfig;
   write_access: WriteAccessConfig;
+  auto_add_repo_collaborators: boolean;
   tiers: SubscriptionTier[];
   last_updated: number;
 }

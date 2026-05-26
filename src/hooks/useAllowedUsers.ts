@@ -21,6 +21,7 @@ export const useAllowedUsersSettings = () => {
     mode: 'public',
     read: 'all_users',
     write: 'all_users',
+    auto_add_repo_collaborators: false,
     tiers: DEFAULT_TIERS['public']
   });
   const [loading, setLoading] = useState(false);
@@ -50,9 +51,9 @@ export const useAllowedUsersSettings = () => {
       message.success('Settings updated successfully');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update settings';
-      
+
       // Handle specific wallet service error for subscription mode
-      if (errorMessage.includes('wallet service is not available') || 
+      if (errorMessage.includes('wallet service is not available') ||
           errorMessage.includes('cannot switch to subscription mode')) {
         setError('Subscription mode requires active wallet service');
         message.error({
@@ -164,7 +165,7 @@ export const useAllowedUsersList = () => {
 // Legacy hook for backward compatibility - will be removed
 export const useAllowedUsersNpubs = (type: 'read' | 'write') => {
   const { users, loading, error, addUser, removeUser, refetch } = useAllowedUsersList();
-  
+
   return {
     npubs: users,
     loading,
@@ -181,22 +182,22 @@ export const useAllowedUsersValidation = () => {
     if (!npub) {
       return 'NPUB is required';
     }
-    
+
     if (!npub.startsWith('npub1')) {
       return 'NPUB must start with "npub1"';
     }
-    
+
     if (npub.length !== 63) {
       return 'NPUB must be 63 characters long';
     }
-    
+
     // Basic bech32 validation
     const validChars = /^[a-z0-9]+$/;
     const npubWithoutPrefix = npub.slice(5);
     if (!validChars.test(npubWithoutPrefix)) {
       return 'NPUB contains invalid characters';
     }
-    
+
     return null;
   }, []);
 
