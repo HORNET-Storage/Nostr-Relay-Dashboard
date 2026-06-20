@@ -16,7 +16,7 @@ interface PieChartProps extends BaseChartProps {
 }
 
 // Define the keys for the colors object
-type DataCategory = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'misc';
+type DataCategory = 'kinds' | 'photos' | 'videos' | 'nosis' | 'audio' | 'misc';
 
 export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLegend, ...props }) => {
   const theme = useAppSelector((state) => state.theme.theme);
@@ -54,7 +54,7 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
     kinds: getGradientColor('rgba(142, 48, 235, 0.9)', 'rgba(142, 48, 235, 0.4)'), // Purple gradient
     photos: getGradientColor('rgba(247, 147, 26, 0.9)', 'rgba(247, 147, 26, 0.4)'), // Orange gradient
     videos: getGradientColor('rgba(33, 150, 243, 0.9)', 'rgba(33, 150, 243, 0.4)'), // Blue gradient
-    gitNestr: getGradientColor('rgba(25, 230, 141, 0.9)', 'rgba(25, 230, 141, 0.4)'), // Cyan gradient
+    nosis: getGradientColor('rgba(25, 230, 141, 0.9)', 'rgba(25, 230, 141, 0.4)'), // Cyan gradient
     audio: getGradientColor('rgba(233, 75, 47, 0.9)', 'rgba(233, 75, 47, 0.4)'), // Red gradient
     misc: getGradientColor('rgba(245, 209, 73, 0.9)', 'rgba(245, 209, 73, 0.4)'), // Yellow gradient
   };
@@ -64,7 +64,7 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
     [t('categories.kinds')]: 'kinds',
     [t('categories.photos')]: 'photos',
     [t('categories.videos')]: 'videos',
-    [t('categories.gitNestr')]: 'gitNestr',
+    [t('categories.nosis')]: 'nosis',
     [t('categories.audio')]: 'audio',
     [t('categories.misc')]: 'misc',
   };
@@ -82,7 +82,7 @@ export const PieChart: React.FC<PieChartProps> = ({ option, data, name, showLege
           kinds: 'rgba(142, 48, 235, 0.9)',
           photos: 'rgba(247, 147, 26, 0.9)',
           videos: 'rgba(33, 150, 243, 0.9)',
-          gitNestr: 'rgba(25, 230, 141, 0.9)',
+          nosis: 'rgba(25, 230, 141, 0.9)',
           audio: 'rgba(233, 75, 47, 0.9)',
           misc: 'rgba(245, 209, 73, 0.9)',
         };

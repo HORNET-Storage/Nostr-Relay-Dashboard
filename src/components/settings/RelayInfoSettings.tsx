@@ -21,7 +21,7 @@ const RelayInfoSettings: React.FC = () => {
   // Function to get the default bee logo URL (no upload needed)
   const getDefaultIconUrl = (): string => {
     const currentOrigin = window.location.origin;
-    return `${currentOrigin}/logo-dark-192.png`;
+    return `${currentOrigin}/logo.png`;
   };
 
   // Update form values when settings change

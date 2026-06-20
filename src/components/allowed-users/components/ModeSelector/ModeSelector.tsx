@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Space, Tooltip } from 'antd';
+import { Button, Space, Tooltip, Alert } from 'antd';
 import { AllowedUsersMode } from '@app/types/allowedUsers.types';
 import * as S from './ModeSelector.styles';
 
@@ -79,6 +79,15 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
           <strong>{MODE_INFO[currentMode]?.label || 'Unknown Mode'}:</strong> {MODE_INFO[currentMode]?.description || 'No description available'}
         </S.DescriptionText>
       </S.ModeDescription>
+
+      {currentMode === 'invite-only' && (
+        <Alert
+          type="info"
+          showIcon
+          style={{ marginTop: '12px' }}
+          message="Granting access to repositories hosted on this relay will bypass the need for an invite for access to data relating to that specific repository."
+        />
+      )}
     </S.Container>
   );
 };

@@ -2378,7 +2378,7 @@ body:has(header:contains("Search")) .fixed.z-50.right-5 .bg-base-300 input {
 /* MAINFEED TOP HEADER STRIP (White Frost Effect) */
 /* ============================================= */
 /* This creates a frosted white strip at the top of the MainFeed area only,
-   not affecting the sidebars or their content (Relay icons, Nestr logo) */
+   not affecting the sidebars or their content (Relay icons, Nosis logo) */
 
 /* Apply frosted white strip only to MainFeed's top section */
 [data-theme="liquid-glass"] main::before {

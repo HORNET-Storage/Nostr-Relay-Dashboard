@@ -196,7 +196,7 @@ export const RelayOwnerConfig: React.FC<RelayOwnerConfigProps> = ({
           <S.AutoDetectedIndicator>
             <CheckOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
             <Text style={{ color: '#52c41a', fontSize: '13px' }}>
-              Auto-detected from Nestr
+              Auto-detected from Nosis
             </Text>
           </S.AutoDetectedIndicator>
         )}

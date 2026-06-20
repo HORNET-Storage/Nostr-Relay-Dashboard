@@ -7,12 +7,12 @@ export type Settings = {
   dynamicKinds: string[];
   photos: string[];
   videos: string[];
-  gitNestr: string[];
+  nosis: string[];
   audio: string[];
   isKindsActive: boolean;
   isPhotosActive: boolean;
   isVideosActive: boolean;
-  isGitNestrActive: boolean;
+  isNosisActive: boolean;
   isAudioActive: boolean;
   isFileStorageActive: boolean;
   moderationMode: string;    // "strict" or "passive"
@@ -22,7 +22,7 @@ export type Settings = {
   audioMaxSizeMB: number;
 }
 
-export type Category = 'kinds' | 'photos' | 'videos' | 'gitNestr' | 'audio' | 'dynamicKinds' | 'photoMaxSizeMB' | 'videoMaxSizeMB' | 'audioMaxSizeMB';  
+export type Category = 'kinds' | 'photos' | 'videos' | 'nosis' | 'audio' | 'dynamicKinds' | 'photoMaxSizeMB' | 'videoMaxSizeMB' | 'audioMaxSizeMB';  
 export const noteOptions = [
   { kind: 0, kindString: 'kind0', description: 'Metadata', category: 1 },
   { kind: 1, kindString: 'kind1', description: 'Text Note', category: 1 },
@@ -63,7 +63,7 @@ export const noteOptions = [
 export const categories = [
   { id: 1, name: 'Basic Nostr Features' },
   { id: 2, name: 'Extra Nostr Features' },
-  { id: 3, name: 'GitNestr Features' },
+  { id: 3, name: 'Nosis Features' },
 ];
 
 interface FormatOption {

@@ -78,7 +78,7 @@
     "kinds": "Notes",
     "photos": "Photos",
     "videos": "Videos",
-    "gitNestr": "GitNestr",
+    "nosis": "Nosis",
     "profiles": "Profiles",
     "npubs": "npubs",
     "lightningAddr": "Lightning",
@@ -158,7 +158,7 @@
     "kind9802": "Kind 9802",
     "photos": "Photos",
     "videos": "Videos",
-    "gitNestr": "GitNest Data",
+    "nosis": "GitNest Data",
     "jpeg": "JPEG",
     "jpg": "JPG",
     "png": "PNG",
@@ -192,9 +192,9 @@
     "m4b": "M4B",
     "midi": "MIDI",
     "Nostr/file_attachment": "Nostr/file_attachment",
-    "GitNestr/bundle_chain": "GitNestr/bundle_chain",
-    "GitNestr/archive_repo": "GitNestr/archive_repo",
-    "GitNestr/encrypted_data": "GitNestr/encrypted_data"
+    "Nosis/bundle_chain": "Nosis/bundle_chain",
+    "Nosis/archive_repo": "Nosis/archive_repo",
+    "Nosis/encrypted_data": "Nosis/encrypted_data"
   },
   "common": {
     "address": "Address",
