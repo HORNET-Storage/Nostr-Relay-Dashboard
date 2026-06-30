@@ -134,7 +134,7 @@ const kindMapping: { [key: number]: { description: string; nip: string } } = {
   30023: { description: 'Long-form Content', nip: '23' },
   30024: { description: 'Draft Long-form Content', nip: '23' },
   30030: { description: 'Emoji sets', nip: '51' },
-  30063: { description: 'Release artifact sets', nip: '51' },
+  31416: { description: 'Release artifact sets', nip: '888' },
   30078: { description: 'Application-specific Data', nip: '78' },
   30311: { description: 'Live Event', nip: '53' },
   30315: { description: 'User Statuses', nip: '38' },
