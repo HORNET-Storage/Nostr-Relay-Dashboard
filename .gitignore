@@ -34,3 +34,6 @@ yarn-error.log*
 # generated files
 /public/themes
 /memory-bank
+
+# runtime logs (contain locally generated state that must stay out of git)
+/logs
