@@ -488,6 +488,7 @@ interface UseGenericSettingsResult<T> {
   fetchSettings: () => Promise<void>;
   updateSettings: (updatedSettings: Partial<T>) => void;
   saveSettings: () => Promise<void>;
+  updateSetting: (key: string, value: any) => Promise<void>;
 }
 
 /**
@@ -579,130 +580,12 @@ const useGenericSettings = <T extends SettingsGroupName>(
     });
   }, [groupName]);
 
-  const saveSettings = useCallback(async () => {
-    if (!settings) {
-      console.warn('No settings to save');
-      return;
-    }
-
+  const updateSetting = useCallback(async (key: string, value: any) => {
     try {
       setLoading(true);
       setError(null);
 
-      // By default, use settings as-is
-      let dataToSave = settings;
-
-      // Define settings groups that need special handling
-      const prefixedSettingsMap: Record<string, { prefix: string, formKeys: string[] }> = {
-        'image_moderation': {
-          prefix: 'image_moderation_',
-          formKeys: [
-            'image_moderation_api',
-            'image_moderation_check_interval',
-            'image_moderation_concurrency',
-            'image_moderation_enabled',
-            'image_moderation_mode',
-            'image_moderation_temp_dir',
-            'image_moderation_threshold',
-            'image_moderation_timeout'
-          ]
-        },
-        'content_filter': {
-          prefix: 'content_filter_',
-          formKeys: [
-            'content_filter_cache_size',
-            'content_filter_cache_ttl',
-            'content_filter_enabled',
-            'full_text_kinds' // Special case without prefix
-          ]
-        },
-        'ollama': {
-          prefix: 'ollama_',
-          formKeys: [
-            'ollama_model',
-            'ollama_timeout',
-            'ollama_url'
-          ]
-        },
-        'xnostr': {
-          prefix: 'xnostr_',
-          formKeys: [
-            'xnostr_browser_path',
-            'xnostr_browser_pool_size',
-            'xnostr_check_interval',
-            'xnostr_concurrency',
-            'xnostr_enabled',
-            'xnostr_temp_dir',
-            'xnostr_update_interval',
-            'xnostr_nitter',
-            'xnostr_verification_intervals'
-          ]
-        },
-        'wallet': {
-          prefix: 'wallet_',
-          formKeys: [
-            'wallet_api_key',
-            'wallet_name'
-          ]
-        }
-      };
-
-      // Check if this group needs special handling
-      if (groupName in prefixedSettingsMap) {
-        console.log(`Settings from state for ${groupName}:`, settings);
-        const { prefix, formKeys } = prefixedSettingsMap[groupName];
-
-        // First fetch complete settings structure to preserve all values
-        console.log(`Fetching complete settings before saving ${groupName}...`);
-        const fetchResponse = await fetch(`${config.baseURL}/api/settings`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!fetchResponse.ok) {
-          throw new Error(`Failed to fetch current settings: ${fetchResponse.status}`);
-        }
-
-        const currentData = await fetchResponse.json();
-        const currentSettings = extractSettingsForGroup(currentData.settings, groupName) || {};
-        console.log(`Current ${groupName} settings from API:`, currentSettings);
-
-        // Create a properly prefixed object for the API
-        const prefixedSettings: Record<string, any> = {};
-
-        // Copy all existing settings from the backend with correct prefixes
-        Object.entries(currentSettings).forEach(([key, value]) => {
-          // Special case for content_filter's full_text_kinds which doesn't have prefix
-          if (groupName === 'content_filter' && key === 'full_text_kinds') {
-            prefixedSettings[key] = value;
-          } else {
-            // Skip prefixing if key already has the prefix to avoid double-prefixing
-            const prefixedKey = key.startsWith(prefix) ? key : `${prefix}${key}`;
-            prefixedSettings[prefixedKey] = value;
-          }
-        });
-
-        // Update with changed values from the form
-        const settingsObj = settings as Record<string, any>;
-
-        // Update each field that has changed
-        formKeys.forEach(formKey => {
-          if (formKey in settingsObj && settingsObj[formKey] !== undefined) {
-            console.log(`Updating field: ${formKey} from ${prefixedSettings[formKey]} to ${settingsObj[formKey]}`);
-            prefixedSettings[formKey] = settingsObj[formKey];
-          }
-        });
-
-        console.log(`Final ${groupName} settings with prefixed keys for API:`, prefixedSettings);
-        dataToSave = prefixedSettings as unknown as SettingsGroupType<T>;
-      }
-      
-      console.log(`Saving ${groupName} settings:`, dataToSave);
-
-      // Construct the nested update structure for the new API
-      const nestedUpdate = buildNestedUpdate(groupName, dataToSave);
-      console.log(`Nested update structure:`, nestedUpdate);
+      const nestedUpdate = buildNestedUpdate(groupName, { [key]: value });
 
       const response = await fetch(`${config.baseURL}/api/settings`, {
         method: 'POST',
@@ -714,7 +597,6 @@ const useGenericSettings = <T extends SettingsGroupName>(
       });
 
       if (response.status === 401) {
-        console.error('Unauthorized access when saving, logging out');
         handleLogout();
         return;
       }
@@ -723,10 +605,30 @@ const useGenericSettings = <T extends SettingsGroupName>(
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log(`${groupName} settings saved successfully`);
-      
-      // Optionally refresh settings after save to get any server-side changes
       await fetchSettings();
+    } catch (error) {
+      setError(error instanceof Error ? error : new Error(String(error)));
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, [groupName, token, handleLogout, fetchSettings]);
+
+  const saveSettings = useCallback(async () => {
+    if (!settings) {
+      console.warn('No settings to save');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      for (const [key, value] of Object.entries(settings)) {
+        await updateSetting(key, value);
+      }
+
+      console.log(`${groupName} settings saved successfully`);
     } catch (error) {
       console.error(`Error saving ${groupName} settings:`, error);
       setError(error instanceof Error ? error : new Error(String(error)));
@@ -734,7 +636,7 @@ const useGenericSettings = <T extends SettingsGroupName>(
     } finally {
       setLoading(false);
     }
-  }, [groupName, settings, token, handleLogout, fetchSettings]);
+  }, [groupName, settings, updateSetting]);
 
   // Fetch settings on mount
   useEffect(() => {
@@ -748,6 +650,7 @@ const useGenericSettings = <T extends SettingsGroupName>(
     fetchSettings,
     updateSettings,
     saveSettings,
+    updateSetting,
   };
 };
 
