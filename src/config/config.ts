@@ -1,21 +1,7 @@
-// config.ts
-
-// Dynamic URL detection - panel and API run from same origin
-const getBaseURL = (): string => {
-  // Demo mode override for testing
-  if (process.env.REACT_APP_DEMO_MODE === 'true') {
-    return 'http://localhost:10002';
-  }
-  
-  // For both development and production, panel and API are served from same origin
-  // API routes are at /api/* while panel is served from root
-  return process.env.REACT_APP_BASE_URL || window.location.origin;
-};
-
-// Wallet operations now go through panel API, no direct URL needed
-
+// The relay serves both the panel and its API from the same origin.
+// Keep this runtime-derived so one production build works on any host, port, or protocol.
 const config = {
-  baseURL: getBaseURL(),
+  baseURL: window.location.origin,
   isDemoMode: process.env.REACT_APP_DEMO_MODE === 'true',
   // Wallet operations now routed through panel API - always enabled
   isWalletEnabled: true,

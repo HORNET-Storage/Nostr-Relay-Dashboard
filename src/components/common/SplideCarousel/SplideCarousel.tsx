@@ -8,11 +8,11 @@ interface BaseCarouselProps extends SplideProps {
   slidesToShow?: number;
   arrows?: boolean;
   dots?: boolean;
-  autoSpeed: number;
+  autoSpeed?: number;
   infinite?: boolean;
   swipeSpeed?: number;
   type?: 'loop' | 'fade';
-  drag?: string;
+  drag?: boolean | 'free';
   gap?: string;
   snap?: string | boolean;
   flickPower?: string;

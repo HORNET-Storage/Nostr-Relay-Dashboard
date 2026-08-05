@@ -1,0 +1,17 @@
+HORNETS Relay Panel
+Copyright (c) 2026 HORNET Storage contributors.
+
+This project contains code and assets derived from Lightence Admin.
+Copyright (c) 2022 Altence LLC. The original MIT terms are preserved in LICENSE.
+HORNET Storage modifications are also distributed under the MIT License.
+
+The production map uses Leaflet and world-atlas/topojson packages under their
+respective permissive licenses. Country-boundary data is derived from Natural
+Earth public-domain map data. OpenStreetMap tiles are requested at runtime and
+are not redistributed; the required OpenStreetMap contributor attribution is
+displayed in the map UI.
+
+The combined relay release generates an artifact-specific third-party notice
+and license pack from the actual production bundle. That generated pack, not
+this short first-party notice, is the authoritative dependency inventory for a
+particular release artifact.

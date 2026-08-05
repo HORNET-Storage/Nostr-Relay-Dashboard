@@ -1,6 +1,6 @@
-import React from 'react';
-import L, { IconOptions, PointExpression } from 'leaflet';
-import { Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useMemo, useState } from 'react';
+import L, { IconOptions, Map as LeafletMapInstance, PointExpression } from 'leaflet';
+import { createRoot, Root } from 'react-dom/client';
 
 import { ReactComponent as MapBackgroundIcon } from 'assets/icons/map-background.svg';
 
@@ -19,10 +19,10 @@ const defineIconSize = (isDesktop: boolean): PointExpression => {
 
 class MarkerDoctor extends L.Icon {
   constructor(props: IconOptions, isDesktop: boolean) {
-    const iconSIze = defineIconSize(isDesktop);
+    const iconSize = defineIconSize(isDesktop);
     super({
-      popupAnchor: iconSIze,
-      iconSize: iconSIze,
+      popupAnchor: iconSize,
+      iconSize,
       ...props,
     });
   }
@@ -34,36 +34,55 @@ interface DoctorsMapProps {
 
 export const DoctorsMap: React.FC<DoctorsMapProps> = ({ doctors }) => {
   const { isDesktop } = useResponsive();
+  const [map, setMap] = useState<LeafletMapInstance | null>(null);
+  const mapDoctors = useMemo(() => doctors.filter(({ gps }) => gps), [doctors]);
 
-  const mapDoctors = doctors.filter(({ gps }) => gps);
+  useEffect(() => {
+    if (!map) return;
+
+    const markers: L.Marker[] = [];
+    const popupRoots: Root[] = [];
+
+    mapDoctors.forEach((doctor) => {
+      const popupContainer = document.createElement('div');
+      const popupRoot = createRoot(popupContainer);
+      popupRoot.render(
+        <DoctorProfile
+          avatar={doctor.imgUrl}
+          name={doctor.name}
+          speciality={doctor.specifity}
+          rating={doctor.rating}
+        />,
+      );
+
+      const marker = L.marker([doctor.gps?.latitude || 0, doctor.gps?.longitude || 0], {
+        icon: new MarkerDoctor(
+          {
+            iconUrl: doctor.imgUrl,
+            iconRetinaUrl: doctor.imgUrl,
+          },
+          isDesktop,
+        ),
+      })
+        .bindPopup(popupContainer)
+        .addTo(map);
+
+      markers.push(marker);
+      popupRoots.push(popupRoot);
+    });
+
+    return () => {
+      popupRoots.forEach((root) => root.unmount());
+      markers.forEach((marker) => marker.remove());
+    };
+  }, [isDesktop, map, mapDoctors]);
 
   return (
-    <S.DoctorsMap>
-      <MapBackgroundIcon />
-      {mapDoctors.map((marker) => (
-        <Marker
-          key={marker.id}
-          icon={
-            new MarkerDoctor(
-              {
-                iconUrl: marker.imgUrl,
-                iconRetinaUrl: marker.imgUrl,
-              },
-              isDesktop,
-            )
-          }
-          position={[marker.gps?.latitude || 0, marker.gps?.longitude || 0]}
-        >
-          <Popup>
-            <DoctorProfile
-              avatar={marker.imgUrl}
-              name={marker.name}
-              speciality={marker.specifity}
-              rating={marker.rating}
-            />
-          </Popup>
-        </Marker>
-      ))}
-    </S.DoctorsMap>
+    <S.MapFrame>
+      <S.MapDefinitions aria-hidden="true">
+        <MapBackgroundIcon />
+      </S.MapDefinitions>
+      <S.DoctorsMap onMapReady={setMap} />
+    </S.MapFrame>
   );
 };

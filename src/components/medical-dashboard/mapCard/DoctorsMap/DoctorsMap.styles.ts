@@ -2,10 +2,30 @@ import { BORDER_RADIUS } from '@app/styles/themes/constants';
 import styled from 'styled-components';
 import { CountryMap } from '../../../common/CountryMap/CountryMap';
 
+export const MapFrame = styled.div`
+  position: relative;
+  height: 19rem;
+`;
+
+export const MapDefinitions = styled.div`
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+
+  #pattern-circle {
+    fill: var(--dashboard-map-circle-color);
+  }
+
+  #pattern-circle-hovered {
+    fill: var(--primary-color);
+  }
+`;
+
 export const DoctorsMap = styled(CountryMap)`
   // Leaflet uses z-index inside. Create a new stacking context for avoiding overlapping
   isolation: isolate;
-  height: 19rem;
+  height: 100%;
 
   &.leaflet-container {
     background: var(--dashboard-map-background-color);
@@ -21,14 +41,6 @@ export const DoctorsMap = styled(CountryMap)`
           fill: url(#map-background-hovered);
         }
       }
-    }
-
-    #pattern-circle {
-      fill: var(--dashboard-map-circle-color);
-    }
-
-    #pattern-circle-hovered {
-      fill: var(--primary-color);
     }
   }
 

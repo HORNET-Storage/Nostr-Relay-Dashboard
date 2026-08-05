@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { MapContainer } from 'react-leaflet';
+import { LeafletMap } from '../LeafletMap/LeafletMap';
 
-export const Map = styled(MapContainer)`
+export const Map = styled(LeafletMap)`
   height: 100%;
 
   & .leaflet-bottom.leaflet-right {

@@ -30,8 +30,8 @@ export const LAYOUT = {
 } as const;
 
 export const FONT_FAMILY = {
-  main: 'Montserrat',
-  secondary: 'Lato',
+  main: "'Segoe UI', Arial, sans-serif",
+  secondary: "'Segoe UI', Arial, sans-serif",
 } as const;
 
 export const FONT_SIZE = {

@@ -162,6 +162,7 @@ export const getDefaultSettings = (): Partial<Settings> => ({
     mode: "free",
     read_access: { enabled: true, scope: "all_users" },
     write_access: { enabled: true },
+    auto_add_repo_collaborators: false,
     tiers: [],
     last_updated: Date.now()
   },

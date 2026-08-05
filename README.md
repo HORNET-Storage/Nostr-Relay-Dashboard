@@ -49,8 +49,8 @@ The panel uses **NIP-07** ([window.nostr capability](https://nostr-nips.com/nip-
 
 1. **Install a NIP-07 browser extension** (required - see above)
 2. **Install dependencies**: `npm install -g serve` and `yarn install` 
-3. **Start development**: `yarn start`
-4. **For production**: `yarn build` then `serve -s build`
+3. **Start frontend-only development**: `yarn start`
+4. **For relay integration**: `yarn build`, copy `build/*` into the relay's `web/` directory, then start the relay
 
 **For full deployment with reverse proxy, see the detailed setup guide below.**
 
@@ -106,10 +106,10 @@ Nginx Proxy (Port 80/443) - Optional but recommended for production
 
 ## 🔧 Deployment Options
 
-### Direct Access (Development)
-For development, you can run services directly:
+### Direct Access
+For integrated testing, serve the panel build from the relay so browser requests and the panel API share one origin:
 - **Relay + Panel**: `http://localhost:9002` (no proxy needed)
-- **Wallet Service**: `http://localhost:9003` (direct API calls)
+- **Standalone React dev server**: frontend-only unless a development proxy forwards API routes to the relay
 
 ### Nginx Proxy (Production Recommended)
 For production deployment, nginx handles:
@@ -306,41 +306,15 @@ yarn install
 
 ### 3. Environment Configuration
 
-#### Development Setup
-For development, create `.env.development` with your local service URLs:
+The panel and relay API are same-origin. API and wallet origins are not configurable in the browser bundle; every request uses the origin that served the panel.
+
+The environment files contain only non-origin build options:
+
 ```env
-REACT_APP_BASE_URL=http://localhost:9002
-REACT_APP_WALLET_BASE_URL=http://localhost:9003
 REACT_APP_ASSETS_BUCKET=http://localhost
 REACT_APP_DEMO_MODE=false
 REACT_APP_BASENAME=
-
-# Nostr operations now use panel API - no relay URLs needed
-
-# More info https://create-react-app.dev/docs/advanced-configuration
-ESLINT_NO_DEV_ERRORS=true
-TSC_COMPILE_ON_ERROR=true
-```
-
-#### Production Setup
-For production deployment, you need explicit service URL configuration:
-
-Create `.env.production` for production builds:
-
-```env
-# Demo mode (set to false for production)
-REACT_APP_DEMO_MODE=false
-
-# Service URLs
-# REACT_APP_WALLET_BASE_URL - No longer needed! Wallet operations routed through panel API
-
-# Router configuration (empty for direct access)
-REACT_APP_BASENAME=
-PUBLIC_URL=
-
-# Nostr operations now use panel API - no relay URLs needed
-
-# Development optimizations
+PUBLIC_URL=/
 ESLINT_NO_DEV_ERRORS=true
 TSC_COMPILE_ON_ERROR=true
 ```
@@ -365,7 +339,7 @@ start.bat             # Windows
 yarn start
 ```
 
-The development server will start on `http://localhost:3000`
+The development server starts on `http://localhost:3000`. It is frontend-only unless a development proxy forwards API routes; use a relay-served production build for same-origin integration testing.
 
 ## 🚀 Deployment
 
@@ -416,14 +390,8 @@ Controls the React app's routing base path:
 **Note**: For the current working setup, leave this empty (`REACT_APP_BASENAME=`) since the panel is served from the root path.
 
 ### Service URLs
-**🎯 Configuration Requirements**:
-- **Wallet Service**: No longer requires configuration! Wallet operations are routed through panel API (`/api/wallet-proxy/*`)
-- **Panel API**: Auto-detected from current origin (no configuration needed)
 
-**✅ Simplified**: Wallet functionality is now always available through the panel's backend proxy.
-
-**Manual Override** (development only):
-- **REACT_APP_BASE_URL**: Panel API endpoint (dev mode only)
+The panel API and wallet proxy are always contacted through the page origin. Deploy the static build in the relay's `web` directory and expose that relay origin directly or through a reverse proxy. No browser API endpoint configuration is required or supported.
 
 ### Demo Mode
 Set `REACT_APP_DEMO_MODE=true` to enable demo functionality with mock data.
@@ -444,29 +412,12 @@ export NODE_OPTIONS="--openssl-legacy-provider --max-old-space-size=4096"
 ```
 
 #### 3. API Connection Issues
-**Error**: Network errors or 404s
-**Solution**: Verify service URLs in environment variables and ensure backend services are running.
 
-#### 3.1. CORS Configuration Issues
-**Error**: `Access to fetch at 'X' from origin 'Y' has been blocked by CORS policy`
-**Solution**: Ensure your backend services are configured to accept requests from your frontend origin:
+**Error**: Network errors, connection refusals, or unexpected API hosts
 
-For development with direct access:
-```env
-# Frontend running on http://localhost:3000
-# Backend services must allow this origin in their CORS configuration
-REACT_APP_BASE_URL=http://localhost:9002
-REACT_APP_WALLET_BASE_URL=http://localhost:9003
-```
+**Solution**: Verify that the relay web service is reachable at the same origin shown in the browser address bar. The deployed panel must be served by the relay (or a reverse proxy that forwards both the panel and API routes to it).
 
-For production with reverse proxy (recommended):
-```env
-# All services behind same domain - no CORS issues
-REACT_APP_BASE_URL=https://your-domain.com/panel
-REACT_APP_WALLET_BASE_URL=https://your-domain.com/wallet
-```
-
-**Note**: When using direct port access, each backend service must be configured to allow your frontend's origin in their CORS settings. Using a reverse proxy eliminates CORS issues entirely.
+When replacing an older deployment, remove the destination `web` directory before copying the new build, then unregister the site's service worker and clear site data so an obsolete cached bundle cannot remain active.
 
 #### 4. Routing Issues with Reverse Proxy
 **Error**: 404 on refresh or direct URL access
@@ -503,13 +454,13 @@ Start services in this order:
 - Hot reloading enabled
 - Source maps included
 - Verbose error messages
-- Direct API calls to localhost ports
+- API requests remain same-origin; a standalone dev server needs an API proxy for integration testing
 
 ### Production
 - Optimized builds with minification
 - Source maps excluded
 - Error boundaries for user-friendly errors
-- Proxied API calls through reverse proxy
+- Same-origin API calls served directly by the relay or forwarded with the panel through one reverse-proxy origin
 
 ## 🔒 Security Considerations
 

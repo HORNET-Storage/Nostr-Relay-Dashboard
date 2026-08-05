@@ -1,20 +1,21 @@
 {
-  "name": "my-awesome-project",
+  "name": "hornets-relay-panel",
   "version": "1.0.0",
   "license": "MIT",
-  "description": "Free and easy-to-use admin template based on React 17+",
+  "description": "Web administration panel for HORNETS Nostr Relay",
   "repository": {
     "type": "git",
-    "url": "git+github.com:altence/lightence-admin.git"
+    "url": "git+https://github.com/HORNET-Storage/HORNETS-Relay-Panel.git"
   },
   "bugs": {
-    "url": "https://github.com/altence/lightence-admin/issues"
+    "url": "https://github.com/HORNET-Storage/HORNETS-Relay-Panel/issues"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@babel/core": "^7.24.7",
     "@cashu/cashu-ts": "^2.5.2",
     "@craco/craco": "^6.1.2",
+    "@noble/curves": "1.9.2",
     "@lit-labs/react": "^1.0.2",
     "@nostr-dev-kit/ndk": "^2.14.32",
     "@nostr-dev-kit/ndk-hooks": "^1.2.3",
@@ -29,7 +30,6 @@
     "axios": "^0.24.0",
     "axios-mock-adapter": "^1.20.0",
     "bech32": "^2.0.0",
-    "bip-schnorr": "^0.6.7",
     "chart.js": "^4.4.3",
     "country-list": "^2.2.0",
     "credit-card-type": "^9.1.0",
@@ -42,6 +42,7 @@
     "jquery": "^3.7.1",
     "leaflet": "^1.7.1",
     "nostr-tools": "^2.7.0",
+    "topojson-client": "3.1.0",
     "pigeon-maps": "^0.19.7",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -54,7 +55,6 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-insta-stories": "^2.3.0",
     "react-is": "^18.3.1",
-    "react-leaflet": "next",
     "react-phone-number-input": "^3.2.17",
     "react-redux": "^7.2.6",
     "react-responsive": "^9.0.2",
@@ -68,8 +68,6 @@
     "serve": "^14.2.4",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.0",
-    "typeface-lato": "^1.1.13",
-    "typeface-montserrat": "^1.1.13",
     "typescript": "5.1.6",
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1",
@@ -84,7 +82,8 @@
     "workbox-range-requests": "^5.1.3",
     "workbox-routing": "^5.1.3",
     "workbox-strategies": "^5.1.3",
-    "workbox-streams": "^5.1.3"
+    "workbox-streams": "^5.1.3",
+    "world-atlas": "2.0.2"
   },
   "scripts": {
     "start": "NODE_OPTIONS=--openssl-legacy-provider yarn buildThemes && NODE_OPTIONS=--openssl-legacy-provider craco start",
@@ -117,6 +116,7 @@
     "@types/react-simple-maps": "^1.0.7",
     "@types/react-slick": "^0.23.8",
     "@types/styled-components": "^5.1.10",
+    "@types/topojson-client": "3.1.5",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.8.0",
